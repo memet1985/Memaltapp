@@ -2,224 +2,174 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MemAlt - Sweet Waffle Paneli</title>
+    <title>Sweet Waffle - Kapsamlı Yönetim Sistemi</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #e67e22;
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-        .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #2c3e50;
-            border-bottom: 2px solid #e67e22;
-            padding-bottom: 5px;
-        }
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-        .btn {
-            background-color: #f39c12;
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: center;
-            transition: background 0.3s;
-        }
-        .btn:hover {
-            background-color: #d35400;
-        }
-        .sub-panel {
-            display: none;
-            background: #fff8f0;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #f39c12;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 12px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 4px;
-            color: #d35400;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        .save-btn {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .save-btn:hover {
-            background-color: #219653;
-        }
-        .back-btn {
-            background-color: #95a5a6;
-            margin-top: 10px;
-        }
-        .back-btn:hover {
-            background-color: #7f8c8d;
-        }
-        .result-box {
-            margin-top: 15px;
-            background: #fff;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px dashed #e67e22;
-            font-size: 13px;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; color: #333; }
+        h1, h2 { color: #2c3e50; }
+        .container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        label { display: inline-block; width: 150px; margin-top: 10px; font-weight: bold; }
+        input, select { padding: 8px; margin-top: 5px; width: 250px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 15px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        button:hover { background-color: #219653; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
     </style>
 </head>
 <body>
 
-<div class="container" id="main-view">
-    <h1>🧇 MemAlt Yönetim Paneli</h1>
-    <div class="subtitle">Sweet Waffle Şube Takip Sistemi</div>
+    <h1>Sweet Waffle - Günlük Finans ve Stok Takip Sistemi</h1>
 
-    <div class="section-title">Şubeler</div>
-    <div class="btn-group">
-        <button class="btn" onclick="openBranch('Kurtköy')">sweetwaffle - Kurtköy</button>
-        <button class="btn" onclick="openBranch('Soğanlık')">sweetwaffle - Soğanlık</button>
-        <button class="btn" onclick="openBranch('Ortadağ')">sweetwaffle - Ortadağ</button>
+    <!-- ŞUBE GİRİŞ PANELİ -->
+    <div class="container">
+        <h2>Şube Veri Giriş Paneli</h2>
+        <form id="branchForm">
+            <div>
+                <label>Şube Seç:</label>
+                <select id="branchSelect">
+                    <option value="Soğanlık">Soğanlık</option>
+                    <option value="Merkez Şube">Merkez Şube</option>
+                </select>
+            </div>
+            <div>
+                <label>Tarih:</label>
+                <input type="date" id="entryDate" required>
+            </div>
+            <div>
+                <label>Günlük Nakit (₺):</label>
+                <input type="number" id="dailyCash" step="0.01" value="0">
+            </div>
+            <div>
+                <label>Banka/POS (₺):</label>
+                <input type="number" id="dailyBank" step="0.01" value="0">
+            </div>
+            <div>
+                <label>Masraf Tutar (₺):</label>
+                <input type="number" id="expenseAmount" step="0.01" value="0">
+            </div>
+            <div>
+                <label>Masraf Açıklaması:</label>
+                <input type="text" id="expenseDesc" placeholder="Nereye masraf yapıldı?">
+            </div>
+            <div>
+                <label>Stok Ürün Adı:</label>
+                <input type="text" id="stockItem" placeholder="Ürün adı">
+            </div>
+            <div>
+                <label>Stok Miktarı:</label>
+                <input type="number" id="stockQty" step="0.01" value="0">
+            </div>
+            <div>
+                <label>Birim Seçimi:</label>
+                <select id="stockUnit">
+                    <option value="Kilogram">Kilogram (kg)</option>
+                    <option value="Adet">Adet</option>
+                    <option value="Kutu">Kutu</option>
+                    <option value="Litre">Litre (lt)</option>
+                    <option value="Koli">Koli</option>
+                </select>
+            </div>
+            <button type="submit">Günlük Kaydı Ekle</button>
+        </form>
     </div>
 
-    <div class="section-title">Genel İşlemler</div>
-    <div class="btn-group">
-        <button class="btn" onclick="alert('Gider & Bütçe modülü yakında aktifleşecek!')">💰 Gider & Bütçe Takibi</button>
-        <button class="btn" onclick="alert('Menü & Tasarımlar modülü yakında aktifleşecek!')">📄 Menü & Tasarımlar</button>
+    <!-- MERKEZ KONSOLİDASYON VE SÜZGEÇ PANELİ -->
+    <div class="container">
+        <h2>Genel Merkez Kontrol Paneli</h2>
+        <div>
+            <label>Merkez Süzgeç (Şube):</label>
+            <select id="filterBranch" onchange="filterData()">
+                <option value="ALL">Tüm Şubeler (Özet)</option>
+                <option value="Soğanlık">Soğanlık</option>
+                <option value="Merkez Şube">Merkez Şube</option>
+            </select>
+        </div>
+        <div>
+            <label>Birim Filtresi:</label>
+            <select id="filterUnit" onchange="filterData()">
+                <option value="ALL">Tüm Birimler</option>
+                <option value="Kilogram">Kilogram</option>
+                <option value="Adet">Adet</option>
+                <option value="Kutu">Kutu</option>
+                <option value="Litre">Litre</option>
+                <option value="Koli">Koli</option>
+            </select>
+        </div>
+
+        <h3>Konsolide Edilmiş Veri Akışı</h3>
+        <table id="reportTable">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Şube</th>
+                    <th>Nakit (₺)</th>
+                    <th>Banka (₺)</th>
+                    <th>Toplam Ciro (₺)</th>
+                    <th>Masraf (₺)</th>
+                    <th>Masraf Açıklaması</th>
+                    <th>Stok Ürün</th>
+                    <th>Miktar / Birim</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Dinamik Veriler Buraya Gelecek -->
+            </tbody>
+        </table>
     </div>
-</div>
 
-<!-- ŞUBE DETAY PANELİ -->
-<div class="container sub-panel" id="branch-view">
-    <h1 id="branch-title">Şube Adı</h1>
-    <div class="subtitle">Günlük Rapor ve Dosyalama Alanı</div>
+    <script>
+        // Örnek veri dizisi (Airtable mantığına benzer kod bazlı yapı)
+        const systemData = [];
 
-    <div class="form-group">
-        <label>💵 Günlük Nakit Ciro (TL)</label>
-        <input type="number" id="nakit" placeholder="0.00">
-    </div>
+        document.getElementById('branchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const record = {
+                branch: document.getElementById('branchSelect').value,
+                date: document.getElementById('entryDate').value,
+                cash: parseFloat(document.getElementById('dailyCash').value) || 0,
+                bank: parseFloat(document.getElementById('dailyBank').value) || 0,
+                expense: parseFloat(document.getElementById('expenseAmount').value) || 0,
+                expenseDesc: document.getElementById('expenseDesc').value,
+                stockItem: document.getElementById('stockItem').value,
+                stockQty: parseFloat(document.getElementById('stockQty').value) || 0,
+                stockUnit: document.getElementById('stockUnit').value
+            };
 
-    <div class="form-group">
-        <label>💳 Günlük Banka/Kart Ciro (TL)</label>
-        <input type="number" id="banka" placeholder="0.00">
-    </div>
+            systemData.push(record);
+            alert('Günlük kayıt merkeze ve şubeye başarıyla işlendi!');
+            this.reset();
+            filterData();
+        });
 
-    <div class="form-group">
-        <label>📥 Günlük Gelen Faturalar Toplamı (TL)</label>
-        <input type="number" id="gelen-fatura" placeholder="0.00">
-    </div>
+        function filterData() {
+            const selectedBranch = document.getElementById('filterBranch').value;
+            const selectedUnit = document.getElementById('filterUnit').value;
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
 
-    <div class="form-group">
-        <label>📤 Günlük Giden Faturalar Toplamı (TL)</label>
-        <input type="number" id="giden-fatura" placeholder="0.00">
-    </div>
+            const filtered = systemData.filter(item => {
+                const matchBranch = (selectedBranch === 'ALL' || item.branch === selectedBranch);
+                const matchUnit = (selectedUnit === 'ALL' || item.stockUnit === selectedUnit);
+                return matchBranch && matchUnit;
+            });
 
-    <div class="form-group">
-        <label>🛒 Günlük Diğer Masraflar (TL)</label>
-        <input type="number" id="masraf" placeholder="0.00">
-    </div>
-
-    <button class="save-btn" onclick="calculateAndSave()">💾 Özeti Hesapla ve Kaydet</button>
-
-    <div class="result-box" id="result-area" style="display:none;">
-        <strong>Günlük Özet:</strong><br>
-        <span id="summary-text"></span>
-    </div>
-
-    <button class="btn save-btn back-btn" onclick="goBack()">⬅️ Şubeler Menüsüne Dön</button>
-</div>
-
-<script>
-    let currentBranch = '';
-
-    function openBranch(branchName) {
-        currentBranch = branchName;
-        document.getElementById('branch-title').innerText = "sweetwaffle - " + branchName;
-        document.getElementById('main-view').style.display = 'none';
-        document.getElementById('branch-view').style.display = 'block';
-        
-        // Alanları sıfırla
-        document.getElementById('nakit').value = '';
-        document.getElementById('banka').value = '';
-        document.getElementById('gelen-fatura').value = '';
-        document.getElementById('giden-fatura').value = '';
-        document.getElementById('masraf').value = '';
-        document.getElementById('result-area').style.display = 'none';
-    }
-
-    function goBack() {
-        document.getElementById('branch-view').style.display = 'none';
-        document.getElementById('main-view').style.display = 'block';
-    }
-
-    function calculateAndSave() {
-        let nakit = parseFloat(document.getElementById('nakit').value) || 0;
-        let banka = parseFloat(document.getElementById('banka').value) || 0;
-        let gelen = parseFloat(document.getElementById('gelen-fatura').value) || 0;
-        let giden = parseFloat(document.getElementById('giden-fatura').value) || 0;
-        let masraf = parseFloat(document.getElementById('masraf').value) || 0;
-
-        let toplamCiro = nakit + banka;
-        let toplamGider = gelen + giden + masraf;
-        let netKasa = toplamCiro - toplamGider;
-
-        let summary = `Toplam Ciro: ${toplamCiro.toFixed(2)} TL<br>` +
-                      `Toplam Gider/Fatura: ${toplamGider.toFixed(2)} TL<br>` +
-                      `<strong>Net Kasa Durumu: ${netKasa.toFixed(2)} TL</strong>`;
-
-        document.getElementById('summary-text').innerHTML = summary;
-        document.getElementById('result-area').style.display = 'block';
-        alert(currentBranch + ' için günlük veriler başarıyla kaydedildi!');
-    }
-</script>
-
+            filtered.forEach(item => {
+                const totalCiro = item.cash + item.bank;
+                const row = `<tr>
+                    <td>${item.date}</td>
+                    <td>${item.branch}</td>
+                    <td>${item.cash.toFixed(2)}</td>
+                    <td>${item.bank.toFixed(2)}</td>
+                    <td>${totalCiro.toFixed(2)}</td>
+                    <td>${item.expense.toFixed(2)}</td>
+                    <td>${item.expenseDesc}</td>
+                    <td>${item.stockItem}</td>
+                    <td>${item.stockQty} ${item.stockUnit}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+    </script>
 </body>
 </html>
