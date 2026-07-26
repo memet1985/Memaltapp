@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemAlt - Sweet Waffle Paneli</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 20px; text-align: center; }
+        h1 { color: #d97706; font-size: 22px; }
+        .card { background: white; padding: 15px; margin: 10px 0; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button { background: #f59e0b; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; width: 100%; margin: 5px 0; font-weight: bold; }
+        button:active { background: #d97706; }
+    </style>
+</head>
+<body>
+
+    <h1>🧇 MemAlt Yönetim Paneli</h1>
+    <p>Sweet Waffle Şube Takip Sistemi</p>
+
+    <div class="card">
+        <h3>Şubeler</h3>
+        <button onclick="secSubre('Kurtköy')">sweetwaffle - Kurtköy</button>
+        <button onclick="secSubre('Soğanlık')">sweetwaffle - Soğanlık</button>
+        <button onclick="secSubre('Ortadağ')">sweetwaffle - Ortadağ</button>
+    </div>
+
+    <div class="card">
+        <h3>İşlemler</h3>
+        <button onclick="islemYap('Giderler')">💰 Gider & Bütçe Takibi</button>
+        <button onclick="islemYap('Menuler')">📄 Menü & Tasarımlar</button>
+    </div>
+
+    <p id="sonuc" style="font-weight: bold; color: #333; margin-top: 20px;"></p>
+
+    <script>
+        function secSubre(sube) {
+            document.getElementById("sonuc").innerText = "Seçilen Şube: sweetwaffle - " + sube;
+        }
+        function islemYap(tur) {
+            document.getElementById("sonuc").innerText = "Açılan Bölüm: " + tur;
+        }
+    </script>
+
+</body>
+</html>
