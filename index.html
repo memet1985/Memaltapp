@@ -29,7 +29,7 @@
 <div class="wrapper">
     <h1>Sweet Waffle Yönetim Sistemi</h1>
 
-    <!-- ALT KISIMDAKİ MENÜ YERİNE MERKEZ VE ŞUBE SEÇENEKLERİ -->
+    <!-- 1 MERKEZ VE ŞUBE GEÇİŞ BUTONLARI -->
     <div class="nav-tabs">
         <button id="btnSub" class="active" onclick="switchTab('sube')">Şube Veri Girişi</button>
         <button id="btnMerkez" onclick="switchTab('merkez')">Merkez (Genel Rapor)</button>
@@ -42,8 +42,9 @@
             <div class="form-group">
                 <label>Şube Seçimi:</label>
                 <select id="branch">
+                    <option value="Kurtköy">Kurtköy</option>
                     <option value="Soğanlık">Soğanlık</option>
-                    <option value="Merkez Şube">Merkez Şube</option>
+                    <option value="Ortadağ">Ortadağ</option>
                 </select>
             </div>
             <div class="form-group">
@@ -75,7 +76,7 @@
                 <input type="number" id="stockQty" step="0.01" value="0">
             </div>
             <div class="form-group">
-                <label>Birim (Kilogram, Adet, Kutu, Litre, Koli):</label>
+                <label>Birim Seçimi:</label>
                 <select id="stockUnit">
                     <option value="Kilogram">Kilogram</option>
                     <option value="Adet">Adet</option>
@@ -88,7 +89,7 @@
         </form>
     </div>
 
-    <!-- MERKEZ İÇİ KONTROL VE RAPOR EKRANI -->
+    <!-- MERKEZ KONTROL VE RAPOR EKRANI -->
     <div id="tab-merkez" class="tab-content">
         <h2>Genel Merkez Kontrol Paneli</h2>
         <div class="filter-box">
@@ -96,8 +97,9 @@
                 <label>Şube Süzgeci:</label>
                 <select id="filterBranch" onchange="renderTable()">
                     <option value="ALL">Tüm Şubeler (Özet)</option>
+                    <option value="Kurtköy">Kurtköy</option>
                     <option value="Soğanlık">Soğanlık</option>
-                    <option value="Merkez Şube">Merkez Şube</option>
+                    <option value="Ortadağ">Ortadağ</option>
                 </select>
             </div>
             <div>
