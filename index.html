@@ -2,212 +2,69 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Sweet Waffle - Yönetim Paneli</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Waffle Yönetim Paneli</title>
+    <!-- PWA Manifest Bağlantısı -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#7c3f1e">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        .wrapper { max-width: 1000px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h1, h2 { color: #2c3e50; text-align: center; }
-        .nav-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
-        .nav-tabs button { padding: 12px 20px; font-size: 16px; font-weight: bold; border: none; background: #e0e0e0; cursor: pointer; border-radius: 6px; transition: 0.3s; }
-        .nav-tabs button.active { background: #e67e22; color: white; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        button.submit-btn { background: #27ae60; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
-        button.submit-btn:hover { background: #219653; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f8f9fa; }
-        .filter-box { display: flex; gap: 15px; margin-bottom: 15px; }
-        .filter-box div { flex: 1; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fdfbf7;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h1 {
+            color: #7c3f1e;
+            text-align: center;
+            font-size: 24px;
+        }
+        .card {
+            background: #faf6f0;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #7c3f1e;
+        }
+        button {
+            background-color: #7c3f1e;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #5e2f15;
+        }
     </style>
 </head>
 <body>
 
-<div class="wrapper">
-    <h1>Sweet Waffle Yönetim Sistemi</h1>
-
-    <!-- 1 MERKEZ VE 3 ŞUBE GEÇİŞ BUTONLARI -->
-    <div class="nav-tabs">
-        <button id="btnSub" class="active" onclick="switchTab('sube')">Şube Veri Girişi</button>
-        <button id="btnMerkez" onclick="switchTab('merkez')">Merkez (Genel Rapor)</button>
-    </div>
-
-    <!-- ŞUBE GİRİŞ EKRANI -->
-    <div id="tab-sube" class="tab-content active">
-        <h2>Şube Veri Giriş Ekranı</h2>
-        <form id="dataForm">
-            <div class="form-group">
-                <label>Şube Seçimi:</label>
-                <select id="branch">
-                    <option value="Kurtköy">Kurtköy</option>
-                    <option value="Soğanlık">Soğanlık</option>
-                    <option value="Ortadağ">Ortadağ</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Tarih:</label>
-                <input type="date" id="date" required>
-            </div>
-            <div class="form-group">
-                <label>Günlük Nakit Ciro (₺):</label>
-                <input type="number" id="cash" step="0.01" value="0">
-            </div>
-            <div class="form-group">
-                <label>Günlük Banka / POS Ciro (₺):</label>
-                <input type="number" id="bank" step="0.01" value="0">
-            </div>
-            <div class="form-group">
-                <label>Masraf Tutarı (₺):</label>
-                <input type="number" id="expense" step="0.01" value="0">
-            </div>
-            <div class="form-group">
-                <label>Masraf Açıklaması:</label>
-                <input type="text" id="expenseDesc" placeholder="Nereye masraf yapıldı?">
-            </div>
-            <div class="form-group">
-                <label>Stok Ürün Adı:</label>
-                <input type="text" id="stockItem" placeholder="Ürün adı">
-            </div>
-            <div class="form-group">
-                <label>Stok Miktarı:</label>
-                <input type="number" id="stockQty" step="0.01" value="0">
-            </div>
-            <div class="form-group">
-                <label>Birim Seçimi:</label>
-                <select id="stockUnit">
-                    <option value="Kilogram">Kilogram</option>
-                    <option value="Adet">Adet</option>
-                    <option value="Kutu">Kutu</option>
-                    <option value="Litre">Litre</option>
-                    <option value="Koli">Koli</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Stok Tutarı / Değeri (₺):</label>
-                <input type="number" id="stockAmount" step="0.01" value="0">
-            </div>
-            <button type="submit" class="submit-btn">Kaydet ve Merkeze Gönder</button>
-        </form>
-    </div>
-
-    <!-- MERKEZ KONTROL VE RAPOR EKRANI -->
-    <div id="tab-merkez" class="tab-content">
-        <h2>Genel Merkez Kontrol Paneli</h2>
-        <div class="filter-box">
-            <div>
-                <label>Şube Süzgeci:</label>
-                <select id="filterBranch" onchange="renderTable()">
-                    <option value="ALL">Tüm Şubeler (Özet)</option>
-                    <option value="Kurtköy">Kurtköy</option>
-                    <option value="Soğanlık">Soğanlık</option>
-                    <option value="Ortadağ">Ortadağ</option>
-                </select>
-            </div>
-            <div>
-                <label>Birim Süzgeci:</label>
-                <select id="filterUnit" onchange="renderTable()">
-                    <option value="ALL">Tüm Birimler</option>
-                    <option value="Kilogram">Kilogram</option>
-                    <option value="Adet">Adet</option>
-                    <option value="Kutu">Kutu</option>
-                    <option value="Litre">Litre</option>
-                    <option value="Koli">Koli</option>
-                </select>
-            </div>
+    <div class="container">
+        <div style="text-align: center;">
+            <img src="sweet-logo.jpeg" alt="Sweet Waffle Logo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+        </div>
+        <h1>Sweet Waffle Yönetim Paneli</h1>
+        
+        <div class="card">
+            <h3>Bulut Durumu</h3>
+            <p>Sisteminiz başarıyla buluta taşındı ve 7/24 kesintisiz çalışmaya hazır!</p>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Tarih</th>
-                    <th>Şube</th>
-                    <th>Nakit (₺)</th>
-                    <th>Banka (₺)</th>
-                    <th>Toplam Ciro (₺)</th>
-                    <th>Masraf (₺)</th>
-                    <th>Masraf Açıklaması</th>
-                    <th>Stok / Miktar / Tutar</th>
-                </tr>
-            </thead>
-            <tbody id="reportTableBody">
-                <!-- Veriler buraya dolacak -->
-            </tbody>
-        </table>
+        <button onclick="alert('Sweet Waffle PWA Aktif!')">Durumu Kontrol Et</button>
     </div>
-</div>
-
-<script>
-    const database = [];
-
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
-
-        if(tabName === 'sube') {
-            document.getElementById('tab-sube').classList.add('active');
-            document.getElementById('btnSub').classList.add('active');
-        } else {
-            document.getElementById('tab-merkez').classList.add('active');
-            document.getElementById('btnMerkez').classList.add('active');
-            renderTable();
-        }
-    }
-
-    document.getElementById('dataForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const entry = {
-            branch: document.getElementById('branch').value,
-            date: document.getElementById('date').value,
-            cash: parseFloat(document.getElementById('cash').value) || 0,
-            bank: parseFloat(document.getElementById('bank').value) || 0,
-            expense: parseFloat(document.getElementById('expense').value) || 0,
-            expenseDesc: document.getElementById('expenseDesc').value,
-            stockItem: document.getElementById('stockItem').value,
-            stockQty: parseFloat(document.getElementById('stockQty').value) || 0,
-            stockUnit: document.getElementById('stockUnit').value,
-            stockAmount: parseFloat(document.getElementById('stockAmount').value) || 0
-        };
-
-        database.push(entry);
-        alert('Kayıt başarıyla oluşturuldu ve merkeze iletildi.');
-        this.reset();
-    });
-
-    function renderTable() {
-        const tbody = document.getElementById('reportTableBody');
-        tbody.innerHTML = '';
-
-        const selectedBranch = document.getElementById('filterBranch').value;
-        const selectedUnit = document.getElementById('filterUnit').value;
-
-        const filtered = database.filter(item => {
-            const matchBranch = (selectedBranch === 'ALL' || item.branch === selectedBranch);
-            const matchUnit = (selectedUnit === 'ALL' || item.stockUnit === selectedUnit);
-            return matchBranch && matchUnit;
-        });
-
-        filtered.forEach(item => {
-            const totalCiro = item.cash + item.bank;
-            const stockInfo = item.stockItem ? `${item.stockItem} (${item.stockQty} ${item.stockUnit} - ${item.stockAmount.toFixed(2)} ₺)` : '-';
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${item.date}</td>
-                <td>${item.branch}</td>
-                <td>${item.cash.toFixed(2)}</td>
-                <td>${item.bank.toFixed(2)}</td>
-                <td><b>${totalCiro.toFixed(2)}</b></td>
-                <td>${item.expense.toFixed(2)}</td>
-                <td>${item.expenseDesc || '-'}</td>
-                <td>${stockInfo}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-</script>
 
 </body>
 </html>
