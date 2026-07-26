@@ -4,73 +4,78 @@
     <meta charset="UTF-8">
     <title>Sweet Waffle - Yönetim Paneli</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; color: #333; }
-        h1, h2 { color: #2c3e50; }
-        .container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        label { display: inline-block; width: 160px; margin-top: 10px; font-weight: bold; }
-        input, select { padding: 8px; margin-top: 5px; width: 250px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 10px 15px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
-        button:hover { background-color: #219653; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
+        .wrapper { max-width: 1000px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #2c3e50; text-align: center; }
+        .nav-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .nav-tabs button { padding: 12px 20px; font-size: 16px; font-weight: bold; border: none; background: #e0e0e0; cursor: pointer; border-radius: 6px; transition: 0.3s; }
+        .nav-tabs button.active { background: #e67e22; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        button.submit-btn { background: #27ae60; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
+        button.submit-btn:hover { background: #219653; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .nav-bar { background: #2c3e50; padding: 10px 20px; border-radius: 6px; margin-bottom: 20px; }
-        .nav-bar a { color: white; text-decoration: none; font-weight: bold; font-size: 16px; cursor: pointer; }
-        .section { display: none; }
-        .section.active { display: block; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; }
+        .filter-box { display: flex; gap: 15px; margin-bottom: 15px; }
+        .filter-box div { flex: 1; }
     </style>
 </head>
 <body>
 
-    <h1>Sweet Waffle - İşletme Yönetim Sistemi</h1>
+<div class="wrapper">
+    <h1>Sweet Waffle Yönetim Sistemi</h1>
 
-    <!-- ÜST NAVİGASYON (Menüler yerine Merkez Sekmesi) -->
-    <div class="nav-bar">
-        <a onclick="switchTab('subePanel')">Şube Veri Giriş</a> | 
-        <a onclick="switchTab('merkezPanel')">Merkez (Raporlar ve Süzgeçler)</a>
+    <!-- ALT KISIMDAKİ MENÜ YERİNE MERKEZ VE ŞUBE SEÇENEKLERİ -->
+    <div class="nav-tabs">
+        <button id="btnSub" class="active" onclick="switchTab('sube')">Şube Veri Girişi</button>
+        <button id="btnMerkez" onclick="switchTab('merkez')">Merkez (Genel Rapor)</button>
     </div>
 
-    <!-- ŞUBE GİRİŞ PANELİ -->
-    <div id="subePanel" class="container section active">
-        <h2>Şube Veri Giriş Paneli</h2>
-        <form id="branchForm">
-            <div>
-                <label>Şube Seç:</label>
-                <select id="branchSelect">
+    <!-- ŞUBE GİRİŞ EKRANI -->
+    <div id="tab-sube" class="tab-content active">
+        <h2>Şube Veri Giriş Ekranı</h2>
+        <form id="dataForm">
+            <div class="form-group">
+                <label>Şube Seçimi:</label>
+                <select id="branch">
                     <option value="Soğanlık">Soğanlık</option>
                     <option value="Merkez Şube">Merkez Şube</option>
                 </select>
             </div>
-            <div>
+            <div class="form-group">
                 <label>Tarih:</label>
-                <input type="date" id="entryDate" required>
+                <input type="date" id="date" required>
             </div>
-            <div>
-                <label>Günlük Nakit (₺):</label>
-                <input type="number" id="dailyCash" step="0.01" value="0">
+            <div class="form-group">
+                <label>Günlük Nakit Ciro (₺):</label>
+                <input type="number" id="cash" step="0.01" value="0">
             </div>
-            <div>
-                <label>Banka/POS (₺):</label>
-                <input type="number" id="dailyBank" step="0.01" value="0">
+            <div class="form-group">
+                <label>Günlük Banka / POS Ciro (₺):</label>
+                <input type="number" id="bank" step="0.01" value="0">
             </div>
-            <div>
-                <label>Masraf Tutar (₺):</label>
-                <input type="number" id="expenseAmount" step="0.01" value="0">
+            <div class="form-group">
+                <label>Masraf Tutarı (₺):</label>
+                <input type="number" id="expense" step="0.01" value="0">
             </div>
-            <div>
+            <div class="form-group">
                 <label>Masraf Açıklaması:</label>
                 <input type="text" id="expenseDesc" placeholder="Nereye masraf yapıldı?">
             </div>
-            <div>
+            <div class="form-group">
                 <label>Stok Ürün Adı:</label>
                 <input type="text" id="stockItem" placeholder="Ürün adı">
             </div>
-            <div>
+            <div class="form-group">
                 <label>Stok Miktarı:</label>
                 <input type="number" id="stockQty" step="0.01" value="0">
             </div>
-            <div>
-                <label>Birim Seçimi:</label>
+            <div class="form-group">
+                <label>Birim (Kilogram, Adet, Kutu, Litre, Koli):</label>
                 <select id="stockUnit">
                     <option value="Kilogram">Kilogram</option>
                     <option value="Adet">Adet</option>
@@ -79,111 +84,122 @@
                     <option value="Koli">Koli</option>
                 </select>
             </div>
-            <button type="submit">Kayıt Ekle</button>
+            <button type="submit" class="submit-btn">Kaydet ve Merkeze Gönder</button>
         </form>
     </div>
 
-    <!-- MERKEZ PANELİ (Süzgeçler ve Detaylı Raporlar) -->
-    <div id="merkezPanel" class="container section">
+    <!-- MERKEZ İÇİ KONTROL VE RAPOR EKRANI -->
+    <div id="tab-merkez" class="tab-content">
         <h2>Genel Merkez Kontrol Paneli</h2>
-        <div>
-            <label>Merkez Süzgeç (Şube):</label>
-            <select id="filterBranch" onchange="filterData()">
-                <option value="ALL">Tüm Şubeler (Özet)</option>
-                <option value="Soğanlık">Soğanlık</option>
-                <option value="Merkez Şube">Merkez Şube</option>
-            </select>
-        </div>
-        <div>
-            <label>Birim Filtresi:</label>
-            <select id="filterUnit" onchange="filterData()">
-                <option value="ALL">Tüm Birimler</option>
-                <option value="Kilogram">Kilogram</option>
-                <option value="Adet">Adet</option>
-                <option value="Kutu">Kutu</option>
-                <option value="Litre">Litre</option>
-                <option value="Koli">Koli</option>
-            </select>
+        <div class="filter-box">
+            <div>
+                <label>Şube Süzgeci:</label>
+                <select id="filterBranch" onchange="renderTable()">
+                    <option value="ALL">Tüm Şubeler (Özet)</option>
+                    <option value="Soğanlık">Soğanlık</option>
+                    <option value="Merkez Şube">Merkez Şube</option>
+                </select>
+            </div>
+            <div>
+                <label>Birim Süzgeci:</label>
+                <select id="filterUnit" onchange="renderTable()">
+                    <option value="ALL">Tüm Birimler</option>
+                    <option value="Kilogram">Kilogram</option>
+                    <option value="Adet">Adet</option>
+                    <option value="Kutu">Kutu</option>
+                    <option value="Litre">Litre</option>
+                    <option value="Koli">Koli</option>
+                </select>
+            </div>
         </div>
 
-        <h3>Konsolide Veri Akışı</h3>
-        <table id="reportTable">
+        <table>
             <thead>
                 <tr>
                     <th>Tarih</th>
                     <th>Şube</th>
                     <th>Nakit (₺)</th>
                     <th>Banka (₺)</th>
-                    <th>Toplam Ciro (₺)</th>
+                    <th>Toplam (₺)</th>
                     <th>Masraf (₺)</th>
                     <th>Masraf Açıklaması</th>
-                    <th>Stok Ürün</th>
-                    <th>Miktar / Birim</th>
+                    <th>Stok / Miktar</th>
                 </tr>
             </thead>
-            <tbody id="tableBody">
-                <!-- Veriler buraya gelecek -->
+            <tbody id="reportTableBody">
+                <!-- Veriler buraya dolacak -->
             </tbody>
         </table>
     </div>
+</div>
 
-    <script>
-        const systemData = [];
+<script>
+    const database = [];
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
+
+        if(tabName === 'sube') {
+            document.getElementById('tab-sube').classList.add('active');
+            document.getElementById('btnSub').classList.add('active');
+        } else {
+            document.getElementById('tab-merkez').classList.add('active');
+            document.getElementById('btnMerkez').classList.add('active');
+            renderTable();
         }
+    }
 
-        document.getElementById('branchForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const record = {
-                branch: document.getElementById('branchSelect').value,
-                date: document.getElementById('entryDate').value,
-                cash: parseFloat(document.getElementById('dailyCash').value) || 0,
-                bank: parseFloat(document.getElementById('dailyBank').value) || 0,
-                expense: parseFloat(document.getElementById('expenseAmount').value) || 0,
-                expenseDesc: document.getElementById('expenseDesc').value,
-                stockItem: document.getElementById('stockItem').value,
-                stockQty: parseFloat(document.getElementById('stockQty').value) || 0,
-                stockUnit: document.getElementById('stockUnit').value
-            };
+    document.getElementById('dataForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const entry = {
+            branch: document.getElementById('branch').value,
+            date: document.getElementById('date').value,
+            cash: parseFloat(document.getElementById('cash').value) || 0,
+            bank: parseFloat(document.getElementById('bank').value) || 0,
+            expense: parseFloat(document.getElementById('expense').value) || 0,
+            expenseDesc: document.getElementById('expenseDesc').value,
+            stockItem: document.getElementById('stockItem').value,
+            stockQty: parseFloat(document.getElementById('stockQty').value) || 0,
+            stockUnit: document.getElementById('stockUnit').value
+        };
 
-            systemData.push(record);
-            alert('Veri başarıyla kaydedildi!');
-            this.reset();
-            filterData();
+        database.push(entry);
+        alert('Kayıt başarıyla oluşturuldu ve merkeze iletildi.');
+        this.reset();
+    });
+
+    function renderTable() {
+        const tbody = document.getElementById('reportTableBody');
+        tbody.innerHTML = '';
+
+        const selectedBranch = document.getElementById('filterBranch').value;
+        const selectedUnit = document.getElementById('filterUnit').value;
+
+        const filtered = database.filter(item => {
+            const matchBranch = (selectedBranch === 'ALL' || item.branch === selectedBranch);
+            const matchUnit = (selectedUnit === 'ALL' || item.stockUnit === selectedUnit);
+            return matchBranch && matchUnit;
         });
 
-        function filterData() {
-            const selectedBranch = document.getElementById('filterBranch').value;
-            const selectedUnit = document.getElementById('filterUnit').value;
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
+        filtered.forEach(item => {
+            const totalCiro = item.cash + item.bank;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.date}</td>
+                <td>${item.branch}</td>
+                <td>${item.cash.toFixed(2)}</td>
+                <td>${item.bank.toFixed(2)}</td>
+                <td><b>${totalCiro.toFixed(2)}</b></td>
+                <td>${item.expense.toFixed(2)}</td>
+                <td>${item.expenseDesc || '-'}</td>
+                <td>${item.stockItem ? item.stockItem + ' (' + item.stockQty + ' ' + item.stockUnit + ')' : '-'}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+</script>
 
-            const filtered = systemData.filter(item => {
-                const matchBranch = (selectedBranch === 'ALL' || item.branch === selectedBranch);
-                const matchUnit = (selectedUnit === 'ALL' || item.stockUnit === selectedUnit);
-                return matchBranch && matchUnit;
-            });
-
-            filtered.forEach(item => {
-                const totalCiro = item.cash + item.bank;
-                const row = `<tr>
-                    <td>${item.date}</td>
-                    <td>${item.branch}</td>
-                    <td>${item.cash.toFixed(2)}</td>
-                    <td>${item.bank.toFixed(2)}</td>
-                    <td>${totalCiro.toFixed(2)}</td>
-                    <td>${item.expense.toFixed(2)}</td>
-                    <td>${item.expenseDesc}</td>
-                    <td>${item.stockItem}</td>
-                    <td>${item.stockQty} ${item.stockUnit}</td>
-                </tr>`;
-                tbody.innerHTML += row;
-            });
-        }
-    </script>
 </body>
 </html>
