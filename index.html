@@ -5,41 +5,220 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MemAlt - Sweet Waffle Paneli</title>
     <style>
-        body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 20px; text-align: center; }
-        h1 { color: #d97706; font-size: 22px; }
-        .card { background: white; padding: 15px; margin: 10px 0; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        button { background: #f59e0b; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; width: 100%; margin: 5px 0; font-weight: bold; }
-        button:active { background: #d97706; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #e67e22;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            border-bottom: 2px solid #e67e22;
+            padding-bottom: 5px;
+        }
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .btn {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background-color: #d35400;
+        }
+        .sub-panel {
+            display: none;
+            background: #fff8f0;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #f39c12;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #d35400;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .save-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .save-btn:hover {
+            background-color: #219653;
+        }
+        .back-btn {
+            background-color: #95a5a6;
+            margin-top: 10px;
+        }
+        .back-btn:hover {
+            background-color: #7f8c8d;
+        }
+        .result-box {
+            margin-top: 15px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px dashed #e67e22;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
 
+<div class="container" id="main-view">
     <h1>🧇 MemAlt Yönetim Paneli</h1>
-    <p>Sweet Waffle Şube Takip Sistemi</p>
+    <div class="subtitle">Sweet Waffle Şube Takip Sistemi</div>
 
-    <div class="card">
-        <h3>Şubeler</h3>
-        <button onclick="secSubre('Kurtköy')">sweetwaffle - Kurtköy</button>
-        <button onclick="secSubre('Soğanlık')">sweetwaffle - Soğanlık</button>
-        <button onclick="secSubre('Ortadağ')">sweetwaffle - Ortadağ</button>
+    <div class="section-title">Şubeler</div>
+    <div class="btn-group">
+        <button class="btn" onclick="openBranch('Kurtköy')">sweetwaffle - Kurtköy</button>
+        <button class="btn" onclick="openBranch('Soğanlık')">sweetwaffle - Soğanlık</button>
+        <button class="btn" onclick="openBranch('Ortadağ')">sweetwaffle - Ortadağ</button>
     </div>
 
-    <div class="card">
-        <h3>İşlemler</h3>
-        <button onclick="islemYap('Giderler')">💰 Gider & Bütçe Takibi</button>
-        <button onclick="islemYap('Menuler')">📄 Menü & Tasarımlar</button>
+    <div class="section-title">Genel İşlemler</div>
+    <div class="btn-group">
+        <button class="btn" onclick="alert('Gider & Bütçe modülü yakında aktifleşecek!')">💰 Gider & Bütçe Takibi</button>
+        <button class="btn" onclick="alert('Menü & Tasarımlar modülü yakında aktifleşecek!')">📄 Menü & Tasarımlar</button>
+    </div>
+</div>
+
+<div class="container sub-panel" id="branch-view">
+    <h1 id="branch-title">Şube Adı</h1>
+    <div class="subtitle">Günlük Rapor ve Dosyalama Alanı</div>
+
+    <div class="form-group">
+        <label>💵 Günlük Nakit Ciro (TL)</label>
+        <input type="number" id="nakit" placeholder="0.00">
     </div>
 
-    <p id="sonuc" style="font-weight: bold; color: #333; margin-top: 20px;"></p>
+    <div class="form-group">
+        <label>💳 Günlük Banka/Kart Ciro (TL)</label>
+        <input type="number" id="banka" placeholder="0.00">
+    </div>
 
-    <script>
-        function secSubre(sube) {
-            document.getElementById("sonuc").innerText = "Seçilen Şube: sweetwaffle - " + sube;
-        }
-        function islemYap(tur) {
-            document.getElementById("sonuc").innerText = "Açılan Bölüm: " + tur;
-        }
-    </script>
+    <div class="form-group">
+        <label>📥 Günlük Gelen Faturalar Toplamı (TL)</label>
+        <input type="number" id="gelen-fatura" placeholder="0.00">
+    </div>
+
+    <div class="form-group">
+        <label>📤 Günlük Giden Faturalar Toplamı (TL)</label>
+        <input type="number" id="giden-fatura" placeholder="0.00">
+    </div>
+
+    <div class="form-group">
+        <label>🛒 Günlük Diğer Masraflar (TL)</label>
+        <input type="number" id="masraf" placeholder="0.00">
+    </div>
+
+    <button class="save-btn" onclick="calculateAndSave()">💾 Özeti Hesapla ve Kaydet</button>
+
+    <div class="result-box" id="result-area" style="display:none;">
+        <strong>Günlük Özet:</strong><br>
+        <span id="summary-text"></span>
+    </div>
+
+    <button class="btn save-btn back-btn" onclick="goBack()">⬅️ Şubeler Menüsüne Dön</button>
+</div>
+
+<script>
+    let currentBranch = '';
+
+    function openBranch(branchName) {
+        currentBranch = branchName;
+        document.getElementById('branch-title').innerText = "sweetwaffle - " + branchName;
+        document.getElementById('main-view').style.display = 'none';
+        document.getElementById('branch-view').style.display = 'block';
+        
+        // Alanları sıfırla
+        document.getElementById('nakit').value = '';
+        document.getElementById('banka').value = '';
+        document.getElementById('gelen-fatura').value = '';
+        document.getElementById('giden-fatura').value = '';
+        document.getElementById('masraf').value = '';
+        document.getElementById('result-area').style.display = 'none';
+    }
+
+    function goBack() {
+        document.getElementById('branch-view').style.display = 'none';
+        document.getElementById('main-view').style.display = 'block';
+    }
+
+    function calculateAndSave() {
+        let nakit = parseFloat(document.getElementById('nakit').value) || 0;
+        let banka = parseFloat(document.getElementById('banka').value) || 0;
+        let gelen = parseFloat(document.getElementById('gelen-fatura').value) || 0;
+        let giden = parseFloat(document.getElementById('giden-fatura').value) || 0;
+        let masraf = parseFloat(document.getElementById('masraf').value) || 0;
+
+        let toplamCiro = nakit + banka;
+        let toplamGider = gelen + giden + masraf;
+        let netKasa = toplamCiro - toplamGider;
+
+        let summary = `Toplam Ciro: ${toplamCiro.toFixed(2)} TL<br>` +
+                      `Toplam Gider/Fatura: ${toplamGider.toFixed(2)} TL<br>` +
+                      `<strong>Net Kasa Durumu: ${netKasa.toFixed(2)} TL</strong>`;
+
+        document.getElementById('summary-text').innerHTML = summary;
+        document.getElementById('result-area').style.display = 'block';
+        alert(currentBranch + ' için günlük veriler başarıyla kaydedildi!');
+    }
+</script>
 
 </body>
 </html>
