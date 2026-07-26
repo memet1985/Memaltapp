@@ -1,1 +1,1 @@
-# MemAlt-Co.
+# Memaltapp
