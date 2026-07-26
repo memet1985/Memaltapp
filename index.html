@@ -29,7 +29,7 @@
 <div class="wrapper">
     <h1>Sweet Waffle Yönetim Sistemi</h1>
 
-    <!-- 1 MERKEZ VE ŞUBE GEÇİŞ BUTONLARI -->
+    <!-- 1 MERKEZ VE 3 ŞUBE GEÇİŞ BUTONLARI -->
     <div class="nav-tabs">
         <button id="btnSub" class="active" onclick="switchTab('sube')">Şube Veri Girişi</button>
         <button id="btnMerkez" onclick="switchTab('merkez')">Merkez (Genel Rapor)</button>
@@ -85,6 +85,10 @@
                     <option value="Koli">Koli</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label>Stok Tutarı / Değeri (₺):</label>
+                <input type="number" id="stockAmount" step="0.01" value="0">
+            </div>
             <button type="submit" class="submit-btn">Kaydet ve Merkeze Gönder</button>
         </form>
     </div>
@@ -122,10 +126,10 @@
                     <th>Şube</th>
                     <th>Nakit (₺)</th>
                     <th>Banka (₺)</th>
-                    <th>Toplam (₺)</th>
+                    <th>Toplam Ciro (₺)</th>
                     <th>Masraf (₺)</th>
                     <th>Masraf Açıklaması</th>
-                    <th>Stok / Miktar</th>
+                    <th>Stok / Miktar / Tutar</th>
                 </tr>
             </thead>
             <tbody id="reportTableBody">
@@ -164,7 +168,8 @@
             expenseDesc: document.getElementById('expenseDesc').value,
             stockItem: document.getElementById('stockItem').value,
             stockQty: parseFloat(document.getElementById('stockQty').value) || 0,
-            stockUnit: document.getElementById('stockUnit').value
+            stockUnit: document.getElementById('stockUnit').value,
+            stockAmount: parseFloat(document.getElementById('stockAmount').value) || 0
         };
 
         database.push(entry);
@@ -187,6 +192,7 @@
 
         filtered.forEach(item => {
             const totalCiro = item.cash + item.bank;
+            const stockInfo = item.stockItem ? `${item.stockItem} (${item.stockQty} ${item.stockUnit} - ${item.stockAmount.toFixed(2)} ₺)` : '-';
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${item.date}</td>
@@ -196,7 +202,7 @@
                 <td><b>${totalCiro.toFixed(2)}</b></td>
                 <td>${item.expense.toFixed(2)}</td>
                 <td>${item.expenseDesc || '-'}</td>
-                <td>${item.stockItem ? item.stockItem + ' (' + item.stockQty + ' ' + item.stockUnit + ')' : '-'}</td>
+                <td>${stockInfo}</td>
             `;
             tbody.appendChild(tr);
         });
