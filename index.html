@@ -2,26 +2,36 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Sweet Waffle - Kapsamlı Yönetim Sistemi</title>
+    <title>Sweet Waffle - Yönetim Paneli</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; color: #333; }
         h1, h2 { color: #2c3e50; }
         .container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        label { display: inline-block; width: 150px; margin-top: 10px; font-weight: bold; }
+        label { display: inline-block; width: 160px; margin-top: 10px; font-weight: bold; }
         input, select { padding: 8px; margin-top: 5px; width: 250px; border: 1px solid #ccc; border-radius: 4px; }
         button { padding: 10px 15px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
         button:hover { background-color: #219653; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background-color: #f2f2f2; }
+        .nav-bar { background: #2c3e50; padding: 10px 20px; border-radius: 6px; margin-bottom: 20px; }
+        .nav-bar a { color: white; text-decoration: none; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .section { display: none; }
+        .section.active { display: block; }
     </style>
 </head>
 <body>
 
-    <h1>Sweet Waffle - Günlük Finans ve Stok Takip Sistemi</h1>
+    <h1>Sweet Waffle - İşletme Yönetim Sistemi</h1>
+
+    <!-- ÜST NAVİGASYON (Menüler yerine Merkez Sekmesi) -->
+    <div class="nav-bar">
+        <a onclick="switchTab('subePanel')">Şube Veri Giriş</a> | 
+        <a onclick="switchTab('merkezPanel')">Merkez (Raporlar ve Süzgeçler)</a>
+    </div>
 
     <!-- ŞUBE GİRİŞ PANELİ -->
-    <div class="container">
+    <div id="subePanel" class="container section active">
         <h2>Şube Veri Giriş Paneli</h2>
         <form id="branchForm">
             <div>
@@ -62,19 +72,19 @@
             <div>
                 <label>Birim Seçimi:</label>
                 <select id="stockUnit">
-                    <option value="Kilogram">Kilogram (kg)</option>
+                    <option value="Kilogram">Kilogram</option>
                     <option value="Adet">Adet</option>
                     <option value="Kutu">Kutu</option>
-                    <option value="Litre">Litre (lt)</option>
+                    <option value="Litre">Litre</option>
                     <option value="Koli">Koli</option>
                 </select>
             </div>
-            <button type="submit">Günlük Kaydı Ekle</button>
+            <button type="submit">Kayıt Ekle</button>
         </form>
     </div>
 
-    <!-- MERKEZ KONSOLİDASYON VE SÜZGEÇ PANELİ -->
-    <div class="container">
+    <!-- MERKEZ PANELİ (Süzgeçler ve Detaylı Raporlar) -->
+    <div id="merkezPanel" class="container section">
         <h2>Genel Merkez Kontrol Paneli</h2>
         <div>
             <label>Merkez Süzgeç (Şube):</label>
@@ -96,7 +106,7 @@
             </select>
         </div>
 
-        <h3>Konsolide Edilmiş Veri Akışı</h3>
+        <h3>Konsolide Veri Akışı</h3>
         <table id="reportTable">
             <thead>
                 <tr>
@@ -112,14 +122,18 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <!-- Dinamik Veriler Buraya Gelecek -->
+                <!-- Veriler buraya gelecek -->
             </tbody>
         </table>
     </div>
 
     <script>
-        // Örnek veri dizisi (Airtable mantığına benzer kod bazlı yapı)
         const systemData = [];
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
 
         document.getElementById('branchForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -137,7 +151,7 @@
             };
 
             systemData.push(record);
-            alert('Günlük kayıt merkeze ve şubeye başarıyla işlendi!');
+            alert('Veri başarıyla kaydedildi!');
             this.reset();
             filterData();
         });
