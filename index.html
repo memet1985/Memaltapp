@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sweet Waffle - Yönetim Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase Kütüphanesi -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-50 min-h-screen font-sans">
     <div class="container mx-auto px-4 py-6 max-w-6xl">
@@ -166,6 +168,11 @@
     </div>
 
     <script>
+        // Supabase Bağlantı Bilgilerin
+        const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
+        const SUPABASE_ANON_KEY = 'buraya_supabase_anon_key_degerini_yaz'; // Vercel'deki anon key değerini buraya yapıştırabilirsin
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const currentBranch = 'Kurtköy';
 
         function getLocalTodayString() {
@@ -177,19 +184,23 @@
 
         async function fetchReports() {
             try {
-                // Not: Canlı ortamda (Vercel) local bağlantı hatası almamak için endpoint kontrolü
-                const response = await fetch(`/api/reports?branch=${currentBranch}`);
-                const result = await response.json();
-                
+                const { data, error } = await supabaseClient
+                    .from('reports')
+                    .select('*')
+                    .eq('branch', currentBranch)
+                    .order('date', { ascending: false });
+
+                if (error) throw error;
+
                 const tbody = document.getElementById('reportTableBody');
                 tbody.innerHTML = '';
 
                 let totalC = 0, totalB = 0, totalR = 0, totalE = 0, totalS = 0;
 
-                if (result.success && result.data.length > 0) {
-                    document.getElementById('statTotalCount').innerText = result.data.length;
+                if (data && data.length > 0) {
+                    document.getElementById('statTotalCount').innerText = data.length;
 
-                    result.data.forEach(row => {
+                    data.forEach(row => {
                         const c = parseFloat(row.cash) || 0;
                         const b = parseFloat(row.bank) || 0;
                         const r = c + b;
@@ -244,23 +255,19 @@
             };
 
             try {
-                const response = await fetch('/api/reports', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-                if (result.success) {
-                    alert('Veri başarıyla kaydedildi!');
-                    document.getElementById('reportForm').reset();
-                    document.getElementById('date').value = getLocalTodayString();
-                    fetchReports();
-                } else {
-                    alert('Kayıt başarısız: ' + result.message);
-                }
+                const { error } = await supabaseClient
+                    .from('reports')
+                    .insert([payload]);
+
+                if (error) throw error;
+
+                alert('Veri başarıyla kaydedildi!');
+                document.getElementById('reportForm').reset();
+                document.getElementById('date').value = getLocalTodayString();
+                fetchReports();
             } catch (err) {
-                console.error('Bağlantı hatası:', err);
-                alert('Sunucuya bağlanılamadı!');
+                console.error('Kayıt hatası:', err);
+                alert('Kayıt yapılamadı: ' + err.message);
             }
         });
 
