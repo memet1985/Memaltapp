@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sweet Waffle - Merkez Yönetim Paneli</title>
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -12,137 +12,56 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { box-sizing: border-box; -webkit-text-size-adjust: 100%; }
+        html, body { width: 100%; max-width: 100vw; overflow-x: hidden; margin: 0; padding: 0; background-color: #f9fafb; }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen font-sans pb-12">
-    <div class="container mx-auto px-3 sm:px-4 py-6 max-w-7xl">
+<body class="font-sans pb-10">
+    <div style="width: 100%; max-width: 480px; margin: 0 auto; padding: 10px;">
         
-        <!-- Üst Header & Şube Geçiş Butonları -->
-        <header class="bg-white border border-amber-300 rounded-2xl shadow-md p-4 sm:p-5 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
-                <div class="flex items-center gap-3">
-                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-amber-50 rounded-2xl flex items-center justify-center border-2 border-amber-800 shadow-inner overflow-hidden p-1">
-                        <img id="companyLogo" src="logo.webp" alt="Sweet Waffle Logo" class="w-full h-full object-contain" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
-                        <div id="logoFallback" class="w-full h-full bg-amber-900 text-white font-bold text-[10px] items-center justify-center text-center hidden">LOGO</div>
+        <!-- Üst Header -->
+        <header style="background: #fff; border: 1px solid #fcd34d; border-radius: 12px; padding: 10px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 36px; height: 36px; background: #fffbeb; border: 1px solid #78350f; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                        <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('merkezLogoFallback').style.display='flex';">
+                        <div id="merkezLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 8px; display: none; align-items: center; justify-content: center;">LOGO</div>
                     </div>
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-black text-amber-950 tracking-wide">Merkez Paneli</h1>
-                        <p class="text-xs text-gray-500">Tüm şube raporları ve yönetimi</p>
+                        <h1 style="font-size: 13px; font-weight: 900; color: #451a03; margin: 0;">Merkez Paneli</h1>
+                        <p style="font-size: 9px; color: #6b7280; margin: 0;">Genel Durum Raporu</p>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Şubelere ve Merkeze Geçiş Menüsü -->
-            <div class="flex flex-wrap items-center gap-2 justify-center w-full md:w-auto">
-                <a href="index.html" class="bg-gradient-to-r from-amber-900 to-amber-700 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold shadow-md border border-amber-400 tracking-wider flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-amber-300 animate-pulse"></span> MERKEZ
-                </a>
-                <div class="h-6 w-[1px] bg-amber-200 hidden md:block"></div>
-                <div class="flex flex-wrap gap-1.5 justify-center">
-                    <a href="sube.html?ad=Kurtkoy" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Kurtköy</a>
-                    <a href="sube.html?ad=Soganlik" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Soğanlık</a>
-                    <a href="sube.html?ad=Ortadag" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Ortadağ</a>
+                
+                <div style="display: flex; gap: 4px;">
+                    <a href="sube.html?ad=Kurtkoy" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Kurtköy</a>
+                    <a href="sube.html?ad=Soganlik" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Soğanlık</a>
+                    <a href="sube.html?ad=Ortadag" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Ortadağ</a>
                 </div>
             </div>
         </header>
 
-        <!-- Özet Kartları -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-6">
-            <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm text-center">
-                <p class="text-[11px] font-semibold text-gray-500 uppercase">Toplam Kayıt</p>
-                <p id="statTotalCount" class="text-base sm:text-lg font-bold text-gray-800 mt-1">0</p>
-            </div>
-            <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm text-center">
-                <p class="text-[11px] font-semibold text-gray-500 uppercase">Toplam Nakit</p>
-                <p id="statTotalCash" class="text-base sm:text-lg font-bold text-green-600 mt-1">0.00 ₺</p>
-            </div>
-            <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm text-center">
-                <p class="text-[11px] font-semibold text-gray-500 uppercase">Toplam Banka</p>
-                <p id="statTotalBank" class="text-base sm:text-lg font-bold text-blue-600 mt-1">0.00 ₺</p>
-            </div>
-            <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm text-center">
-                <p class="text-[11px] font-semibold text-gray-500 uppercase">Toplam Ciro</p>
-                <p id="statTotalRevenue" class="text-base sm:text-lg font-bold text-amber-700 mt-1">0.00 ₺</p>
-            </div>
-            <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm text-center">
-                <p class="text-[11px] font-semibold text-gray-500 uppercase">Toplam Masraf</p>
-                <p id="statTotalExpense" class="text-base sm:text-lg font-bold text-red-600 mt-1">0.00 ₺</p>
-            </div>
-            <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm text-center">
-                <p class="text-[11px] font-semibold text-gray-500 uppercase">Stok Tutarı</p>
-                <p id="statTotalStock" class="text-base sm:text-lg font-bold text-amber-900 mt-1">0.00 ₺</p>
-            </div>
-        </div>
-
-        <!-- Tablo ve Filtreler -->
-        <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-amber-900 mb-4">Şube Raporları ve Yönetimi</h3>
-            
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-amber-100">
+        <!-- Tüm Şubelerin Genel Raporları -->
+        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Tüm Şube Kayıtları</h3>
+            <div style="width: 100%; overflow-x: auto;">
+                <table style="width: 100%; min-width: 520px; border-collapse: collapse; font-size: 10px;">
                     <thead>
-                        <tr class="bg-amber-50">
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Şube</th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Tarih</th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Nakit</th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Banka</th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Ciro</th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Masraf</th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Stok Tutarı</th>
-                            <th class="px-3 py-3 text-center text-xs font-semibold text-amber-900 uppercase">İşlemler</th>
-                        </tr>
-                        <!-- Filtre Satırı -->
-                        <tr class="bg-amber-100/40">
-                            <td class="p-1.5"><input type="text" id="filterBranch" placeholder="Şube..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-1.5"><input type="text" id="filterDate" placeholder="Tarih..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-1.5"><input type="text" id="filterCash" placeholder="Nakit..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-1.5"><input type="text" id="filterBank" placeholder="Banka..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-1.5"><input type="text" id="filterRevenue" placeholder="Ciro..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-1.5"><input type="text" id="filterExpense" placeholder="Masraf..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-1.5"><input type="text" id="filterStock" placeholder="Stok..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-1.5 text-center text-xs text-gray-400">-</td>
+                        <tr style="background: #fffbeb; color: #78350f;">
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">Şube</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">Tarih</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">Nakit</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">Banka</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">Ciro</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">Masraf</th>
+                            <th style="padding: 6px; text-align: center; font-weight: 600;">İşlem</th>
                         </tr>
                     </thead>
-                    <tbody id="reportTableBody" class="divide-y divide-gray-100 bg-white text-sm"></tbody>
+                    <tbody id="allReportsTableBody"></tbody>
+                    <tfoot id="allReportsTableFooter" style="background: #fffbeb; font-weight: bold; border-top: 1px solid #fde68a;"></tfoot>
                 </table>
             </div>
-        </div>
-    </div>
-
-    <!-- Düzenleme Modalı -->
-    <div id="editModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-amber-200">
-            <h3 class="text-xl font-bold text-amber-950 mb-4">Kayıt Düzenle</h3>
-            <form id="editForm" class="space-y-3">
-                <input type="hidden" id="editId">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Tarih</label>
-                    <input type="date" id="editDate" class="w-full p-2.5 border rounded-xl border-amber-200 text-sm" required>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Nakit (TL)</label>
-                        <input type="number" step="0.01" id="editCash" class="w-full p-2.5 border rounded-xl border-amber-200 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Banka (TL)</label>
-                        <input type="number" step="0.01" id="editBank" class="w-full p-2.5 border rounded-xl border-amber-200 text-sm">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Masraf (TL)</label>
-                        <input type="number" step="0.01" id="editExpense" class="w-full p-2.5 border rounded-xl border-amber-200 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Stok Tutarı (TL)</label>
-                        <input type="number" step="0.01" id="editStockAmount" class="w-full p-2.5 border rounded-xl border-amber-200 text-sm">
-                    </div>
-                </div>
-                <div class="flex justify-end gap-2 pt-3">
-                    <button type="button" onclick="closeEditModal()" class="px-4 py-2.5 bg-gray-200 text-gray-700 rounded-xl font-semibold text-sm">İptal</button>
-                    <button type="submit" class="px-5 py-2.5 bg-amber-900 hover:bg-amber-800 text-white rounded-xl font-semibold text-sm shadow">Güncelle</button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -150,143 +69,83 @@
         const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let allGlobalData = [];
+
+        function cleanVal(val) {
+            if (val === null || val === undefined || val === '') return 0;
+            // Eğer veritabanından .00 şeklinde geliyorsa temizle
+            let num = Number(val);
+            if (isNaN(num)) return 0;
+            return num % 1 === 0 ? Math.trunc(num) : num;
+        }
 
         async function fetchAllReports() {
             try {
                 const { data, error } = await supabaseClient.from('reports').select('*').order('date', { ascending: false });
                 if (error) throw error;
-                allGlobalData = data || [];
-                applyFilters();
-            } catch (err) { console.error(err); }
+                
+                const tbody = document.getElementById('allReportsTableBody');
+                const tfoot = document.getElementById('allReportsTableFooter');
+                tbody.innerHTML = '';
+                tfoot.innerHTML = '';
+
+                let totalCash = 0, totalBank = 0, totalRevenue = 0, totalExpense = 0;
+
+                if (data && data.length > 0) {
+                    data.forEach(row => {
+                        const c = cleanVal(row.cash);
+                        const b = cleanVal(row.bank);
+                        const r = c + b;
+                        const e = cleanVal(row.expense);
+
+                        totalCash += c; 
+                        totalBank += b; 
+                        totalRevenue += r; 
+                        totalExpense += e;
+
+                        const tr = document.createElement('tr');
+                        tr.style.borderBottom = '1px solid #f3f4f6';
+                        tr.innerHTML = `
+                            <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
+                            <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
+                            <td style="padding: 6px; color: #1f2937;">${c}</td>
+                            <td style="padding: 6px; color: #1f2937;">${b}</td>
+                            <td style="padding: 6px; font-weight: bold; color: #b45309;">${r}</td>
+                            <td style="padding: 6px; color: #dc2626;">${e}</td>
+                            <td style="padding: 6px; text-align: center;">
+                                <button onclick="deleteReport('${row.id}')" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+
+                    tfoot.innerHTML = `
+                        <tr>
+                            <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
+                            <td style="padding: 6px; color: #1f2937;">${totalCash}</td>
+                            <td style="padding: 6px; color: #1f2937;">${totalBank}</td>
+                            <td style="padding: 6px; color: #b45309;">${totalRevenue}</td>
+                            <td style="padding: 6px; color: #dc2626;">${totalExpense}</td>
+                            <td></td>
+                        </tr>
+                    `;
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="7" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
+                }
+            } catch (err) { console.error('Hata:', err); }
         }
 
-        function renderTable(dataArray) {
-            const tbody = document.getElementById('reportTableBody');
-            tbody.innerHTML = '';
-            let totalC = 0, totalB = 0, totalR = 0, totalE = 0, totalS = 0;
-
-            if (dataArray.length > 0) {
-                document.getElementById('statTotalCount').innerText = dataArray.length;
-                dataArray.forEach(row => {
-                    const c = parseFloat(row.cash) || 0;
-                    const b = parseFloat(row.bank) || 0;
-                    const r = c + b;
-                    const e = parseFloat(row.expense) || 0;
-                    const s = parseFloat(row.stock_amount) || 0;
-                    totalC += c; totalB += b; totalR += r; totalE += e; totalS += s;
-
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-amber-50/40 transition";
-                    tr.innerHTML = `
-                        <td class="px-3 py-3.5 font-bold text-amber-950">${row.branch || 'Merkez'}</td>
-                        <td class="px-3 py-3.5 text-gray-600">${row.date}</td>
-                        <td class="px-3 py-3.5 text-gray-800">${c.toFixed(2)} ₺</td>
-                        <td class="px-3 py-3.5 text-gray-800">${b.toFixed(2)} ₺</td>
-                        <td class="px-3 py-3.5 font-bold text-amber-700">${r.toFixed(2)} ₺</td>
-                        <td class="px-3 py-3.5 text-red-600">${e.toFixed(2)} ₺</td>
-                        <td class="px-3 py-3.5 text-amber-900">${s.toFixed(2)} ₺</td>
-                        <td class="px-3 py-3.5 text-center">
-                            <div class="inline-flex items-center gap-1.5">
-                                <button onclick="openEditModal('${row.id}')" title="Düzenle" class="bg-amber-100 hover:bg-amber-200 text-amber-950 p-2 rounded-xl text-xs font-extrabold shadow-sm flex items-center gap-1 transition transform active:scale-95">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                    <span class="hidden sm:inline">Düzenle</span>
-                                </button>
-                                <button onclick="deleteRecord('${row.id}')" title="Sil" class="bg-red-50 hover:bg-red-100 text-red-700 p-2 rounded-xl text-xs font-extrabold shadow-sm flex items-center gap-1 transition transform active:scale-95">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    <span class="hidden sm:inline">Sil</span>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-                document.getElementById('statTotalCash').innerText = totalC.toFixed(2) + ' ₺';
-                document.getElementById('statTotalBank').innerText = totalB.toFixed(2) + ' ₺';
-                document.getElementById('statTotalRevenue').innerText = totalR.toFixed(2) + ' ₺';
-                document.getElementById('statTotalExpense').innerText = totalE.toFixed(2) + ' ₺';
-                document.getElementById('statTotalStock').innerText = totalS.toFixed(2) + ' ₺';
-            } else {
-                tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-6 text-center text-gray-400">Kayıt bulunamadı.</td></tr>`;
+        async function deleteReport(id) {
+            if (confirm('Bu kaydı silmek istediğinize emin misiniz?')) {
+                try {
+                    const { error } = await supabaseClient.from('reports').delete().eq('id', id);
+                    if (error) throw error;
+                    alert('Kayıt başarıyla silindi.');
+                    fetchAllReports();
+                } catch (err) {
+                    alert('Silme başarısız (Ağ veya Bağlantı Hatası): ' + err.message);
+                }
             }
         }
-
-        function openEditModal(id) {
-            const row = allGlobalData.find(r => r.id == id);
-            if (!row) return;
-            document.getElementById('editId').value = row.id;
-            document.getElementById('editDate').value = row.date || '';
-            document.getElementById('editCash').value = row.cash || 0;
-            document.getElementById('editBank').value = row.bank || 0;
-            document.getElementById('editExpense').value = row.expense || 0;
-            document.getElementById('editStockAmount').value = row.stock_amount || 0;
-            document.getElementById('editModal').style.display = 'flex';
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
-
-        document.getElementById('editForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const id = document.getElementById('editId').value;
-            const updatedData = {
-                date: document.getElementById('editDate').value,
-                cash: parseFloat(document.getElementById('editCash').value) || 0,
-                bank: parseFloat(document.getElementById('editBank').value) || 0,
-                expense: parseFloat(document.getElementById('editExpense').value) || 0,
-                stock_amount: parseFloat(document.getElementById('editStockAmount').value) || 0
-            };
-
-            try {
-                const { error } = await supabaseClient.from('reports').update(updatedData).eq('id', id);
-                if (error) throw error;
-                alert('Kayıt başarıyla güncellendi!');
-                closeEditModal();
-                fetchAllReports();
-            } catch (err) { alert('Güncellenemedi: ' + err.message); }
-        });
-
-        async function deleteRecord(id) {
-            if (!confirm('Bu kaydı tamamen silmek istediğinize emin misiniz?')) return;
-            try {
-                const { error } = await supabaseClient.from('reports').delete().eq('id', id);
-                if (error) throw error;
-                alert('Kayıt silindi.');
-                fetchAllReports();
-            } catch (err) { alert('Silinemedi: ' + err.message); }
-        }
-
-        function applyFilters() {
-            const fBranch = document.getElementById('filterBranch').value.toLowerCase().trim();
-            const fDate = document.getElementById('filterDate').value.toLowerCase().trim();
-            const fCash = document.getElementById('filterCash').value.toLowerCase().trim();
-            const fBank = document.getElementById('filterBank').value.toLowerCase().trim();
-            const fRevenue = document.getElementById('filterRevenue').value.toLowerCase().trim();
-            const fExpense = document.getElementById('filterExpense').value.toLowerCase().trim();
-            const fStock = document.getElementById('filterStock').value.toLowerCase().trim();
-
-            const filtered = allGlobalData.filter(row => {
-                const c = parseFloat(row.cash) || 0;
-                const b = parseFloat(row.bank) || 0;
-                const r = c + b;
-                const e = parseFloat(row.expense) || 0;
-                const s = parseFloat(row.stock_amount) || 0;
-
-                return (row.branch || '').toLowerCase().includes(fBranch) &&
-                       (row.date || '').toLowerCase().includes(fDate) &&
-                       c.toString().includes(fCash) &&
-                       b.toString().includes(fBank) &&
-                       r.toString().includes(fRevenue) &&
-                       e.toString().includes(fExpense) &&
-                       s.toString().includes(fStock);
-            });
-            renderTable(filtered);
-        }
-
-        ['filterBranch', 'filterDate', 'filterCash', 'filterBank', 'filterRevenue', 'filterExpense', 'filterStock'].forEach(id => {
-            document.getElementById(id).addEventListener('input', applyFilters);
-        });
 
         fetchAllReports();
     </script>
