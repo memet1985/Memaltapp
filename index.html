@@ -18,10 +18,11 @@
                 </div>
                 <h1 class="text-2xl font-bold text-amber-900 tracking-wide" id="mainHeaderTitle">Sweet Waffle Yönetim Paneli</h1>
             </div>
-            <!-- Sadece Merkezde Görünecek Ana Menüye Dön Butonu -->
+            <!-- Sadece Merkezde Görünecek ve Diğer Şube / Menü Sayfasına Gidecek Buton -->
             <div id="centerMenuButtonContainer">
-                <a href="index.html" class="inline-flex items-center bg-amber-900 hover:bg-amber-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition">
-                    ← Ana Menüye Dön
+                <!-- Buradaki 'subeler.html' veya 'index.html' kısmını yönlendirmek istediğin diğer şube sayfasının dosya adı ile değiştirebilirsin -->
+                <a href="subeler.html" class="inline-flex items-center bg-amber-900 hover:bg-amber-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition">
+                    ← Diğer Şube / Menüye Git
                 </a>
             </div>
         </header>
@@ -176,7 +177,7 @@
     <script>
         // Supabase Bağlantı Bilgileri
         const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdGdub2l5YmJqdm1yZWlrZXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE31z...'; // Kendi geçerli anahtarını buraya yapıştır
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdGdub2l5YmJqdm1yZWlrZXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE31z...'; // Kendi anahtarını buraya yapıştır
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -200,14 +201,12 @@
         function updateInterfaceMode() {
             const selected = branchSelect.value;
             if (selected === 'Merkez') {
-                // Merkez Modu: Tüm şubeleri toplar, ana menü butonu görünür, veri girişi gizlenir (veya merkeze ait girilir)
                 branchTitle.innerText = 'Merkez Yönetim Ekranı (Tüm Şubeler Toplanıyor)';
-                centerMenuButtonContainer.style.display = 'block';
-                dataEntryCard.style.display = 'none'; // Merkez sadece toplar ve izler
+                centerMenuButtonContainer.style.display = 'block'; // Merkezde diğer şube/menüye dön butonu görünür
+                dataEntryCard.style.display = 'none'; 
             } else {
-                // Şube Modu: Sadece o şube çalışır, ana menü butonu gizlenir, veri girişi açık olur
                 branchTitle.innerText = `${selected} Şube Çalışma Ekranı`;
-                centerMenuButtonContainer.style.display = 'none'; // Şubelerde ana menüye dön butonu YOK
+                centerMenuButtonContainer.style.display = 'none'; // Şubelerde bu buton gizlidir
                 dataEntryCard.style.display = 'block';
             }
         }
@@ -217,7 +216,6 @@
             try {
                 let query = supabaseClient.from('reports').select('*').order('date', { ascending: false });
 
-                // Eğer Merkez seçildiyse tüm şubelerin verilerini çek, değilse sadece seçilen şubeninkini çek
                 if (selectedBranch !== 'Merkez') {
                     query = query.eq('branch', selectedBranch);
                 }
@@ -317,7 +315,6 @@
             }
         });
 
-        // Sayfa açılışında başlangıç modunu ayarla
         updateInterfaceMode();
         fetchReports();
     </script>
