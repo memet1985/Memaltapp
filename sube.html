@@ -61,11 +61,11 @@
                     <label style="display: block; font-size: 10px; font-weight: 600; color: #78350f; margin-bottom: 3px;">Ciro Bilgileri (TL)</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                         <div>
-                            <input type="number" step="0.01" id="cash" placeholder="Nakit" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
+                            <input type="number" step="any" id="cash" placeholder="Nakit" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
                             <span style="font-size: 8px; color: #6b7280;">Nakit</span>
                         </div>
                         <div>
-                            <input type="number" step="0.01" id="bank" placeholder="Banka" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
+                            <input type="number" step="any" id="bank" placeholder="Banka" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
                             <span style="font-size: 8px; color: #6b7280;">Banka / Kart</span>
                         </div>
                     </div>
@@ -75,7 +75,7 @@
                     <label style="display: block; font-size: 10px; font-weight: 600; color: #78350f; margin-bottom: 3px;">Masraf (Opsiyonel)</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                         <div>
-                            <input type="number" step="0.01" id="expense" placeholder="Tutar" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
+                            <input type="number" step="any" id="expense" placeholder="Tutar" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
                             <span style="font-size: 8px; color: #6b7280;">Tutar (TL)</span>
                         </div>
                         <div>
@@ -104,11 +104,11 @@
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                         <div>
-                            <input type="number" step="0.01" id="stockQty" placeholder="Miktar" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
+                            <input type="number" step="any" id="stockQty" placeholder="Miktar" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
                             <span style="font-size: 8px; color: #6b7280;">Miktar</span>
                         </div>
                         <div>
-                            <input type="number" step="0.01" id="stockAmount" placeholder="Tutar" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
+                            <input type="number" step="any" id="stockAmount" placeholder="Tutar" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
                             <span style="font-size: 8px; color: #6b7280;">Tutar (TL)</span>
                         </div>
                     </div>
@@ -200,11 +200,11 @@
                         tr.style.borderBottom = '1px solid #f3f4f6';
                         tr.innerHTML = `
                             <td style="padding: 6px; color: #4b5563;">${row.date}</td>
-                            <td style="padding: 6px; color: #1f2937;">${c.toFixed(2)}</td>
-                            <td style="padding: 6px; color: #1f2937;">${b.toFixed(2)}</td>
-                            <td style="padding: 6px; font-weight: bold; color: #b45309;">${r.toFixed(2)}</td>
-                            <td style="padding: 6px; color: #dc2626;">${e.toFixed(2)}</td>
-                            <td style="padding: 6px; color: #78350f;">${s.toFixed(2)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${row.cash !== null && row.cash !== '' ? row.cash : 0}</td>
+                            <td style="padding: 6px; color: #1f2937;">${row.bank !== null && row.bank !== '' ? row.bank : 0}</td>
+                            <td style="padding: 6px; font-weight: bold; color: #b45309;">${r}</td>
+                            <td style="padding: 6px; color: #dc2626;">${row.expense !== null && row.expense !== '' ? row.expense : 0}</td>
+                            <td style="padding: 6px; color: #78350f;">${row.stock_amount !== null && row.stock_amount !== '' ? row.stock_amount : 0}</td>
                         `;
                         tbody.appendChild(tr);
                     });
@@ -212,11 +212,11 @@
                     tfoot.innerHTML = `
                         <tr>
                             <td style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
-                            <td style="padding: 6px; color: #1f2937;">${totalCash.toFixed(2)}</td>
-                            <td style="padding: 6px; color: #1f2937;">${totalBank.toFixed(2)}</td>
-                            <td style="padding: 6px; color: #b45309;">${totalRevenue.toFixed(2)}</td>
-                            <td style="padding: 6px; color: #dc2626;">${totalExpense.toFixed(2)}</td>
-                            <td style="padding: 6px; color: #451a03;">${totalStock.toFixed(2)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${totalCash}</td>
+                            <td style="padding: 6px; color: #1f2937;">${totalBank}</td>
+                            <td style="padding: 6px; color: #b45309;">${totalRevenue}</td>
+                            <td style="padding: 6px; color: #dc2626;">${totalExpense}</td>
+                            <td style="padding: 6px; color: #451a03;">${totalStock}</td>
                         </tr>
                     `;
                 } else {
@@ -230,14 +230,14 @@
             const payload = {
                 branch: currentBranch,
                 date: document.getElementById('date').value,
-                cash: parseFloat(document.getElementById('cash').value) || 0,
-                bank: parseFloat(document.getElementById('bank').value) || 0,
-                expense: parseFloat(document.getElementById('expense').value) || 0,
+                cash: document.getElementById('cash').value ? parseFloat(document.getElementById('cash').value) : 0,
+                bank: document.getElementById('bank').value ? parseFloat(document.getElementById('bank').value) : 0,
+                expense: document.getElementById('expense').value ? parseFloat(document.getElementById('expense').value) : 0,
                 expense_desc: document.getElementById('expenseDesc').value,
                 stock_item: document.getElementById('stockItemSelect').value,
-                stock_qty: parseFloat(document.getElementById('stockQty').value) || 0,
+                stock_qty: document.getElementById('stockQty').value ? parseFloat(document.getElementById('stockQty').value) : 0,
                 stock_unit: document.getElementById('stockUnit').value,
-                stock_amount: parseFloat(document.getElementById('stockAmount').value) || 0
+                stock_amount: document.getElementById('stockAmount').value ? parseFloat(document.getElementById('stockAmount').value) : 0
             };
 
             try {
