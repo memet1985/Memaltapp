@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sweet Waffle - Yönetim Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase Kütüphanesi -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-50 min-h-screen font-sans">
@@ -26,9 +25,20 @@
             </div>
         </header>
 
-        <!-- Şube Başlığı -->
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-amber-900" id="branchTitle">Kurtköy Şubesi Paneli</h2>
+        <!-- Şube / Merkez Seçim Barı -->
+        <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <label for="branchSelect" class="text-sm font-bold text-amber-900 whitespace-nowrap">Aktif Şube / Merkez:</label>
+                <select id="branchSelect" class="w-full md:w-64 rounded-xl border border-amber-300 bg-amber-50 p-2.5 text-amber-900 font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    <option value="Merkez">Merkez</option>
+                    <option value="Kurtköy">Kurtköy Şubesi</option>
+                    <option value="Soğanlık">Soğanlık Şubesi</option>
+                    <option value="3_Subeli_Genel">Tüm Şubeler (Genel Özet)</option>
+                </select>
+            </div>
+            <div id="branchTitle" class="text-lg font-bold text-amber-800">
+                Merkez Yönetim Ekranı
+            </div>
         </div>
 
         <!-- Özet Kartları -->
@@ -61,7 +71,7 @@
 
         <!-- Yeni Veri Giriş Kartı -->
         <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6 mb-8">
-            <h3 class="text-lg font-bold text-amber-900 mb-4 pb-2 border-b border-amber-100">Yeni Veri Girişi</h3>
+            <h3 class="text-lg font-bold text-amber-900 mb-4 pb-2 border-b border-amber-100">Seçilen Konum İçin Yeni Veri Girişi</h3>
             
             <form id="reportForm" class="space-y-4">
                 <div>
@@ -102,18 +112,13 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
                         <div>
                             <label class="block text-xs font-medium text-gray-600 mb-1">Ürün / Malzeme Seçin:</label>
-                            <div class="flex gap-1">
-                                <select id="stockItemSelect" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
-                                    <option value="">-- Ürün Seçin --</option>
-                                    <option value="Waffle Hamuru">Waffle Hamuru</option>
-                                    <option value="Çikolata Sosu">Çikolata Sosu</option>
-                                    <option value="Muz / Çilek">Muz / Çilek</option>
-                                    <option value="Kutu / Ambalaj">Kutu / Ambalaj</option>
-                                </select>
-                                <button type="button" class="bg-amber-800 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-amber-700 shadow transition flex items-center gap-1">
-                                    + Yeni
-                                </button>
-                            </div>
+                            <select id="stockItemSelect" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
+                                <option value="">-- Ürün Seçin --</option>
+                                <option value="Waffle Hamuru">Waffle Hamuru</option>
+                                <option value="Çikolata Sosu">Çikolata Sosu</option>
+                                <option value="Muz / Çilek">Muz / Çilek</option>
+                                <option value="Kutu / Ambalaj">Kutu / Ambalaj</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 mb-1">Miktar:</label>
@@ -137,7 +142,7 @@
 
                 <div class="pt-2">
                     <button type="submit" class="w-full bg-amber-900 hover:bg-amber-800 text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition text-center">
-                        Sisteme Kaydet
+                        Seçilen Konuma Kaydet
                     </button>
                 </div>
             </form>
@@ -150,6 +155,7 @@
                 <table class="min-w-full divide-y divide-amber-100">
                     <thead>
                         <tr class="bg-amber-50">
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Konum / Şube</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Tarih</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Nakit</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Banka</th>
@@ -168,12 +174,11 @@
     </div>
 
     <script>
-        // Supabase Bağlantı Bilgilerin
+        // Supabase Bağlantı Bilgileri (Doğrudan Vercel ortamındaki anahtarınla çalışır)
         const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
-        const SUPABASE_ANON_KEY = 'buraya_supabase_anon_key_degerini_yaz'; // Vercel'deki anon key değerini buraya yapıştırabilirsin
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdGdub2l5YmJqdm1yZWlrZXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE31z...'; // Kendi geçerli anon key değerini buraya tam olarak yapıştır
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const currentBranch = 'Kurtköy';
 
         function getLocalTodayString() {
             const tzOffset = new Date().getTimezoneOffset() * 60000;
@@ -182,14 +187,24 @@
 
         document.getElementById('date').value = getLocalTodayString();
 
-        async function fetchReports() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('reports')
-                    .select('*')
-                    .eq('branch', currentBranch)
-                    .order('date', { ascending: false });
+        const branchSelect = document.getElementById('branchSelect');
+        const branchTitle = document.getElementById('branchTitle');
 
+        branchSelect.addEventListener('change', () => {
+            branchTitle.innerText = branchSelect.value === '3_Subeli_Genel' ? 'Tüm Şubeler ve Merkez Genel Görünümü' : `${branchSelect.value} Yönetim Ekranı`;
+            fetchReports();
+        });
+
+        async function fetchReports() {
+            const selectedBranch = branchSelect.value;
+            try {
+                let query = supabaseClient.from('reports').select('*').order('date', { ascending: false });
+
+                if (selectedBranch !== '3_Subeli_Genel') {
+                    query = query.eq('branch', selectedBranch);
+                }
+
+                const { data, error } = await query;
                 if (error) throw error;
 
                 const tbody = document.getElementById('reportTableBody');
@@ -215,6 +230,7 @@
 
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
+                            <td class="px-4 py-3 font-medium text-amber-900">${row.branch || 'Merkez'}</td>
                             <td class="px-4 py-3 text-gray-600">${row.date}</td>
                             <td class="px-4 py-3 text-gray-800">${c.toFixed(2)} ₺</td>
                             <td class="px-4 py-3 text-gray-800">${b.toFixed(2)} ₺</td>
@@ -231,7 +247,13 @@
                     document.getElementById('statTotalExpense').innerText = totalE.toFixed(2) + ' ₺';
                     document.getElementById('statTotalStock').innerText = totalS.toFixed(2) + ' ₺';
                 } else {
-                    tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-4 text-center text-gray-400">Henüz kayıt bulunmuyor.</td></tr>`;
+                    document.getElementById('statTotalCount').innerText = 0;
+                    document.getElementById('statTotalCash').innerText = '0.00 ₺';
+                    document.getElementById('statTotalBank').innerText = '0.00 ₺';
+                    document.getElementById('statTotalRevenue').innerText = '0.00 ₺';
+                    document.getElementById('statTotalExpense').innerText = '0.00 ₺';
+                    document.getElementById('statTotalStock').innerText = '0.00 ₺';
+                    tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-4 text-center text-gray-400">Bu konum için henüz kayıt bulunmuyor.</td></tr>`;
                 }
             } catch (err) {
                 console.error('Veriler alınamadı:', err);
@@ -241,8 +263,10 @@
         document.getElementById('reportForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
+            const targetBranch = branchSelect.value === '3_Subeli_Genel' ? 'Merkez' : branchSelect.value;
+
             const payload = {
-                branch: currentBranch,
+                branch: targetBranch,
                 date: document.getElementById('date').value,
                 cash: parseFloat(document.getElementById('cash').value) || 0,
                 bank: parseFloat(document.getElementById('bank').value) || 0,
@@ -261,7 +285,7 @@
 
                 if (error) throw error;
 
-                alert('Veri başarıyla kaydedildi!');
+                alert(`Veri başarıyla ${targetBranch} konumuna kaydedildi!`);
                 document.getElementById('reportForm').reset();
                 document.getElementById('date').value = getLocalTodayString();
                 fetchReports();
