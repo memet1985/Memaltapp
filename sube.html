@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title id="pageTitle">Şube Paneli</title>
+    <title>Sweet Waffle - Merkez Yönetim Paneli</title>
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#78350f">
@@ -15,252 +15,113 @@
     <style>
         * { box-sizing: border-box; -webkit-text-size-adjust: 100%; }
         html, body { width: 100%; max-width: 100vw; overflow-x: hidden; margin: 0; padding: 0; background-color: #f9fafb; }
-        /* Sayı inputlarındaki sağdaki okları (spinners) kaldırır */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
     </style>
 </head>
 <body class="font-sans pb-10">
     <div style="width: 100%; max-width: 480px; margin: 0 auto; padding: 10px;">
         
-        <!-- Üst Header & Şube Geçişleri -->
+        <!-- Üst Header -->
         <header style="background: #fff; border: 1px solid #fcd34d; border-radius: 12px; padding: 10px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div style="width: 36px; height: 36px; background: #fffbeb; border: 1px solid #78350f; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
-                        <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('subeLogoFallback').style.display='flex';">
-                        <div id="subeLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 8px; display: none; align-items: center; justify-content: center;">LOGO</div>
+                        <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('merkezLogoFallback').style.display='flex';">
+                        <div id="merkezLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 8px; display: none; align-items: center; justify-content: center;">LOGO</div>
                     </div>
                     <div>
-                        <h1 id="headerTitle" style="font-size: 13px; font-weight: 900; color: #451a03; margin: 0;">Şube Paneli</h1>
-                        <p style="font-size: 9px; color: #6b7280; margin: 0;">Veri Girişi</p>
+                        <h1 style="font-size: 13px; font-weight: 900; color: #451a03; margin: 0;">Merkez Paneli</h1>
+                        <p style="font-size: 9px; color: #6b7280; margin: 0;">Genel Durum Raporu</p>
                     </div>
                 </div>
                 
-                <a href="index.html" style="background: #78350f; color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 4px;">
-                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #fde047;"></span> MERKEZ
-                </a>
-            </div>
-
-            <!-- Şube Butonları -->
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; border-top: 1px solid #fef3c7; padding-top: 8px;">
-                <a href="sube.html?ad=Kurtkoy" class="branch-btn" data-branch="Kurtkoy" style="text-align: center; background: #fffbeb; color: #78350f; padding: 6px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid #fde68a; text-decoration: none;">Kurtköy</a>
-                <a href="sube.html?ad=Soganlik" class="branch-btn" data-branch="Soganlik" style="text-align: center; background: #fffbeb; color: #78350f; padding: 6px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid #fde68a; text-decoration: none;">Soğanlık</a>
-                <a href="sube.html?ad=Ortadag" class="branch-btn" data-branch="Ortadag" style="text-align: center; background: #fffbeb; color: #78350f; padding: 6px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid #fde68a; text-decoration: none;">Ortadağ</a>
+                <div style="display: flex; gap: 4px;">
+                    <a href="sube.html?ad=Kurtkoy" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Kurtköy</a>
+                    <a href="sube.html?ad=Soganlik" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Soğanlık</a>
+                    <a href="sube.html?ad=Ortadag" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Ortadağ</a>
+                </div>
             </div>
         </header>
 
-        <!-- Veri Giriş Formu -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase; border-bottom: 1px solid #fef3c7; padding-bottom: 6px;">Yeni Rapor Ekle</h3>
-            
-            <form id="reportForm" style="display: flex; flex-direction: column; gap: 8px;">
-                <div>
-                    <label style="display: block; font-size: 10px; font-weight: 600; color: #374151; margin-bottom: 2px;">Tarih:</label>
-                    <input type="date" id="date" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; color: #1f2937; background: #fff;" required>
-                </div>
-
-                <div>
-                    <label style="display: block; font-size: 10px; font-weight: 600; color: #78350f; margin-bottom: 3px;">Ciro Bilgileri (TL)</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                        <div>
-                            <input type="number" step="any" id="cash" placeholder="" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
-                            <span style="font-size: 8px; color: #6b7280;">Nakit</span>
-                        </div>
-                        <div>
-                            <input type="number" step="any" id="bank" placeholder="" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
-                            <span style="font-size: 8px; color: #6b7280;">Banka / Kart</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label style="display: block; font-size: 10px; font-weight: 600; color: #78350f; margin-bottom: 3px;">Masraf (Opsiyonel)</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                        <div>
-                            <input type="number" step="any" id="expense" placeholder="" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
-                            <span style="font-size: 8px; color: #6b7280;">Tutar (TL)</span>
-                        </div>
-                        <div>
-                            <input type="text" id="expenseDesc" placeholder="" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
-                            <span style="font-size: 8px; color: #6b7280;">Açıklama</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label style="display: block; font-size: 10px; font-weight: 600; color: #78350f; margin-bottom: 3px;">Stok (Opsiyonel)</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px;">
-                        <select id="stockItemSelect" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 11px; background: #fff;">
-                            <option value="">-- Ürün Seç --</option>
-                            <option value="Waffle Hamuru">Waffle Hamuru</option>
-                            <option value="Çikolata Sosu">Çikolata Sosu</option>
-                            <option value="Muz / Çilek">Muz / Çilek</option>
-                            <option value="Kutu / Ambalaj">Kutu / Ambalaj</option>
-                        </select>
-                        <select id="stockUnit" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 11px; background: #fff;">
-                            <option value="KG">KG</option>
-                            <option value="Adet">Adet</option>
-                            <option value="Paket">Paket</option>
-                            <option value="Lt">Lt</option>
-                        </select>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                        <div>
-                            <input type="number" step="any" id="stockQty" placeholder="" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
-                            <span style="font-size: 8px; color: #6b7280;">Miktar</span>
-                        </div>
-                        <div>
-                            <input type="number" step="any" id="stockAmount" placeholder="" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
-                            <span style="font-size: 8px; color: #6b7280;">Tutar (TL)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="padding-top: 4px;">
-                    <button type="submit" style="width: 100%; background: #78350f; color: #fff; font-weight: bold; padding: 10px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer;">
-                        Kaydet
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Geçmiş Raporlar -->
+        <!-- Tüm Şubelerin Genel Raporları -->
         <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Geçmiş Kayıtlar</h3>
+            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Tüm Şube Kayıtları</h3>
             <div style="width: 100%; overflow-x: auto;">
-                <table style="width: 100%; min-width: 440px; border-collapse: collapse; font-size: 10px;">
+                <table style="width: 100%; min-width: 480px; border-collapse: collapse; font-size: 10px;">
                     <thead>
                         <tr style="background: #fffbeb; color: #78350f;">
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">Şube</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">Tarih</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">Nakit</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">Banka</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">Ciro</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">Masraf</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">Stok</th>
                         </tr>
                     </thead>
-                    <tbody id="reportTableBody"></tbody>
-                    <tfoot id="reportTableFooter" style="background: #fffbeb; font-weight: bold; border-top: 1px solid #fde68a;"></tfoot>
+                    <tbody id="allReportsTableBody"></tbody>
+                    <tfoot id="allReportsTableFooter" style="background: #fffbeb; font-weight: bold; border-top: 1px solid #fde68a;"></tfoot>
                 </table>
             </div>
         </div>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentBranch = urlParams.get('ad') || 'Kurtkoy';
-
-        document.getElementById('pageTitle').innerText = `Sweet Waffle - ${currentBranch}`;
-        document.getElementById('headerTitle').innerText = `${currentBranch} Şubesi`;
-
-        document.querySelectorAll('.branch-btn').forEach(btn => {
-            if (btn.getAttribute('data-branch') === currentBranch) {
-                btn.style.background = '#78350f';
-                btn.style.color = '#fff';
-                btn.style.borderColor = '#451a03';
-            }
-        });
-
         const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        function setTodayDate() {
-            const tzOffset = new Date().getTimezoneOffset() * 60000;
-            const localISOTime = new Date(Date.now() - tzOffset).toISOString().split('T')[0];
-            document.getElementById('date').value = localISOTime;
-        }
-        setTodayDate();
-
-        async function fetchBranchReports() {
+        async function fetchAllReports() {
             try {
                 const { data, error } = await supabaseClient.from('reports').select('*').order('date', { ascending: false });
                 if (error) throw error;
                 
-                const filteredData = (data || []).filter(row => 
-                    row.branch && row.branch.trim().toLowerCase() === currentBranch.trim().toLowerCase()
-                );
-                
-                const tbody = document.getElementById('reportTableBody');
-                const tfoot = document.getElementById('reportTableFooter');
+                const tbody = document.getElementById('allReportsTableBody');
+                const tfoot = document.getElementById('allReportsTableFooter');
                 tbody.innerHTML = '';
                 tfoot.innerHTML = '';
 
-                let totalCash = 0, totalBank = 0, totalRevenue = 0, totalExpense = 0, totalStock = 0;
+                let totalCash = 0, totalBank = 0, totalRevenue = 0, totalExpense = 0;
 
-                if (filteredData.length > 0) {
-                    filteredData.forEach(row => {
+                if (data && data.length > 0) {
+                    data.forEach(row => {
                         const c = parseFloat(row.cash) || 0;
                         const b = parseFloat(row.bank) || 0;
                         const r = c + b;
                         const e = parseFloat(row.expense) || 0;
-                        const s = parseFloat(row.stock_amount) || 0;
 
-                        totalCash += c; totalBank += b; totalRevenue += r; totalExpense += e; totalStock += s;
+                        totalCash += c; 
+                        totalBank += b; 
+                        totalRevenue += r; 
+                        totalExpense += e;
 
                         const tr = document.createElement('tr');
                         tr.style.borderBottom = '1px solid #f3f4f6';
                         tr.innerHTML = `
-                            <td style="padding: 6px; color: #4b5563;">${row.date}</td>
+                            <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
+                            <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
                             <td style="padding: 6px; color: #1f2937;">${row.cash !== null && row.cash !== '' ? row.cash : 0}</td>
                             <td style="padding: 6px; color: #1f2937;">${row.bank !== null && row.bank !== '' ? row.bank : 0}</td>
                             <td style="padding: 6px; font-weight: bold; color: #b45309;">${r}</td>
                             <td style="padding: 6px; color: #dc2626;">${row.expense !== null && row.expense !== '' ? row.expense : 0}</td>
-                            <td style="padding: 6px; color: #78350f;">${row.stock_amount !== null && row.stock_amount !== '' ? row.stock_amount : 0}</td>
                         `;
                         tbody.appendChild(tr);
                     });
 
                     tfoot.innerHTML = `
                         <tr>
-                            <td style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
+                            <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
                             <td style="padding: 6px; color: #1f2937;">${totalCash}</td>
                             <td style="padding: 6px; color: #1f2937;">${totalBank}</td>
                             <td style="padding: 6px; color: #b45309;">${totalRevenue}</td>
                             <td style="padding: 6px; color: #dc2626;">${totalExpense}</td>
-                            <td style="padding: 6px; color: #451a03;">${totalStock}</td>
                         </tr>
                     `;
                 } else {
-                    tbody.innerHTML = `<tr><td colspan="6" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt yok.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
                 }
             } catch (err) { console.error('Hata:', err); }
         }
 
-        document.getElementById('reportForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const payload = {
-                branch: currentBranch,
-                date: document.getElementById('date').value,
-                cash: document.getElementById('cash').value ? parseFloat(document.getElementById('cash').value) : 0,
-                bank: document.getElementById('bank').value ? parseFloat(document.getElementById('bank').value) : 0,
-                expense: document.getElementById('expense').value ? parseFloat(document.getElementById('expense').value) : 0,
-                expense_desc: document.getElementById('expenseDesc').value,
-                stock_item: document.getElementById('stockItemSelect').value,
-                stock_qty: document.getElementById('stockQty').value ? parseFloat(document.getElementById('stockQty').value) : 0,
-                stock_unit: document.getElementById('stockUnit').value,
-                stock_amount: document.getElementById('stockAmount').value ? parseFloat(document.getElementById('stockAmount').value) : 0
-            };
-
-            try {
-                const { error } = await supabaseClient.from('reports').insert([payload]);
-                if (error) throw error;
-                
-                alert('Kayıt başarıyla eklendi!');
-                document.getElementById('reportForm').reset();
-                setTodayDate();
-                fetchBranchReports();
-            } catch (err) { alert('Kayıt yapılamadı: ' + err.message); }
-        });
-
-        fetchBranchReports();
+        fetchAllReports();
     </script>
 </body>
 </html>
