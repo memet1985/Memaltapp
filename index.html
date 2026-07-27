@@ -8,27 +8,33 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-50 min-h-screen font-sans">
-    <div class="container mx-auto px-4 py-6 max-w-6xl">
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
         
         <!-- Üst Header & Şube Geçiş Butonları -->
         <header class="bg-white border border-amber-300 rounded-2xl shadow-md p-5 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-4">
-                <!-- Farklı ve Daha Büyük Merkez İkonu -->
-                <div class="w-16 h-16 bg-gradient-to-tr from-amber-700 to-amber-500 rounded-2xl flex items-center justify-center border-2 border-amber-900 shadow-lg transform -rotate-2">
-                    <span class="text-white font-extrabold text-xs tracking-wider uppercase">MERKEZ</span>
+                <!-- Logo -->
+                <div class="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center border-2 border-amber-800 shadow-inner overflow-hidden p-1">
+                    <img id="companyLogo" src="logo.webp" alt="Sweet Waffle Logo" class="w-full h-full object-contain" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
+                    <div id="logoFallback" class="w-full h-full bg-amber-900 text-white font-bold text-[10px] items-center justify-center text-center hidden">LOGOMUZ</div>
                 </div>
                 <div>
                     <h1 class="text-2xl font-black text-amber-950 tracking-wide">Merkez Yönetim Paneli</h1>
-                    <p class="text-xs text-gray-500">Tüm şubelerin genel toplama ve filtreleme ekranı</p>
+                    <p class="text-xs text-gray-500">Tüm şubelerin genel toplama ve gelişmiş filtreleme ekranı</p>
                 </div>
             </div>
             
-            <!-- Şubelere Geçiş Menüsü -->
-            <div class="flex flex-wrap gap-2 justify-center">
-                <a href="index.html" class="bg-amber-900 text-white px-3 py-2 rounded-xl text-xs font-semibold shadow">Merkez</a>
-                <a href="sube.html?ad=Kurtkoy" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Kurtköy Şube</a>
-                <a href="sube.html?ad=Soganlik" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Soğanlık Şube</a>
-                <a href="sube.html?ad=Ortadag" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Ortadağ Şube</a>
+            <!-- Şubelere ve Merkeze Geçiş Menüsü -->
+            <div class="flex flex-wrap items-center gap-3 justify-center">
+                <a href="index.html" class="bg-gradient-to-r from-amber-900 to-amber-700 text-white px-5 py-3 rounded-2xl text-sm font-extrabold shadow-lg border-2 border-amber-400 tracking-wider flex items-center gap-2 transform hover:scale-105 transition">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-300 animate-pulse"></span> MERKEZ
+                </a>
+                <div class="h-8 w-[1px] bg-amber-200 hidden md:block"></div>
+                <div class="flex flex-wrap gap-2">
+                    <a href="sube.html?ad=Kurtkoy" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Kurtköy Şube</a>
+                    <a href="sube.html?ad=Soganlik" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Soğanlık Şube</a>
+                    <a href="sube.html?ad=Ortadag" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Ortadağ Şube</a>
+                </div>
             </div>
         </header>
 
@@ -60,26 +66,31 @@
             </div>
         </div>
 
-        <!-- Tablo ve Filtre Alanı -->
+        <!-- Tablo ve Sütun Bazlı Filtreler -->
         <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-3">
-                <h3 class="text-lg font-bold text-amber-900">Tüm Şubelerin Birleştirilmiş Geçmiş Raporları</h3>
-                <!-- Tablo Başlıkları / Filtreleme Kutusu -->
-                <div class="w-full md:w-72">
-                    <input type="text" id="tableFilterInput" placeholder="Şube veya tarihe göre filtrele..." class="w-full rounded-xl border border-amber-200 p-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                </div>
-            </div>
+            <h3 class="text-lg font-bold text-amber-900 mb-4">Tüm Şubelerin Birleştirilmiş Geçmiş Raporları</h3>
+            
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-amber-100">
                     <thead>
                         <tr class="bg-amber-50">
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Şube / Konum</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Tarih</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Nakit</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Banka</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Toplam Ciro</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Masraf</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Stok Maliyeti</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Şube / Konum</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Tarih</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Nakit</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Banka</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Toplam Ciro</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Masraf</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Stok Maliyeti</th>
+                        </tr>
+                        <!-- Sütun Altı Filtre Satırı -->
+                        <tr class="bg-amber-100/50">
+                            <td class="p-2"><input type="text" id="filterBranch" placeholder="Şube ara..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white"></td>
+                            <td class="p-2"><input type="text" id="filterDate" placeholder="Tarih ara..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white"></td>
+                            <td class="p-2"><input type="text" id="filterCash" placeholder="Nakit ara..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white"></td>
+                            <td class="p-2"><input type="text" id="filterBank" placeholder="Banka ara..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white"></td>
+                            <td class="p-2"><input type="text" id="filterRevenue" placeholder="Ciro ara..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white"></td>
+                            <td class="p-2"><input type="text" id="filterExpense" placeholder="Masraf ara..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white"></td>
+                            <td class="p-2"><input type="text" id="filterStock" placeholder="Stok ara..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white"></td>
                         </tr>
                     </thead>
                     <tbody id="reportTableBody" class="divide-y divide-gray-100 bg-white text-sm"></tbody>
@@ -99,7 +110,7 @@
                 const { data, error } = await supabaseClient.from('reports').select('*').order('date', { ascending: false });
                 if (error) throw error;
                 allGlobalData = data || [];
-                renderTable(allGlobalData);
+                applyFilters();
             } catch (err) { console.error(err); }
         }
 
@@ -120,13 +131,13 @@
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td class="px-4 py-3 font-semibold text-amber-900">${row.branch || 'Merkez'}</td>
-                        <td class="px-4 py-3 text-gray-600">${row.date}</td>
-                        <td class="px-4 py-3 text-gray-800">${c.toFixed(2)} ₺</td>
-                        <td class="px-4 py-3 text-gray-800">${b.toFixed(2)} ₺</td>
-                        <td class="px-4 py-3 font-semibold text-amber-700">${r.toFixed(2)} ₺</td>
-                        <td class="px-4 py-3 text-red-600">${e.toFixed(2)} ₺</td>
-                        <td class="px-4 py-3 text-amber-900">${s.toFixed(2)} ₺</td>
+                        <td class="px-3 py-3 font-semibold text-amber-900">${row.branch || 'Merkez'}</td>
+                        <td class="px-3 py-3 text-gray-600">${row.date}</td>
+                        <td class="px-3 py-3 text-gray-800">${c.toFixed(2)} ₺</td>
+                        <td class="px-3 py-3 text-gray-800">${b.toFixed(2)} ₺</td>
+                        <td class="px-3 py-3 font-semibold text-amber-700">${r.toFixed(2)} ₺</td>
+                        <td class="px-3 py-3 text-red-600">${e.toFixed(2)} ₺</td>
+                        <td class="px-3 py-3 text-amber-900">${s.toFixed(2)} ₺</td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -140,15 +151,38 @@
             }
         }
 
-        // Filtreleme Dinleyicisi
-        document.getElementById('tableFilterInput').addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase().trim();
+        function applyFilters() {
+            const fBranch = document.getElementById('filterBranch').value.toLowerCase().trim();
+            const fDate = document.getElementById('filterDate').value.toLowerCase().trim();
+            const fCash = document.getElementById('filterCash').value.toLowerCase().trim();
+            const fBank = document.getElementById('filterBank').value.toLowerCase().trim();
+            const fRevenue = document.getElementById('filterRevenue').value.toLowerCase().trim();
+            const fExpense = document.getElementById('filterExpense').value.toLowerCase().trim();
+            const fStock = document.getElementById('filterStock').value.toLowerCase().trim();
+
             const filtered = allGlobalData.filter(row => {
-                const branchName = (row.branch || '').toLowerCase();
-                const dateStr = (row.date || '').toLowerCase();
-                return branchName.includes(query) || dateStr.includes(query);
+                const c = parseFloat(row.cash) || 0;
+                const b = parseFloat(row.bank) || 0;
+                const r = c + b;
+                const e = parseFloat(row.expense) || 0;
+                const s = parseFloat(row.stock_amount) || 0;
+
+                const matchBranch = (row.branch || '').toLowerCase().includes(fBranch);
+                const matchDate = (row.date || '').toLowerCase().includes(fDate);
+                const matchCash = c.toString().includes(fCash);
+                const matchBank = b.toString().includes(fBank);
+                const matchRevenue = r.toString().includes(fRevenue);
+                const matchExpense = e.toString().includes(fExpense);
+                const matchStock = s.toString().includes(fStock);
+
+                return matchBranch && matchDate && matchCash && matchBank && matchRevenue && matchExpense && matchStock;
             });
+
             renderTable(filtered);
+        }
+
+        ['filterBranch', 'filterDate', 'filterCash', 'filterBank', 'filterRevenue', 'filterExpense', 'filterStock'].forEach(id => {
+            document.getElementById(id).addEventListener('input', applyFilters);
         });
 
         fetchAllReports();
