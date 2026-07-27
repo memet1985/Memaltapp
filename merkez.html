@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sweet Waffle - Kurtköy Şube Paneli</title>
+    <title>Sweet Waffle - Merkez Yönetim Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -17,106 +17,56 @@
                     <span class="text-amber-800 font-bold text-xs">Waffle</span>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold text-amber-900 tracking-wide" id="pageHeaderTitle">Kurtköy Şube Paneli</h1>
-                    <p class="text-xs text-gray-500">Sadece bu şubeye ait veri girişi ve geçmiş raporları</p>
+                    <h1 class="text-xl font-bold text-amber-900 tracking-wide">Merkez Yönetim Paneli</h1>
+                    <p class="text-xs text-gray-500">Tüm şubelerin genel toplama ve takip ekranı</p>
                 </div>
             </div>
             
             <!-- Şubelere Geçiş Menüsü -->
             <div class="flex flex-wrap gap-2 justify-center">
-                <a href="merkez.html" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Merkez</a>
-                <a href="kurtkoy.html" class="bg-amber-900 text-white px-3 py-2 rounded-xl text-xs font-semibold shadow">Kurtköy Şube</a>
+                <a href="merkez.html" class="bg-amber-900 text-white px-3 py-2 rounded-xl text-xs font-semibold shadow">Merkez</a>
+                <a href="kurtkoy.html" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Kurtköy Şube</a>
                 <a href="soganlik.html" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Soğanlık Şube</a>
                 <a href="ortadag.html" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Ortadağ Şube</a>
             </div>
         </header>
 
-        <!-- Yeni Veri Giriş Kartı -->
-        <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6 mb-8">
-            <h3 class="text-lg font-bold text-amber-900 mb-4 pb-2 border-b border-amber-100">Şube Veri Girişi</h3>
-            
-            <form id="reportForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tarih:</label>
-                    <input type="date" id="date" class="w-full md:w-1/3 rounded-xl border border-amber-200 shadow-sm p-2.5 text-gray-800 focus:ring-2 focus:ring-amber-500 focus:outline-none" required>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-amber-900 mb-2">Ciro Bilgileri</label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Nakit Ciro (TL):</label>
-                            <input type="number" step="0.01" id="cash" value="0" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Banka / Kart (TL):</label>
-                            <input type="number" step="0.01" id="bank" value="0" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-amber-900 mb-2">Masraf Ekle (Opsiyonel)</label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Masraf Tutarı (TL):</label>
-                            <input type="number" step="0.01" id="expense" value="0" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Masraf Açıklaması:</label>
-                            <input type="text" id="expenseDesc" placeholder="Örn: Market, kurye ödemesi vs." class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-amber-900 mb-2">Stok Girişi (Opsiyonel)</label>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Ürün / Malzeme Seçin:</label>
-                            <select id="stockItemSelect" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
-                                <option value="">-- Ürün Seçin --</option>
-                                <option value="Waffle Hamuru">Waffle Hamuru</option>
-                                <option value="Çikolata Sosu">Çikolata Sosu</option>
-                                <option value="Muz / Çilek">Muz / Çilek</option>
-                                <option value="Kutu / Ambalaj">Kutu / Ambalaj</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Miktar:</label>
-                            <input type="number" step="0.01" id="stockQty" value="0" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Birim:</label>
-                            <select id="stockUnit" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
-                                <option value="KG">KG</option>
-                                <option value="Adet">Adet</option>
-                                <option value="Paket">Paket</option>
-                                <option value="Lt">Lt</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Stok Tutarı (TL):</label>
-                            <input type="number" step="0.01" id="stockAmount" value="0" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-2">
-                    <button type="submit" class="w-full bg-amber-900 hover:bg-amber-800 text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition text-center">
-                        Bu Şube İçin Kaydet
-                    </button>
-                </div>
-            </form>
+        <!-- Özet Kartları -->
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
+            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm text-center">
+                <p class="text-xs font-semibold text-gray-500 uppercase">Toplam Kayıt</p>
+                <p id="statTotalCount" class="text-lg font-bold text-gray-800 mt-1">0</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm text-center">
+                <p class="text-xs font-semibold text-gray-500 uppercase">Toplam Nakit</p>
+                <p id="statTotalCash" class="text-lg font-bold text-green-600 mt-1">0.00 ₺</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm text-center">
+                <p class="text-xs font-semibold text-gray-500 uppercase">Toplam Banka</p>
+                <p id="statTotalBank" class="text-lg font-bold text-blue-600 mt-1">0.00 ₺</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm text-center">
+                <p class="text-xs font-semibold text-gray-500 uppercase">Toplam Ciro</p>
+                <p id="statTotalRevenue" class="text-lg font-bold text-amber-700 mt-1">0.00 ₺</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm text-center">
+                <p class="text-xs font-semibold text-gray-500 uppercase">Toplam Masraf</p>
+                <p id="statTotalExpense" class="text-lg font-bold text-red-600 mt-1">0.00 ₺</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm text-center">
+                <p class="text-xs font-semibold text-gray-500 uppercase">Stok Maliyeti</p>
+                <p id="statTotalStock" class="text-lg font-bold text-amber-900 mt-1">0.00 ₺</p>
+            </div>
         </div>
 
-        <!-- Şubeye Ait Geçmiş Kayıtlar -->
+        <!-- Tüm Şubelerin Geçmiş Kayıtları Tablosu -->
         <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6">
-            <h3 class="text-lg font-bold text-amber-900 mb-4">Şubeye Ait Geçmiş Kayıtlar</h3>
+            <h3 class="text-lg font-bold text-amber-900 mb-4">Tüm Şubelerin Birleştirilmiş Geçmiş Raporları</h3>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-amber-100">
                     <thead>
                         <tr class="bg-amber-50">
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Şube / Konum</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Tarih</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Nakit</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Banka</th>
@@ -135,21 +85,11 @@
     </div>
 
     <script>
-        // BU SAYFANIN ŞUBE ADINI BURADAN DEĞİŞTİREBİLİRSİN (Örn: 'Kurtköy', 'Soğanlık', 'Ortadağ')
-        const CURRENT_BRANCH = 'Kurtköy'; 
-
         const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        function getLocalTodayString() {
-            const tzOffset = new Date().getTimezoneOffset() * 60000;
-            return new Date(Date.now() - tzOffset).toISOString().split('T')[0];
-        }
-
-        document.getElementById('date').value = getLocalTodayString();
-
-        async function fetchBranchReports() {
+        async function fetchAllReports() {
             try {
                 const { data, error } = await supabaseClient
                     .from('reports')
@@ -158,14 +98,15 @@
 
                 if (error) throw error;
 
-                const filteredData = (data || []).filter(row => 
-                    row.branch && row.branch.trim().toLowerCase() === CURRENT_BRANCH.trim().toLowerCase()
-                );
-
                 const tbody = document.getElementById('reportTableBody');
                 tbody.innerHTML = '';
 
+                let totalC = 0, totalB = 0, totalR = 0, totalE = 0, totalS = 0;
+                const filteredData = data || [];
+
                 if (filteredData.length > 0) {
+                    document.getElementById('statTotalCount').innerText = filteredData.length;
+
                     filteredData.forEach(row => {
                         const c = parseFloat(row.cash) || 0;
                         const b = parseFloat(row.bank) || 0;
@@ -173,8 +114,15 @@
                         const e = parseFloat(row.expense) || 0;
                         const s = parseFloat(row.stock_amount) || 0;
 
+                        totalC += c;
+                        totalB += b;
+                        totalR += r;
+                        totalE += e;
+                        totalS += s;
+
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
+                            <td class="px-4 py-3 font-semibold text-amber-900">${row.branch || 'Merkez'}</td>
                             <td class="px-4 py-3 text-gray-600">${row.date}</td>
                             <td class="px-4 py-3 text-gray-800">${c.toFixed(2)} ₺</td>
                             <td class="px-4 py-3 text-gray-800">${b.toFixed(2)} ₺</td>
@@ -184,48 +132,21 @@
                         `;
                         tbody.appendChild(tr);
                     });
+
+                    document.getElementById('statTotalCash').innerText = totalC.toFixed(2) + ' ₺';
+                    document.getElementById('statTotalBank').innerText = totalB.toFixed(2) + ' ₺';
+                    document.getElementById('statTotalRevenue').innerText = totalR.toFixed(2) + ' ₺';
+                    document.getElementById('statTotalExpense').innerText = totalE.toFixed(2) + ' ₺';
+                    document.getElementById('statTotalStock').innerText = totalS.toFixed(2) + ' ₺';
                 } else {
-                    tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-4 text-center text-gray-400">Bu şube için henüz kayıt bulunmuyor.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-4 text-center text-gray-400">Henüz kayıt bulunmuyor.</td></tr>`;
                 }
             } catch (err) {
                 console.error('Veriler alınamadı:', err);
             }
         }
 
-        document.getElementById('reportForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const payload = {
-                branch: CURRENT_BRANCH,
-                date: document.getElementById('date').value,
-                cash: parseFloat(document.getElementById('cash').value) || 0,
-                bank: parseFloat(document.getElementById('bank').value) || 0,
-                expense: parseFloat(document.getElementById('expense').value) || 0,
-                expense_desc: document.getElementById('expenseDesc').value,
-                stock_item: document.getElementById('stockItemSelect').value,
-                stock_qty: parseFloat(document.getElementById('stockQty').value) || 0,
-                stock_unit: document.getElementById('stockUnit').value,
-                stock_amount: parseFloat(document.getElementById('stockAmount').value) || 0
-            };
-
-            try {
-                const { error } = await supabaseClient
-                    .from('reports')
-                    .insert([payload]);
-
-                if (error) throw error;
-
-                alert(`Veri başarıyla ${CURRENT_BRANCH} şubesi adına kaydedildi!`);
-                document.getElementById('reportForm').reset();
-                document.getElementById('date').value = getLocalTodayString();
-                fetchBranchReports();
-            } catch (err) {
-                console.error('Kayıt hatası:', err);
-                alert('Kayıt yapılamadı: ' + err.message);
-            }
-        });
-
-        fetchBranchReports();
+        fetchAllReports();
     </script>
 </body>
 </html>
