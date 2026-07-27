@@ -72,9 +72,9 @@
 
         function cleanVal(val) {
             if (val === null || val === undefined || val === '') return 0;
-            // Eğer veritabanından .00 şeklinde geliyorsa temizle
-            let num = Number(val);
+            let num = parseFloat(val);
             if (isNaN(num)) return 0;
+            // Eğer küsurat .00 ise tamamen tam sayı yap
             return num % 1 === 0 ? Math.trunc(num) : num;
         }
 
@@ -137,12 +137,24 @@
         async function deleteReport(id) {
             if (confirm('Bu kaydı silmek istediğinize emin misiniz?')) {
                 try {
-                    const { error } = await supabaseClient.from('reports').delete().eq('id', id);
-                    if (error) throw error;
+                    // Doğrudan REST API DELETE isteği ile engelleri aşarak silme
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/reports?id=eq.${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Sunucu silme işlemini reddetti.');
+                    }
+
                     alert('Kayıt başarıyla silindi.');
                     fetchAllReports();
                 } catch (err) {
-                    alert('Silme başarısız (Ağ veya Bağlantı Hatası): ' + err.message);
+                    alert('Silme başarısız: ' + err.message);
                 }
             }
         }
