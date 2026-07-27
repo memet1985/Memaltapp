@@ -174,7 +174,6 @@
     </div>
 
     <script>
-        // Supabase Bağlantı Bilgileri (Yeni Publishable Key eklendi)
         const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         
@@ -210,25 +209,29 @@
         async function fetchReports() {
             const selectedBranch = branchSelect.value;
             try {
-                let query = supabaseClient.from('reports').select('*').order('date', { ascending: false });
+                const { data, error } = await supabaseClient
+                    .from('reports')
+                    .select('*')
+                    .order('date', { ascending: false });
 
-                // Şube seçiliyse sadece o şubeyi getir, Merkez seçiliyse tüm kayıtları getir
-                if (selectedBranch !== 'Merkez') {
-                    query = query.eq('branch', selectedBranch);
-                }
-
-                const { data, error } = await query;
                 if (error) throw error;
+
+                let filteredData = data || [];
+                if (selectedBranch !== 'Merkez') {
+                    filteredData = data.filter(row => 
+                        row.branch && row.branch.trim().toLowerCase() === selectedBranch.trim().toLowerCase()
+                    );
+                }
 
                 const tbody = document.getElementById('reportTableBody');
                 tbody.innerHTML = '';
 
                 let totalC = 0, totalB = 0, totalR = 0, totalE = 0, totalS = 0;
 
-                if (data && data.length > 0) {
-                    document.getElementById('statTotalCount').innerText = data.length;
+                if (filteredData.length > 0) {
+                    document.getElementById('statTotalCount').innerText = filteredData.length;
 
-                    data.forEach(row => {
+                    filteredData.forEach(row => {
                         const c = parseFloat(row.cash) || 0;
                         const b = parseFloat(row.bank) || 0;
                         const r = c + b;
