@@ -11,14 +11,15 @@
     <div class="container mx-auto px-4 py-6 max-w-6xl">
         
         <!-- Üst Header & Şube Geçiş Butonları -->
-        <header class="bg-white border border-amber-200 rounded-2xl shadow-sm p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center border border-amber-300 overflow-hidden shadow-inner">
-                    <span class="text-amber-800 font-bold text-xs">Waffle</span>
+        <header class="bg-white border border-amber-300 rounded-2xl shadow-md p-5 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <!-- Farklı ve Daha Büyük Merkez İkonu -->
+                <div class="w-16 h-16 bg-gradient-to-tr from-amber-700 to-amber-500 rounded-2xl flex items-center justify-center border-2 border-amber-900 shadow-lg transform -rotate-2">
+                    <span class="text-white font-extrabold text-xs tracking-wider uppercase">MERKEZ</span>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold text-amber-900 tracking-wide">Merkez Yönetim Paneli</h1>
-                    <p class="text-xs text-gray-500">Tüm şubelerin genel toplama ve takip ekranı</p>
+                    <h1 class="text-2xl font-black text-amber-950 tracking-wide">Merkez Yönetim Paneli</h1>
+                    <p class="text-xs text-gray-500">Tüm şubelerin genel toplama ve filtreleme ekranı</p>
                 </div>
             </div>
             
@@ -59,9 +60,15 @@
             </div>
         </div>
 
-        <!-- Tablo -->
+        <!-- Tablo ve Filtre Alanı -->
         <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6">
-            <h3 class="text-lg font-bold text-amber-900 mb-4">Tüm Şubelerin Birleştirilmiş Geçmiş Raporları</h3>
+            <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-3">
+                <h3 class="text-lg font-bold text-amber-900">Tüm Şubelerin Birleştirilmiş Geçmiş Raporları</h3>
+                <!-- Tablo Başlıkları / Filtreleme Kutusu -->
+                <div class="w-full md:w-72">
+                    <input type="text" id="tableFilterInput" placeholder="Şube veya tarihe göre filtrele..." class="w-full rounded-xl border border-amber-200 p-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                </div>
+            </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-amber-100">
                     <thead>
@@ -85,48 +92,65 @@
         const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let allGlobalData = [];
 
         async function fetchAllReports() {
             try {
                 const { data, error } = await supabaseClient.from('reports').select('*').order('date', { ascending: false });
                 if (error) throw error;
-                const tbody = document.getElementById('reportTableBody');
-                tbody.innerHTML = '';
-                let totalC = 0, totalB = 0, totalR = 0, totalE = 0, totalS = 0;
-                const filteredData = data || [];
-
-                if (filteredData.length > 0) {
-                    document.getElementById('statTotalCount').innerText = filteredData.length;
-                    filteredData.forEach(row => {
-                        const c = parseFloat(row.cash) || 0;
-                        const b = parseFloat(row.bank) || 0;
-                        const r = c + b;
-                        const e = parseFloat(row.expense) || 0;
-                        const s = parseFloat(row.stock_amount) || 0;
-                        totalC += c; totalB += b; totalR += r; totalE += e; totalS += s;
-
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td class="px-4 py-3 font-semibold text-amber-900">${row.branch || 'Merkez'}</td>
-                            <td class="px-4 py-3 text-gray-600">${row.date}</td>
-                            <td class="px-4 py-3 text-gray-800">${c.toFixed(2)} ₺</td>
-                            <td class="px-4 py-3 text-gray-800">${b.toFixed(2)} ₺</td>
-                            <td class="px-4 py-3 font-semibold text-amber-700">${r.toFixed(2)} ₺</td>
-                            <td class="px-4 py-3 text-red-600">${e.toFixed(2)} ₺</td>
-                            <td class="px-4 py-3 text-amber-900">${s.toFixed(2)} ₺</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                    document.getElementById('statTotalCash').innerText = totalC.toFixed(2) + ' ₺';
-                    document.getElementById('statTotalBank').innerText = totalB.toFixed(2) + ' ₺';
-                    document.getElementById('statTotalRevenue').innerText = totalR.toFixed(2) + ' ₺';
-                    document.getElementById('statTotalExpense').innerText = totalE.toFixed(2) + ' ₺';
-                    document.getElementById('statTotalStock').innerText = totalS.toFixed(2) + ' ₺';
-                } else {
-                    tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-4 text-center text-gray-400">Henüz kayıt bulunmuyor.</td></tr>`;
-                }
+                allGlobalData = data || [];
+                renderTable(allGlobalData);
             } catch (err) { console.error(err); }
         }
+
+        function renderTable(dataArray) {
+            const tbody = document.getElementById('reportTableBody');
+            tbody.innerHTML = '';
+            let totalC = 0, totalB = 0, totalR = 0, totalE = 0, totalS = 0;
+
+            if (dataArray.length > 0) {
+                document.getElementById('statTotalCount').innerText = dataArray.length;
+                dataArray.forEach(row => {
+                    const c = parseFloat(row.cash) || 0;
+                    const b = parseFloat(row.bank) || 0;
+                    const r = c + b;
+                    const e = parseFloat(row.expense) || 0;
+                    const s = parseFloat(row.stock_amount) || 0;
+                    totalC += c; totalB += b; totalR += r; totalE += e; totalS += s;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="px-4 py-3 font-semibold text-amber-900">${row.branch || 'Merkez'}</td>
+                        <td class="px-4 py-3 text-gray-600">${row.date}</td>
+                        <td class="px-4 py-3 text-gray-800">${c.toFixed(2)} ₺</td>
+                        <td class="px-4 py-3 text-gray-800">${b.toFixed(2)} ₺</td>
+                        <td class="px-4 py-3 font-semibold text-amber-700">${r.toFixed(2)} ₺</td>
+                        <td class="px-4 py-3 text-red-600">${e.toFixed(2)} ₺</td>
+                        <td class="px-4 py-3 text-amber-900">${s.toFixed(2)} ₺</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                document.getElementById('statTotalCash').innerText = totalC.toFixed(2) + ' ₺';
+                document.getElementById('statTotalBank').innerText = totalB.toFixed(2) + ' ₺';
+                document.getElementById('statTotalRevenue').innerText = totalR.toFixed(2) + ' ₺';
+                document.getElementById('statTotalExpense').innerText = totalE.toFixed(2) + ' ₺';
+                document.getElementById('statTotalStock').innerText = totalS.toFixed(2) + ' ₺';
+            } else {
+                tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-4 text-center text-gray-400">Aranan kriterlere uygun kayıt bulunamadı.</td></tr>`;
+            }
+        }
+
+        // Filtreleme Dinleyicisi
+        document.getElementById('tableFilterInput').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = allGlobalData.filter(row => {
+                const branchName = (row.branch || '').toLowerCase();
+                const dateStr = (row.date || '').toLowerCase();
+                return branchName.includes(query) || dateStr.includes(query);
+            });
+            renderTable(filtered);
+        });
+
         fetchAllReports();
     </script>
 </body>
