@@ -4,71 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sweet Waffle - Merkez Yönetim Paneli</title>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#78350f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-50 min-h-screen font-sans">
-    <div class="container mx-auto px-4 py-6 max-w-7xl">
+<body class="bg-gray-50 min-h-screen font-sans pb-12">
+    <div class="container mx-auto px-3 sm:px-4 py-6 max-w-7xl">
         
         <!-- Üst Header & Şube Geçiş Butonları -->
-        <header class="bg-white border border-amber-300 rounded-2xl shadow-md p-5 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-4">
-                <!-- Logo -->
-                <div class="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center border-2 border-amber-800 shadow-inner overflow-hidden p-1">
-                    <img id="companyLogo" src="logo.webp" alt="Sweet Waffle Logo" class="w-full h-full object-contain" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
-                    <div id="logoFallback" class="w-full h-full bg-amber-900 text-white font-bold text-[10px] items-center justify-center text-center hidden">LOGOMUZ</div>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-black text-amber-950 tracking-wide">Merkez Yönetim Paneli</h1>
-                    <p class="text-xs text-gray-500">Tüm şubelerin genel toplama ve yönetimi</p>
+        <header class="bg-white border border-amber-300 rounded-2xl shadow-md p-4 sm:p-5 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex items-center gap-3">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-amber-50 rounded-2xl flex items-center justify-center border-2 border-amber-800 shadow-inner overflow-hidden p-1">
+                        <img id="companyLogo" src="logo.webp" alt="Sweet Waffle Logo" class="w-full h-full object-contain" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
+                        <div id="logoFallback" class="w-full h-full bg-amber-900 text-white font-bold text-[10px] items-center justify-center text-center hidden">LOGO</div>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-black text-amber-950 tracking-wide">Merkez Paneli</h1>
+                        <p class="text-xs text-gray-500">Tüm şube raporları ve yönetimi</p>
+                    </div>
                 </div>
             </div>
             
             <!-- Şubelere ve Merkeze Geçiş Menüsü -->
-            <div class="flex flex-wrap items-center gap-3 justify-center">
-                <a href="index.html" class="bg-gradient-to-r from-amber-900 to-amber-700 text-white px-5 py-3 rounded-2xl text-sm font-extrabold shadow-lg border-2 border-amber-400 tracking-wider flex items-center gap-2 transform hover:scale-105 transition">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-300 animate-pulse"></span> MERKEZ
+            <div class="flex flex-wrap items-center gap-2 justify-center w-full md:w-auto">
+                <a href="index.html" class="bg-gradient-to-r from-amber-900 to-amber-700 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold shadow-md border border-amber-400 tracking-wider flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-amber-300 animate-pulse"></span> MERKEZ
                 </a>
-                <div class="h-8 w-[1px] bg-amber-200 hidden md:block"></div>
-                <div class="flex flex-wrap gap-2">
-                    <a href="sube.html?ad=Kurtkoy" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Kurtköy Şube</a>
-                    <a href="sube.html?ad=Soganlik" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Soğanlık Şube</a>
-                    <a href="sube.html?ad=Ortadag" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Ortadağ Şube</a>
+                <div class="h-6 w-[1px] bg-amber-200 hidden md:block"></div>
+                <div class="flex flex-wrap gap-1.5 justify-center">
+                    <a href="sube.html?ad=Kurtkoy" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Kurtköy</a>
+                    <a href="sube.html?ad=Soganlik" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Soğanlık</a>
+                    <a href="sube.html?ad=Ortadag" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Ortadağ</a>
                 </div>
             </div>
         </header>
 
         <!-- Özet Kartları -->
-        <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm text-center">
-                <p class="text-xs font-semibold text-gray-500 uppercase">Toplam Kayıt</p>
-                <p id="statTotalCount" class="text-lg font-bold text-gray-800 mt-1">0</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-6">
+            <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm text-center">
+                <p class="text-[11px] font-semibold text-gray-500 uppercase">Toplam Kayıt</p>
+                <p id="statTotalCount" class="text-base sm:text-lg font-bold text-gray-800 mt-1">0</p>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm text-center">
-                <p class="text-xs font-semibold text-gray-500 uppercase">Toplam Nakit</p>
-                <p id="statTotalCash" class="text-lg font-bold text-green-600 mt-1">0.00 ₺</p>
+            <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm text-center">
+                <p class="text-[11px] font-semibold text-gray-500 uppercase">Toplam Nakit</p>
+                <p id="statTotalCash" class="text-base sm:text-lg font-bold text-green-600 mt-1">0.00 ₺</p>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm text-center">
-                <p class="text-xs font-semibold text-gray-500 uppercase">Toplam Banka</p>
-                <p id="statTotalBank" class="text-lg font-bold text-blue-600 mt-1">0.00 ₺</p>
+            <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm text-center">
+                <p class="text-[11px] font-semibold text-gray-500 uppercase">Toplam Banka</p>
+                <p id="statTotalBank" class="text-base sm:text-lg font-bold text-blue-600 mt-1">0.00 ₺</p>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm text-center">
-                <p class="text-xs font-semibold text-gray-500 uppercase">Toplam Ciro</p>
-                <p id="statTotalRevenue" class="text-lg font-bold text-amber-700 mt-1">0.00 ₺</p>
+            <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm text-center">
+                <p class="text-[11px] font-semibold text-gray-500 uppercase">Toplam Ciro</p>
+                <p id="statTotalRevenue" class="text-base sm:text-lg font-bold text-amber-700 mt-1">0.00 ₺</p>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm text-center">
-                <p class="text-xs font-semibold text-gray-500 uppercase">Toplam Masraf</p>
-                <p id="statTotalExpense" class="text-lg font-bold text-red-600 mt-1">0.00 ₺</p>
+            <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm text-center">
+                <p class="text-[11px] font-semibold text-gray-500 uppercase">Toplam Masraf</p>
+                <p id="statTotalExpense" class="text-base sm:text-lg font-bold text-red-600 mt-1">0.00 ₺</p>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm text-center">
-                <p class="text-xs font-semibold text-gray-500 uppercase">Stok Tutarı</p>
-                <p id="statTotalStock" class="text-lg font-bold text-amber-900 mt-1">0.00 ₺</p>
+            <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm text-center">
+                <p class="text-[11px] font-semibold text-gray-500 uppercase">Stok Tutarı</p>
+                <p id="statTotalStock" class="text-base sm:text-lg font-bold text-amber-900 mt-1">0.00 ₺</p>
             </div>
         </div>
 
         <!-- Tablo ve Filtreler -->
-        <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6">
-            <h3 class="text-lg font-bold text-amber-900 mb-4">Tüm Şubelerin Raporları ve Yönetimi</h3>
+        <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-4 sm:p-6">
+            <h3 class="text-base sm:text-lg font-bold text-amber-900 mb-4">Şube Raporları ve Yönetimi</h3>
             
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-amber-100">
@@ -78,21 +85,21 @@
                             <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Tarih</th>
                             <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Nakit</th>
                             <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Banka</th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Toplam Ciro</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Ciro</th>
                             <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Masraf</th>
                             <th class="px-3 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Stok Tutarı</th>
                             <th class="px-3 py-3 text-center text-xs font-semibold text-amber-900 uppercase">İşlemler</th>
                         </tr>
                         <!-- Filtre Satırı -->
-                        <tr class="bg-amber-100/50">
-                            <td class="p-2"><input type="text" id="filterBranch" placeholder="Şube..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-2"><input type="text" id="filterDate" placeholder="Tarih..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-2"><input type="text" id="filterCash" placeholder="Nakit..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-2"><input type="text" id="filterBank" placeholder="Banka..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-2"><input type="text" id="filterRevenue" placeholder="Ciro..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-2"><input type="text" id="filterExpense" placeholder="Masraf..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-2"><input type="text" id="filterStock" placeholder="Stok..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
-                            <td class="p-2 text-center text-xs text-gray-400">-</td>
+                        <tr class="bg-amber-100/40">
+                            <td class="p-1.5"><input type="text" id="filterBranch" placeholder="Şube..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
+                            <td class="p-1.5"><input type="text" id="filterDate" placeholder="Tarih..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
+                            <td class="p-1.5"><input type="text" id="filterCash" placeholder="Nakit..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
+                            <td class="p-1.5"><input type="text" id="filterBank" placeholder="Banka..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
+                            <td class="p-1.5"><input type="text" id="filterRevenue" placeholder="Ciro..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
+                            <td class="p-1.5"><input type="text" id="filterExpense" placeholder="Masraf..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
+                            <td class="p-1.5"><input type="text" id="filterStock" placeholder="Stok..." class="w-full p-1.5 text-xs rounded-lg border border-amber-200 bg-white"></td>
+                            <td class="p-1.5 text-center text-xs text-gray-400">-</td>
                         </tr>
                     </thead>
                     <tbody id="reportTableBody" class="divide-y divide-gray-100 bg-white text-sm"></tbody>
@@ -109,31 +116,31 @@
                 <input type="hidden" id="editId">
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Tarih</label>
-                    <input type="date" id="editDate" class="w-full p-2 border rounded-xl border-amber-200" required>
+                    <input type="date" id="editDate" class="w-full p-2.5 border rounded-xl border-amber-200 text-sm" required>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Nakit (TL)</label>
-                        <input type="number" step="0.01" id="editCash" class="w-full p-2 border rounded-xl border-amber-200">
+                        <input type="number" step="0.01" id="editCash" class="w-full p-2.5 border rounded-xl border-amber-200 text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Banka (TL)</label>
-                        <input type="number" step="0.01" id="editBank" class="w-full p-2 border rounded-xl border-amber-200">
+                        <input type="number" step="0.01" id="editBank" class="w-full p-2.5 border rounded-xl border-amber-200 text-sm">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Masraf (TL)</label>
-                        <input type="number" step="0.01" id="editExpense" class="w-full p-2 border rounded-xl border-amber-200">
+                        <input type="number" step="0.01" id="editExpense" class="w-full p-2.5 border rounded-xl border-amber-200 text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Stok Tutarı (TL)</label>
-                        <input type="number" step="0.01" id="editStockAmount" class="w-full p-2 border rounded-xl border-amber-200">
+                        <input type="number" step="0.01" id="editStockAmount" class="w-full p-2.5 border rounded-xl border-amber-200 text-sm">
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-3">
-                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl font-semibold text-sm">İptal</button>
-                    <button type="submit" class="px-4 py-2 bg-amber-900 text-white rounded-xl font-semibold text-sm">Kaydet</button>
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2.5 bg-gray-200 text-gray-700 rounded-xl font-semibold text-sm">İptal</button>
+                    <button type="submit" class="px-5 py-2.5 bg-amber-900 hover:bg-amber-800 text-white rounded-xl font-semibold text-sm shadow">Güncelle</button>
                 </div>
             </form>
         </div>
@@ -170,17 +177,26 @@
                     totalC += c; totalB += b; totalR += r; totalE += e; totalS += s;
 
                     const tr = document.createElement('tr');
+                    tr.className = "hover:bg-amber-50/40 transition";
                     tr.innerHTML = `
-                        <td class="px-3 py-3 font-semibold text-amber-900">${row.branch || 'Merkez'}</td>
-                        <td class="px-3 py-3 text-gray-600">${row.date}</td>
-                        <td class="px-3 py-3 text-gray-800">${c.toFixed(2)} ₺</td>
-                        <td class="px-3 py-3 text-gray-800">${b.toFixed(2)} ₺</td>
-                        <td class="px-3 py-3 font-semibold text-amber-700">${r.toFixed(2)} ₺</td>
-                        <td class="px-3 py-3 text-red-600">${e.toFixed(2)} ₺</td>
-                        <td class="px-3 py-3 text-amber-900">${s.toFixed(2)} ₺</td>
-                        <td class="px-3 py-3 text-center space-x-2">
-                            <button onclick="openEditModal('${row.id}')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-2.5 py-1 rounded-lg text-xs font-bold transition">Düzenle</button>
-                            <button onclick="deleteRecord('${row.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1 rounded-lg text-xs font-bold transition">Sil</button>
+                        <td class="px-3 py-3.5 font-bold text-amber-950">${row.branch || 'Merkez'}</td>
+                        <td class="px-3 py-3.5 text-gray-600">${row.date}</td>
+                        <td class="px-3 py-3.5 text-gray-800">${c.toFixed(2)} ₺</td>
+                        <td class="px-3 py-3.5 text-gray-800">${b.toFixed(2)} ₺</td>
+                        <td class="px-3 py-3.5 font-bold text-amber-700">${r.toFixed(2)} ₺</td>
+                        <td class="px-3 py-3.5 text-red-600">${e.toFixed(2)} ₺</td>
+                        <td class="px-3 py-3.5 text-amber-900">${s.toFixed(2)} ₺</td>
+                        <td class="px-3 py-3.5 text-center">
+                            <div class="inline-flex items-center gap-1.5">
+                                <button onclick="openEditModal('${row.id}')" title="Düzenle" class="bg-amber-100 hover:bg-amber-200 text-amber-950 p-2 rounded-xl text-xs font-extrabold shadow-sm flex items-center gap-1 transition transform active:scale-95">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    <span class="hidden sm:inline">Düzenle</span>
+                                </button>
+                                <button onclick="deleteRecord('${row.id}')" title="Sil" class="bg-red-50 hover:bg-red-100 text-red-700 p-2 rounded-xl text-xs font-extrabold shadow-sm flex items-center gap-1 transition transform active:scale-95">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    <span class="hidden sm:inline">Sil</span>
+                                </button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -191,7 +207,7 @@
                 document.getElementById('statTotalExpense').innerText = totalE.toFixed(2) + ' ₺';
                 document.getElementById('statTotalStock').innerText = totalS.toFixed(2) + ' ₺';
             } else {
-                tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-4 text-center text-gray-400">Kayıt bulunamadı.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-6 text-center text-gray-400">Kayıt bulunamadı.</td></tr>`;
             }
         }
 
@@ -232,7 +248,7 @@
         });
 
         async function deleteRecord(id) {
-            if (!confirm('Bu kaydı silmek istediğinize emin misiniz?')) return;
+            if (!confirm('Bu kaydı tamamen silmek istediğinize emin misiniz?')) return;
             try {
                 const { error } = await supabaseClient.from('reports').delete().eq('id', id);
                 if (error) throw error;
