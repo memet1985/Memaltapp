@@ -46,11 +46,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-medium text-gray-600 mb-1">Nakit Ciro (TL):</label>
-                            <input type="number" step="0.01" id="cash" value="0" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <input type="number" step="0.01" id="cash" value="0" class="clear-zero w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 mb-1">Banka / Kart (TL):</label>
-                            <input type="number" step="0.01" id="bank" value="0" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <input type="number" step="0.01" id="bank" value="0" class="clear-zero w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
                         </div>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-medium text-gray-600 mb-1">Masraf Tutarı (TL):</label>
-                            <input type="number" step="0.01" id="expense" value="0" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <input type="number" step="0.01" id="expense" value="0" class="clear-zero w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 mb-1">Masraf Açıklaması:</label>
@@ -84,7 +84,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 mb-1">Miktar:</label>
-                            <input type="number" step="0.01" id="stockQty" value="0" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <input type="number" step="0.01" id="stockQty" value="0" class="clear-zero w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 mb-1">Birim:</label>
@@ -97,7 +97,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 mb-1">Stok Tutarı (TL):</label>
-                            <input type="number" step="0.01" id="stockAmount" value="0" class="w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <input type="number" step="0.01" id="stockAmount" value="0" class="clear-zero w-full rounded-xl border border-amber-200 shadow-sm p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
                         </div>
                     </div>
                 </div>
@@ -132,13 +132,26 @@
     </div>
 
     <script>
+        // Sayı alanlarına tıklandığında veya odaklanıldığında 0'ı otomatik silme mantığı
+        document.querySelectorAll('.clear-zero').forEach(input => {
+            input.addEventListener('focus', function() {
+                if (this.value === '0' || this.value === '0.00') {
+                    this.value = '';
+                }
+            });
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    this.value = '0';
+                }
+            });
+        });
+
         const urlParams = new URLSearchParams(window.location.search);
         const currentBranch = urlParams.get('ad') || 'Kurtkoy';
 
         document.getElementById('pageTitle').innerText = `Sweet Waffle - ${currentBranch} Şube`;
         document.getElementById('headerTitle').innerText = `${currentBranch} Şubesi Yönetim Paneli`;
 
-        // Menüde aktif olan şube butonunu renklendir
         document.querySelectorAll('.branch-btn').forEach(btn => {
             if (btn.getAttribute('data-branch') === currentBranch) {
                 btn.className = "branch-btn bg-amber-900 text-white px-3 py-2 rounded-xl text-xs font-semibold shadow";
@@ -211,6 +224,8 @@
                 alert(`Veri başarıyla ${currentBranch} şubesi adına kaydedildi!`);
                 document.getElementById('reportForm').reset();
                 document.getElementById('date').value = getLocalTodayString();
+                // Sıfırlama sonrası input değerlerini varsayılan 0'a çek
+                document.querySelectorAll('.clear-zero').forEach(i => i.value = '0');
                 fetchBranchReports();
             } catch (err) { alert('Kayıt yapılamadı: ' + err.message); }
         });
