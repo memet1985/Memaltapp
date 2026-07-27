@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sweet Waffle - Yönetim Paneli</title>
+    <title>Sweet Waffle - Yönetim ve Şube Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -16,9 +16,10 @@
                 <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center border border-amber-300 overflow-hidden shadow-inner">
                     <span class="text-amber-800 font-bold text-xs">Waffle</span>
                 </div>
-                <h1 class="text-2xl font-bold text-amber-900 tracking-wide">Sweet Waffle Yönetim Paneli</h1>
+                <h1 class="text-2xl font-bold text-amber-900 tracking-wide" id="mainHeaderTitle">Sweet Waffle Yönetim Paneli</h1>
             </div>
-            <div>
+            <!-- Sadece Merkezde Görünecek Ana Menüye Dön Butonu -->
+            <div id="centerMenuButtonContainer">
                 <a href="index.html" class="inline-flex items-center bg-amber-900 hover:bg-amber-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition">
                     ← Ana Menüye Dön
                 </a>
@@ -28,16 +29,15 @@
         <!-- Şube / Merkez Seçim Barı -->
         <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-2 w-full md:w-auto">
-                <label for="branchSelect" class="text-sm font-bold text-amber-900 whitespace-nowrap">Aktif Şube / Merkez:</label>
+                <label for="branchSelect" class="text-sm font-bold text-amber-900 whitespace-nowrap">Çalışma Konumu:</label>
                 <select id="branchSelect" class="w-full md:w-64 rounded-xl border border-amber-300 bg-amber-50 p-2.5 text-amber-900 font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                    <option value="Merkez">Merkez</option>
+                    <option value="Merkez">Merkez (Tüm Şubeleri Topla)</option>
                     <option value="Kurtköy">Kurtköy Şubesi</option>
                     <option value="Soğanlık">Soğanlık Şubesi</option>
-                    <option value="3_Subeli_Genel">Tüm Şubeler (Genel Özet)</option>
                 </select>
             </div>
             <div id="branchTitle" class="text-lg font-bold text-amber-800">
-                Merkez Yönetim Ekranı
+                Merkez Toplama ve Yönetim Ekranı
             </div>
         </div>
 
@@ -70,8 +70,8 @@
         </div>
 
         <!-- Yeni Veri Giriş Kartı -->
-        <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6 mb-8">
-            <h3 class="text-lg font-bold text-amber-900 mb-4 pb-2 border-b border-amber-100">Seçilen Konum İçin Yeni Veri Girişi</h3>
+        <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6 mb-8" id="dataEntryCard">
+            <h3 class="text-lg font-bold text-amber-900 mb-4 pb-2 border-b border-amber-100" id="formTitle">Şube Veri Girişi</h3>
             
             <form id="reportForm" class="space-y-4">
                 <div>
@@ -142,7 +142,7 @@
 
                 <div class="pt-2">
                     <button type="submit" class="w-full bg-amber-900 hover:bg-amber-800 text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition text-center">
-                        Seçilen Konuma Kaydet
+                        Bu Şube İçin Kaydet
                     </button>
                 </div>
             </form>
@@ -150,12 +150,12 @@
 
         <!-- Kayıtlar Tablosu -->
         <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6">
-            <h3 class="text-lg font-bold text-amber-900 mb-4">Geçmiş Kayıtlar</h3>
+            <h3 class="text-lg font-bold text-amber-900 mb-4" id="tableTitle">Geçmiş Kayıtlar</h3>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-amber-100">
                     <thead>
                         <tr class="bg-amber-50">
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Konum / Şube</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Şube / Konum</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Tarih</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Nakit</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-amber-900 uppercase">Banka</th>
@@ -174,9 +174,9 @@
     </div>
 
     <script>
-        // Supabase Bağlantı Bilgileri (Doğrudan Vercel ortamındaki anahtarınla çalışır)
+        // Supabase Bağlantı Bilgileri
         const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdGdub2l5YmJqdm1yZWlrZXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE31z...'; // Kendi geçerli anon key değerini buraya tam olarak yapıştır
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdGdub2l5YmJqdm1yZWlrZXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE31z...'; // Kendi geçerli anahtarını buraya yapıştır
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -189,18 +189,36 @@
 
         const branchSelect = document.getElementById('branchSelect');
         const branchTitle = document.getElementById('branchTitle');
+        const centerMenuButtonContainer = document.getElementById('centerMenuButtonContainer');
+        const dataEntryCard = document.getElementById('dataEntryCard');
 
         branchSelect.addEventListener('change', () => {
-            branchTitle.innerText = branchSelect.value === '3_Subeli_Genel' ? 'Tüm Şubeler ve Merkez Genel Görünümü' : `${branchSelect.value} Yönetim Ekranı`;
+            updateInterfaceMode();
             fetchReports();
         });
+
+        function updateInterfaceMode() {
+            const selected = branchSelect.value;
+            if (selected === 'Merkez') {
+                // Merkez Modu: Tüm şubeleri toplar, ana menü butonu görünür, veri girişi gizlenir (veya merkeze ait girilir)
+                branchTitle.innerText = 'Merkez Yönetim Ekranı (Tüm Şubeler Toplanıyor)';
+                centerMenuButtonContainer.style.display = 'block';
+                dataEntryCard.style.display = 'none'; // Merkez sadece toplar ve izler
+            } else {
+                // Şube Modu: Sadece o şube çalışır, ana menü butonu gizlenir, veri girişi açık olur
+                branchTitle.innerText = `${selected} Şube Çalışma Ekranı`;
+                centerMenuButtonContainer.style.display = 'none'; // Şubelerde ana menüye dön butonu YOK
+                dataEntryCard.style.display = 'block';
+            }
+        }
 
         async function fetchReports() {
             const selectedBranch = branchSelect.value;
             try {
                 let query = supabaseClient.from('reports').select('*').order('date', { ascending: false });
 
-                if (selectedBranch !== '3_Subeli_Genel') {
+                // Eğer Merkez seçildiyse tüm şubelerin verilerini çek, değilse sadece seçilen şubeninkini çek
+                if (selectedBranch !== 'Merkez') {
                     query = query.eq('branch', selectedBranch);
                 }
 
@@ -230,7 +248,7 @@
 
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td class="px-4 py-3 font-medium text-amber-900">${row.branch || 'Merkez'}</td>
+                            <td class="px-4 py-3 font-semibold text-amber-900">${row.branch || 'Merkez'}</td>
                             <td class="px-4 py-3 text-gray-600">${row.date}</td>
                             <td class="px-4 py-3 text-gray-800">${c.toFixed(2)} ₺</td>
                             <td class="px-4 py-3 text-gray-800">${b.toFixed(2)} ₺</td>
@@ -253,7 +271,7 @@
                     document.getElementById('statTotalRevenue').innerText = '0.00 ₺';
                     document.getElementById('statTotalExpense').innerText = '0.00 ₺';
                     document.getElementById('statTotalStock').innerText = '0.00 ₺';
-                    tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-4 text-center text-gray-400">Bu konum için henüz kayıt bulunmuyor.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-4 text-center text-gray-400">Bu görünümde henüz kayıt bulunmuyor.</td></tr>`;
                 }
             } catch (err) {
                 console.error('Veriler alınamadı:', err);
@@ -262,11 +280,15 @@
 
         document.getElementById('reportForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            const currentActiveBranch = branchSelect.value;
 
-            const targetBranch = branchSelect.value === '3_Subeli_Genel' ? 'Merkez' : branchSelect.value;
+            if (currentActiveBranch === 'Merkez') {
+                alert('Merkez ekranından direkt veri girişi yapılamaz, lütfen veri gireceğiniz şubeyi seçin.');
+                return;
+            }
 
             const payload = {
-                branch: targetBranch,
+                branch: currentActiveBranch,
                 date: document.getElementById('date').value,
                 cash: parseFloat(document.getElementById('cash').value) || 0,
                 bank: parseFloat(document.getElementById('bank').value) || 0,
@@ -285,7 +307,7 @@
 
                 if (error) throw error;
 
-                alert(`Veri başarıyla ${targetBranch} konumuna kaydedildi!`);
+                alert(`Veri başarıyla ${currentActiveBranch} şubesi adına kaydedildi!`);
                 document.getElementById('reportForm').reset();
                 document.getElementById('date').value = getLocalTodayString();
                 fetchReports();
@@ -295,6 +317,8 @@
             }
         });
 
+        // Sayfa açılışında başlangıç modunu ayarla
+        updateInterfaceMode();
         fetchReports();
     </script>
 </body>
