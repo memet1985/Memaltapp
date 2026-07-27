@@ -16,12 +16,11 @@
                 <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center border border-amber-300 overflow-hidden shadow-inner">
                     <span class="text-amber-800 font-bold text-xs">Waffle</span>
                 </div>
-                <h1 class="text-2xl font-bold text-amber-900 tracking-wide" id="mainHeaderTitle">Sweet Waffle Yönetim Paneli</h1>
+                <h1 class="text-2xl font-bold text-amber-900 tracking-wide">Sweet Waffle Yönetim Paneli</h1>
             </div>
-            <!-- Sadece Merkezde Görünecek Ana Sayfa / Sıfırlama Butonu -->
             <div id="centerMenuButtonContainer">
                 <a href="index.html" class="inline-flex items-center bg-amber-900 hover:bg-amber-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition">
-                    🔄 Ana Ekranı Yenile
+                    🔄 Ekranı Yenile
                 </a>
             </div>
         </header>
@@ -70,7 +69,7 @@
             </div>
         </div>
 
-        <!-- Yeni Veri Giriş Kartı (Şubelerde Görünür, Merkezde Gizlenir) -->
+        <!-- Yeni Veri Giriş Kartı -->
         <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6 mb-8" id="dataEntryCard">
             <h3 class="text-lg font-bold text-amber-900 mb-4 pb-2 border-b border-amber-100" id="formTitle">Şube Veri Girişi</h3>
             
@@ -175,9 +174,9 @@
     </div>
 
     <script>
-        // Supabase Bağlantı Bilgileri
+        // Supabase Bağlantı Bilgileri (Yeni Publishable Key eklendi)
         const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdGdub2l5YmJqdm1yZWlrZXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE31z...'; // Kendi geçerli anahtarını buraya koyabilirsin
+        const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -190,7 +189,6 @@
 
         const branchSelect = document.getElementById('branchSelect');
         const branchTitle = document.getElementById('branchTitle');
-        const centerMenuButtonContainer = document.getElementById('centerMenuButtonContainer');
         const dataEntryCard = document.getElementById('dataEntryCard');
 
         branchSelect.addEventListener('change', () => {
@@ -202,12 +200,10 @@
             const selected = branchSelect.value;
             if (selected === 'Merkez') {
                 branchTitle.innerText = 'Merkez Yönetim Ekranı (Tüm Şubeler Toplanıyor)';
-                centerMenuButtonContainer.style.display = 'block';
-                dataEntryCard.style.display = 'none'; // Merkezde veri girişi formunu kapat
+                dataEntryCard.style.display = 'none'; 
             } else {
                 branchTitle.innerText = `${selected} Şube Çalışma Ekranı`;
-                centerMenuButtonContainer.style.display = 'none'; // Şubelerde merkez butonu gizli (Ana menüye dön yok, doğrudan şube ekranı)
-                dataEntryCard.style.display = 'block'; // Şubede veri girişi açık
+                dataEntryCard.style.display = 'block'; 
             }
         }
 
@@ -216,6 +212,7 @@
             try {
                 let query = supabaseClient.from('reports').select('*').order('date', { ascending: false });
 
+                // Şube seçiliyse sadece o şubeyi getir, Merkez seçiliyse tüm kayıtları getir
                 if (selectedBranch !== 'Merkez') {
                     query = query.eq('branch', selectedBranch);
                 }
