@@ -13,7 +13,7 @@
         <!-- Üst Header & Şube Geçiş Butonları -->
         <header class="bg-white border border-amber-300 rounded-2xl shadow-md p-5 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-4">
-                <!-- Logo - Merkez ile birebir aynı stil -->
+                <!-- Logo -->
                 <div class="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center border-2 border-amber-800 shadow-inner overflow-hidden p-1">
                     <img src="logo.webp" alt="Sweet Waffle Logo" class="w-full h-full object-contain" onerror="this.style.display='none'; document.getElementById('subeLogoFallback').style.display='flex';">
                     <div id="subeLogoFallback" class="w-full h-full bg-amber-900 text-white font-bold text-[10px] items-center justify-center text-center hidden">LOGOMUZ</div>
@@ -33,7 +33,7 @@
                 <div class="flex flex-wrap gap-2">
                     <a href="sube.html?ad=Kurtkoy" class="branch-btn bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300" data-branch="Kurtkoy">Kurtköy Şube</a>
                     <a href="sube.html?ad=Soganlik" class="branch-btn bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300" data-branch="Soganlik">Soğanlık Şube</a>
-                    <a href="sube.html?ad=Ortadag" class="branch-btn bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300">Ortadağ Şube</a>
+                    <a href="sube.html?ad=Ortadag" class="branch-btn bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl text-xs font-semibold transition border border-amber-300" data-branch="Ortadag">Ortadağ Şube</a>
                 </div>
             </div>
         </header>
@@ -117,7 +117,7 @@
             </form>
         </div>
 
-        <!-- Tablo -->
+        <!-- Tablo ve Toplam Alanı -->
         <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6">
             <h3 class="text-lg font-bold text-amber-900 mb-4">Şubeye Ait Geçmiş Kayıtlar</h3>
             <div class="overflow-x-auto">
@@ -133,6 +133,8 @@
                         </tr>
                     </thead>
                     <tbody id="reportTableBody" class="divide-y divide-gray-100 bg-white text-sm"></tbody>
+                    <!-- Otomatik Hesaplanan Alt Toplam Satırı -->
+                    <tfoot id="reportTableFooter" class="bg-amber-50/80 font-bold text-sm border-t-2 border-amber-200"></tfoot>
                 </table>
             </div>
         </div>
@@ -160,7 +162,6 @@
 
         document.querySelectorAll('.branch-btn').forEach(btn => {
             if (btn.getAttribute('data-branch') === currentBranch) {
-                // Aktif şube butonunu vurgula
                 btn.className = "branch-btn bg-amber-900 text-white px-3 py-2 rounded-xl text-xs font-bold shadow border border-amber-800";
             }
         });
@@ -182,8 +183,13 @@
                 const filteredData = (data || []).filter(row => 
                     row.branch && row.branch.trim().toLowerCase() === currentBranch.trim().toLowerCase()
                 );
+                
                 const tbody = document.getElementById('reportTableBody');
+                const tfoot = document.getElementById('reportTableFooter');
                 tbody.innerHTML = '';
+                tfoot.innerHTML = '';
+
+                let totalCash = 0, totalBank = 0, totalRevenue = 0, totalExpense = 0, totalStock = 0;
 
                 if (filteredData.length > 0) {
                     filteredData.forEach(row => {
@@ -192,6 +198,12 @@
                         const r = c + b;
                         const e = parseFloat(row.expense) || 0;
                         const s = parseFloat(row.stock_amount) || 0;
+
+                        totalCash += c;
+                        totalBank += b;
+                        totalRevenue += r;
+                        totalExpense += e;
+                        totalStock += s;
 
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
@@ -204,6 +216,18 @@
                         `;
                         tbody.appendChild(tr);
                     });
+
+                    // Alt Toplam Satırını Yazdır
+                    tfoot.innerHTML = `
+                        <tr>
+                            <td class="px-4 py-3 text-amber-950 uppercase font-black">GENEL TOPLAM:</td>
+                            <td class="px-4 py-3 text-gray-900">${totalCash.toFixed(2)} ₺</td>
+                            <td class="px-4 py-3 text-gray-900">${totalBank.toFixed(2)} ₺</td>
+                            <td class="px-4 py-3 text-amber-800 font-black">${totalRevenue.toFixed(2)} ₺</td>
+                            <td class="px-4 py-3 text-red-700 font-bold">${totalExpense.toFixed(2)} ₺</td>
+                            <td class="px-4 py-3 text-amber-950 font-bold">${totalStock.toFixed(2)} ₺</td>
+                        </tr>
+                    `;
                 } else {
                     tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-4 text-center text-gray-400">Bu şube için henüz kayıt bulunmuyor.</td></tr>`;
                 }
