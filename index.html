@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sweet Waffle - Şube Raporlama Paneli</title>
+    <title>Sweet Waffle - Şube ve Merkez Raporlama Paneli</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#78350f">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,7 +35,7 @@
             <p style="font-size: 11px; color: #6b7280; margin: 0 0 20px 0;">Devam etmek için lütfen şube seçip şifrenizi girin</p>
             
             <div style="display: flex; flex-direction: column; gap: 8px;">
-                <button type="button" onclick="verifyAndEnter('Merkez')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Merkez</button>
+                <button type="button" onclick="verifyAndEnter('Merkez')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Merkez (Tüm Şubeler)</button>
                 <button type="button" onclick="verifyAndEnter('Kurtkoy')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Kurtköy Şubesi</button>
                 <button type="button" onclick="verifyAndEnter('Soganlik')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Soğanlık Şubesi</button>
                 <button type="button" onclick="verifyAndEnter('Ortadag')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Ortadağ Şubesi</button>
@@ -96,8 +96,8 @@
             </div>
         </div>
 
-        <!-- GÜNLÜK RAPOR GİRİŞ FORMU -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+        <!-- GÜNLÜK RAPOR GİRİŞ FORMU (Sadece Şubelerde Aktif, Merkezde Bilgilendirme Amaçlı) -->
+        <div id="formCardContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <h3 id="formSectionTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Günlük Rapor ve Masraf Girişi</h3>
             <form id="branchReportForm" style="display: flex; flex-direction: column; gap: 8px;">
                 
@@ -218,7 +218,6 @@
 
         document.getElementById('reportDate').valueAsDate = new Date();
 
-        // Sayfa açıldığında kayıtlı aktif şube yoksa mutlaka şifre ekranını göster
         window.addEventListener('DOMContentLoaded', () => {
             if (!currentSelectedBranch || !branchPasswords[currentSelectedBranch]) {
                 forceLogout();
@@ -236,10 +235,10 @@
         }
 
         function verifyAndEnter(branchName) {
-            let displayName = branchName === 'Merkez' ? 'Merkez' : (branchName === 'Kurtkoy' ? 'Kurtköy' : (branchName === 'Soganlik' ? 'Soğanlık' : 'Ortadağ'));
+            let displayName = branchName === 'Merkez' ? 'Merkez (Tüm Şubeler)' : (branchName === 'Kurtkoy' ? 'Kurtköy' : (branchName === 'Soganlik' ? 'Soğanlık' : 'Ortadağ'));
             let passwordInput = prompt(`${displayName} için şifreyi giriniz:`);
 
-            if (passwordInput === null) return; // İptal edilirse
+            if (passwordInput === null) return;
 
             if (passwordInput === branchPasswords[branchName]) {
                 currentSelectedBranch = branchName;
@@ -253,10 +252,18 @@
         }
 
         function applyBranchUI(branchName) {
-            let displayName = branchName === 'Merkez' ? 'Merkez' : (branchName === 'Kurtkoy' ? 'Kurtköy' : (branchName === 'Soganlik' ? 'Soğanlık' : 'Ortadağ'));
-            document.getElementById('panelTitle').innerText = displayName + " Paneli";
+            let displayName = branchName === 'Merkez' ? 'Merkez Yönetimi (Tüm Şubeler)' : (branchName === 'Kurtkoy' ? 'Kurtköy Şubesi' : (branchName === 'Soganlik' ? 'Soğanlık Şubesi' : 'Ortadağ Şubesi'));
+            document.getElementById('panelTitle').innerText = displayName;
+            document.getElementById('panelSubtitle').innerText = branchName === 'Merkez' ? 'Tüm Şube Verileri Toplu Görünüm' : 'Günlük Rapor ve Masraf Girişi';
             document.getElementById('formSectionTitle').innerText = displayName + " - Günlük Rapor ve Masraf Girişi";
             document.getElementById('tableHeaderTitle').innerText = displayName + " Raporları Listesi";
+
+            // Eğer Merkez seçildiyse veri giriş formunu gizle (Çünkü merkezden şube adına veri girişi yapılmaz, merkez sadece rapor izler)
+            if (branchName === 'Merkez') {
+                document.getElementById('formCardContainer').style.display = 'none';
+            } else {
+                document.getElementById('formCardContainer').style.display = 'block';
+            }
         }
 
         function formatMoney(val) {
@@ -282,9 +289,8 @@
 
         document.getElementById('branchReportForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            if (!currentSelectedBranch) {
-                alert('Lütfen önce şube seçimi ve şifre doğrulaması yapın!');
-                forceLogout();
+            if (!currentSelectedBranch || currentSelectedBranch === 'Merkez') {
+                alert('Merkez hesabından doğrudan rapor eklenemez!');
                 return;
             }
 
@@ -322,7 +328,13 @@
             tbody.innerHTML = '';
             tfoot.innerHTML = '';
 
-            let filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            // BURASI GÜNCELLENDİ: Eğer 'Merkez' seçildiyse TÜM şubelerin verilerini al, aksi takdirde sadece ilgili şubeyi filtrele
+            let filteredData = [];
+            if (currentSelectedBranch === 'Merkez') {
+                filteredData = allDataCache;
+            } else {
+                filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            }
 
             let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalRevenue = 0, totalExpense = 0;
             let sumPluxee = 0, sumEdenred = 0, sumMultiNet = 0, sumSetcard = 0, sumMetropol = 0, sumToken = 0;
@@ -399,7 +411,7 @@
         }
 
         function exportToExcel() {
-            let filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            let filteredData = currentSelectedBranch === 'Merkez' ? allDataCache : allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
             let dataToExport = filteredData.map(row => {
                 const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
                 return {
@@ -416,7 +428,7 @@
 
             const worksheet = XLSX.utils.json_to_sheet(dataToExport);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "SubeRaporlari");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Raporlar");
             XLSX.writeFile(workbook, `SweetWaffle_${currentSelectedBranch}_Raporlar.xlsx`);
         }
 
@@ -425,9 +437,9 @@
             const doc = new jsPDF('landscape');
 
             doc.setFontSize(14);
-            doc.text(`Sweet Waffle - ${currentSelectedBranch} Şube Raporları`, 14, 15);
+            doc.text(`Sweet Waffle - ${currentSelectedBranch === 'Merkez' ? 'Merkez (Tüm Şubeler)' : currentSelectedBranch} Raporları`, 14, 15);
 
-            let filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            let filteredData = currentSelectedBranch === 'Merkez' ? allDataCache : allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
             let tableRows = filteredData.map(row => {
                 const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
                 const ciro = cleanVal(row.cash) + cleanVal(row.bank);
