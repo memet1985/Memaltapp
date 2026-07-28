@@ -185,15 +185,8 @@
             <div style="width: 100%; overflow-x: auto;">
                 <table style="width: 100%; min-width: 750px; border-collapse: collapse; font-size: 10px;">
                     <thead>
-                        <tr style="background: #fffbeb; color: #78350f;">
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
-                            <th style="padding: 6px; text-align: center; font-weight: 600; width: 90px;">İŞLEMLER</th>
+                        <tr id="tableHeaderRow" style="background: #fffbeb; color: #78350f;">
+                            <!-- Dinamik olarak doldurulacak -->
                         </tr>
                     </thead>
                     <tbody id="allReportsTableBody"></tbody>
@@ -259,6 +252,31 @@
             document.getElementById('panelSubtitle').innerText = branchName === 'Merkez' ? 'Tüm Şube Verileri Toplu Görünüm ve Yönetim' : 'Günlük Rapor ve Masraf Girişi';
             document.getElementById('formSectionTitle').innerText = branchName === 'Merkez' ? 'Merkez: Veri Güncelleme Paneli' : displayName + " - Günlük Rapor ve Masraf Girişi";
             document.getElementById('tableHeaderTitle').innerText = displayName + " Raporları Listesi";
+
+            // Tablo başlıklarını merkeze veya şubeye göre ayarlama
+            const theadRow = document.getElementById('tableHeaderRow');
+            if (branchName === 'Merkez') {
+                theadRow.innerHTML = `
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
+                    <th style="padding: 6px; text-align: center; font-weight: 600; width: 90px;">İŞLEMLER</th>
+                `;
+            } else {
+                theadRow.innerHTML = `
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
+                    <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
+                `;
+            }
         }
 
         function formatMoney(val) {
@@ -290,13 +308,12 @@
             }
 
             const recordId = document.getElementById('editingRecordId').value;
-            // Merkezden ekleme yapılırken form görünürse o anki kaydın ait olduğu şube korunur, yeni eklemelerde merkez varsayılan kaydedilmesin diye şube kontrolü
             let targetBranch = currentSelectedBranch;
             if (recordId) {
                 let existingRec = allDataCache.find(r => r.id == recordId);
                 if (existingRec) targetBranch = existingRec.branch;
             } else if (targetBranch === 'Merkez') {
-                targetBranch = 'Merkez'; // Merkezden yeni kayıt atılırsa
+                targetBranch = 'Merkez';
             }
 
             const payload = {
@@ -424,35 +441,62 @@
 
                     const tr = document.createElement('tr');
                     tr.style.borderBottom = '1px solid #f3f4f6';
-                    tr.innerHTML = `
-                        <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
-                        <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
-                        <td style="padding: 6px; color: #1f2937;">${formatMoney(rawC)}</td>
-                        <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
-                        <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
-                        <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
-                        <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
-                        <td style="padding: 6px; text-align: center;">
-                            <button onclick="editRecord('${row.id}')" style="background: #d97706; color: white; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 2px;">Düzenle</button>
-                            <button onclick="deleteRecord('${row.id}')" style="background: #dc2626; color: white; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
-                        </td>
-                    `;
+
+                    if (currentSelectedBranch === 'Merkez') {
+                        tr.innerHTML = `
+                            <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
+                            <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(rawC)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
+                            <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
+                            <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
+                            <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
+                            <td style="padding: 6px; text-align: center;">
+                                <button onclick="editRecord('${row.id}')" style="background: #d97706; color: white; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 2px;">Düzenle</button>
+                                <button onclick="deleteRecord('${row.id}')" style="background: #dc2626; color: white; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
+                            </td>
+                        `;
+                    } else {
+                        tr.innerHTML = `
+                            <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
+                            <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(rawC)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
+                            <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
+                            <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
+                            <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
+                        `;
+                    }
                     tbody.appendChild(tr);
                 });
 
-                tfoot.innerHTML = `
-                    <tr>
-                        <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
-                        <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
-                        <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
-                        <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
-                        <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
-                        <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
-                        <td></td>
-                    </tr>
-                `;
+                if (currentSelectedBranch === 'Merkez') {
+                    tfoot.innerHTML = `
+                        <tr>
+                            <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
+                            <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
+                            <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
+                            <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
+                            <td></td>
+                        </tr>
+                    `;
+                } else {
+                    tfoot.innerHTML = `
+                        <tr>
+                            <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
+                            <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
+                            <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
+                            <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
+                        </tr>
+                    `;
+                }
             } else {
-                tbody.innerHTML = `<tr><td colspan="8" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
+                let colSpanCount = currentSelectedBranch === 'Merkez' ? 8 : 7;
+                tbody.innerHTML = `<tr><td colspan="${colSpanCount}" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
             }
 
             document.getElementById('statTotalCash').innerText = formatMoney(totalCash);
