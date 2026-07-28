@@ -198,21 +198,6 @@
     </div>
 
     <script>
-        // Merkez Paneli Şifre Kontrolü
-        function checkPassword() {
-            let savedAuth = sessionStorage.getItem('merkez_auth');
-            if (savedAuth !== 'true') {
-                let pass = prompt('Merkez Paneli Şifresini Girin:');
-                if (pass === '12345') {
-                    sessionStorage.setItem('merkez_auth', 'true');
-                } else {
-                    alert('Hatalı şifre!');
-                    window.location.href = 'sube.html?ad=Kurtkoy';
-                }
-            }
-        }
-        checkPassword();
-
         const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
