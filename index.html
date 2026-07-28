@@ -36,6 +36,7 @@
                 </div>
                 
                 <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                    <a href="index.html" style="background: #78350f; color: #fff; border: 1px solid #78350f; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">MERKEZ</a>
                     <a href="sube.html?ad=Kurtkoy" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Kurtköy</a>
                     <a href="sube.html?ad=Soganlik" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Soğanlık</a>
                     <a href="sube.html?ad=Ortadag" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Ortadağ</a>
@@ -43,20 +44,44 @@
             </div>
         </header>
 
+        <!-- Özet Kartları -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM KAYIT</div>
+                <div id="statTotalCount" style="font-size: 14px; font-weight: 900; color: #78350f;">0</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM NAKİT</div>
+                <div id="statTotalCash" style="font-size: 14px; font-weight: 900; color: #047857;">0</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM BANKA</div>
+                <div id="statTotalBank" style="font-size: 14px; font-weight: 900; color: #1d4ed8;">0</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM CİRO</div>
+                <div id="statTotalRevenue" style="font-size: 14px; font-weight: 900; color: #b45309;">0</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center; grid-column: span 2;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM MASRAF</div>
+                <div id="statTotalExpense" style="font-size: 14px; font-weight: 900; color: #dc2626;">0</div>
+            </div>
+        </div>
+
         <!-- Tüm Şubelerin Genel Raporları -->
         <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Tüm Şube Kayıtları</h3>
+            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Şube Raporları ve Yönetimi</h3>
             <div style="width: 100%; overflow-x: auto;">
-                <table style="width: 100%; min-width: 520px; border-collapse: collapse; font-size: 10px;">
+                <table style="width: 100%; min-width: 560px; border-collapse: collapse; font-size: 10px;">
                     <thead>
                         <tr style="background: #fffbeb; color: #78350f;">
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">Şube</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">Tarih</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">Nakit</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">Banka</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">Ciro</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">Masraf</th>
-                            <th style="padding: 6px; text-align: center; font-weight: 600;">İşlem</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF</th>
+                            <th style="padding: 6px; text-align: center; font-weight: 600;">İŞLEMLER</th>
                         </tr>
                     </thead>
                     <tbody id="allReportsTableBody"></tbody>
@@ -66,17 +91,43 @@
         </div>
     </div>
 
+    <!-- Düzenleme Modalı -->
+    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #fff; border-radius: 12px; padding: 16px; width: 100%; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="font-size: 13px; font-weight: bold; color: #78350f; margin: 0 0 12px 0;">Kaydı Düzenle</h3>
+            <input type="hidden" id="editId">
+            <div style="margin-bottom: 8px;">
+                <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Tarih</label>
+                <input type="date" id="editDate" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+            </div>
+            <div style="margin-bottom: 8px;">
+                <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Nakit</label>
+                <input type="number" id="editCash" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+            </div>
+            <div style="margin-bottom: 8px;">
+                <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Banka</label>
+                <input type="number" id="editBank" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Masraf</label>
+                <input type="number" id="editExpense" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="closeEditModal()" style="flex: 1; background: #e5e7eb; color: #374151; border: none; padding: 8px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer;">İptal</button>
+                <button onclick="saveEditModal()" style="flex: 1; background: #78350f; color: #fff; border: none; padding: 8px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer;">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ,00 gibi küsuratları temizleyen kesin fonksiyon
         function cleanVal(val) {
             if (val === null || val === undefined || val === '') return 0;
             let num = Number(val);
             if (isNaN(num)) return 0;
-            // Eğer küsuratı yoksa (örn: 500.00 -> 500), direkt tam sayı yap
             return num % 1 === 0 ? Math.trunc(num) : num;
         }
 
@@ -91,6 +142,7 @@
                 tfoot.innerHTML = '';
 
                 let totalCash = 0, totalBank = 0, totalRevenue = 0, totalExpense = 0;
+                let totalCount = data ? data.length : 0;
 
                 if (data && data.length > 0) {
                     data.forEach(row => {
@@ -113,7 +165,8 @@
                             <td style="padding: 6px; color: #1f2937;">${b}</td>
                             <td style="padding: 6px; font-weight: bold; color: #b45309;">${r}</td>
                             <td style="padding: 6px; color: #dc2626;">${e}</td>
-                            <td style="padding: 6px; text-align: center;">
+                            <td style="padding: 6px; text-align: center; white-space: nowrap;">
+                                <button onclick="openEditModal('${row.id}', '${row.date || ''}', '${row.cash || 0}', '${row.bank || 0}', '${row.expense || 0}')" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
                                 <button onclick="deleteReport('${row.id}')" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
                             </td>
                         `;
@@ -133,7 +186,56 @@
                 } else {
                     tbody.innerHTML = `<tr><td colspan="7" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
                 }
+
+                document.getElementById('statTotalCount').innerText = totalCount;
+                document.getElementById('statTotalCash').innerText = cleanVal(totalCash);
+                document.getElementById('statTotalBank').innerText = cleanVal(totalBank);
+                document.getElementById('statTotalRevenue').innerText = cleanVal(totalRevenue);
+                document.getElementById('statTotalExpense').innerText = cleanVal(totalExpense);
+
             } catch (err) { console.error('Hata:', err); }
+        }
+
+        function openEditModal(id, date, cash, bank, expense) {
+            document.getElementById('editId').value = id;
+            document.getElementById('editDate').value = date;
+            document.getElementById('editCash').value = cash;
+            document.getElementById('editBank').value = bank;
+            document.getElementById('editExpense').value = expense;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        async function saveEditModal() {
+            const id = document.getElementById('editId').value;
+            const date = document.getElementById('editDate').value;
+            const cash = parseFloat(document.getElementById('editCash').value) || 0;
+            const bank = parseFloat(document.getElementById('editBank').value) || 0;
+            const expense = parseFloat(document.getElementById('editExpense').value) || 0;
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reports?id=eq.${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ date, cash, bank, expense })
+                });
+
+                if (!response.ok) throw new Error('Güncelleme başarısız oldu.');
+
+                alert('Kayıt başarıyla güncellendi.');
+                closeEditModal();
+                fetchAllReports();
+            } catch (err) {
+                alert('Hata: ' + err.message);
+            }
         }
 
         async function deleteReport(id) {
@@ -148,9 +250,7 @@
                         }
                     });
 
-                    if (!response.ok) {
-                        throw new Error('Sunucu silme işlemini reddetti.');
-                    }
+                    if (!response.ok) throw new Error('Sunucu silme işlemini reddetti.');
 
                     alert('Kayıt başarıyla silindi.');
                     fetchAllReports();
