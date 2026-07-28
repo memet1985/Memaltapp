@@ -15,6 +15,15 @@
     <style>
         * { box-sizing: border-box; -webkit-text-size-adjust: 100%; }
         html, body { width: 100%; max-width: 100vw; overflow-x: hidden; margin: 0; padding: 0; background-color: #f9fafb; }
+        /* Sayı inputlarındaki aşağı yukarı okları (spinner) tamamen kaldıran kod */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
     </style>
 </head>
 <body class="font-sans pb-10">
@@ -124,11 +133,12 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // ,00 kalıntısını tamamen ortadan kaldıran kesin çözüm fonksiyonu
         function cleanVal(val) {
             if (val === null || val === undefined || val === '') return 0;
             let num = Number(val);
             if (isNaN(num)) return 0;
-            return num % 1 === 0 ? Math.trunc(num) : num;
+            return Math.round(num); // Ondalıkları tamamen siliyor, saf tam sayı döndürüyor
         }
 
         async function fetchAllReports() {
@@ -199,9 +209,9 @@
         function openEditModal(id, date, cash, bank, expense) {
             document.getElementById('editId').value = id;
             document.getElementById('editDate').value = date;
-            document.getElementById('editCash').value = cash;
-            document.getElementById('editBank').value = bank;
-            document.getElementById('editExpense').value = expense;
+            document.getElementById('editCash').value = cleanVal(cash);
+            document.getElementById('editBank').value = cleanVal(bank);
+            document.getElementById('editExpense').value = cleanVal(expense);
             document.getElementById('editModal').style.display = 'flex';
         }
 
