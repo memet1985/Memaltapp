@@ -11,7 +11,6 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- PDF ve Excel export kütüphaneleri -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -40,7 +39,7 @@
                     </div>
                 </div>
                 
-                <!-- Şubeler Arası Geçiş Navigasyonu (Tıklanan Şube Renkli, Diğerleri Şeffaf) -->
+                <!-- Şubeler Arası Geçiş Navigasyonu -->
                 <div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
                     <a href="index.html" id="navIndex" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">MERKEZ</a>
                     <a href="sube.html?ad=Kurtkoy" id="navKurtkoy" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Kurtköy</a>
@@ -121,7 +120,7 @@
             </form>
         </div>
 
-        <!-- Şube Geçmiş Raporlar Tablosu (Sil ve Düzenle butonları kaldırıldı) -->
+        <!-- Şube Geçmiş Raporlar Tablosu -->
         <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Şube Geçmiş Raporları</h3>
             <div style="width: 100%; overflow-x: auto;">
@@ -155,7 +154,6 @@
         document.getElementById('pageTitle').innerText = `${branchParam} Şube Paneli`;
         document.getElementById('reportDate').valueAsDate = new Date();
 
-        // Aktif Şube Butonunu Renkli, Diğerlerini Şeffaf Yapma Mantığı
         const allNavIds = ['navKurtkoy', 'navSoganlik', 'navOrtadag'];
         allNavIds.forEach(id => {
             const btn = document.getElementById(id);
