@@ -3,201 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sweet Waffle - Şube Raporlama Paneli</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#78350f">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
+    <title>Sweet Waffle - Yönetim ve Raporlama Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; -webkit-text-size-adjust: 100%; }
-        html, body { width: 100%; max-width: 100vw; overflow-x: hidden; margin: 0; padding: 0; background-color: #f9fafb; }
-        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfbf9; }
+        .branch-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .branch-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px -5px rgba(120, 53, 15, 0.15);
+            border-color: #f59e0b;
+        }
     </style>
 </head>
-<body class="font-sans pb-10">
+<body class="text-slate-800 min-h-screen flex flex-col antialiased">
 
-    <!-- ANA GİRİŞTEKİ ZORUNLU ŞUBE SEÇİM VE ŞİFRE EKRANI -->
-    <div id="welcomeScreenModal" style="position: fixed; inset: 0; background: rgba(78, 35, 15, 0.98); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 16px;">
-        <div style="background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-            <div style="width: 60px; height: 60px; background: #fffbeb; border: 2px solid #78350f; border-radius: 12px; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('welcomeLogoFallback').style.display='flex';">
-                <div id="welcomeLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 10px; display: none; align-items: center; justify-content: center;">SW</div>
-            </div>
-            <h2 style="font-size: 18px; font-weight: 900; color: #451a03; margin: 0 0 6px 0;">Sweet Waffle</h2>
-            <p style="font-size: 11px; color: #6b7280; margin: 0 0 20px 0;">Devam etmek için lütfen şube seçip şifrenizi girin</p>
+    <!-- ŞIK VE MODERN GİRİŞ / ŞUBE SEÇİM EKRANI -->
+    <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/70 backdrop-blur-md p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 border border-stone-100 relative overflow-hidden">
             
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <button type="button" onclick="verifyAndEnter('Merkez')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Merkez</button>
-                <button type="button" onclick="verifyAndEnter('Kurtkoy')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Kurtköy Şubesi</button>
-                <button type="button" onclick="verifyAndEnter('Soganlik')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Soğanlık Şubesi</button>
-                <button type="button" onclick="verifyAndEnter('Ortadag')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Ortadağ Şubesi</button>
+            <!-- Üst Dekoratif Çizgi -->
+            <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500"></div>
+
+            <div class="text-center mb-8 pt-2">
+                <div class="w-20 h-20 bg-amber-50 rounded-2xl mx-auto flex items-center justify-center text-amber-700 text-3xl font-extrabold shadow-inner border border-amber-200/60 mb-4">
+                    🧇
+                </div>
+                <h1 class="text-2xl font-extrabold text-stone-900 tracking-tight">Sweet Waffle</h1>
+                <p class="text-xs font-semibold text-stone-500 mt-1 uppercase tracking-wider">Şube ve Merkez Raporlama Sistemi</p>
             </div>
+
+            <!-- Şube Seçim Butonları -->
+            <div class="space-y-3 mb-6">
+                <p class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Çalışma Alanı Seçiniz</p>
+                
+                <button type="button" onclick="selectBranch('Kurtkoy')" class="branch-card w-full flex items-center justify-between p-4 bg-stone-50 hover:bg-amber-50/60 border border-stone-200 rounded-2xl text-left font-bold text-stone-700">
+                    <span class="flex items-center gap-3">
+                        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                        Kurtköy Şubesi
+                    </span>
+                    <span class="text-xs bg-stone-200/70 text-stone-600 px-2.5 py-1 rounded-lg">Şube</span>
+                </button>
+
+                <button type="button" onclick="selectBranch('Soganlik')" class="branch-card w-full flex items-center justify-between p-4 bg-stone-50 hover:bg-amber-50/60 border border-stone-200 rounded-2xl text-left font-bold text-stone-700">
+                    <span class="flex items-center gap-3">
+                        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                        Soğanlık Şubesi
+                    </span>
+                    <span class="text-xs bg-stone-200/70 text-stone-600 px-2.5 py-1 rounded-lg">Şube</span>
+                </button>
+
+                <button type="button" onclick="selectBranch('Ortadag')" class="branch-card w-full flex items-center justify-between p-4 bg-stone-50 hover:bg-amber-50/60 border border-stone-200 rounded-2xl text-left font-bold text-stone-700">
+                    <span class="flex items-center gap-3">
+                        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                        Ortadağ Şubesi
+                    </span>
+                    <span class="text-xs bg-stone-200/70 text-stone-600 px-2.5 py-1 rounded-lg">Şube</span>
+                </button>
+
+                <button type="button" onclick="selectBranch('Merkez')" class="branch-card w-full flex items-center justify-between p-4 bg-amber-50 hover:bg-amber-100/70 border-2 border-amber-400 rounded-2xl text-left font-extrabold text-amber-900 shadow-sm">
+                    <span class="flex items-center gap-3">
+                        <span class="w-3 h-3 rounded-full bg-amber-600 animate-pulse"></span>
+                        Merkez Yönetim (Tüm Şubeler)
+                    </span>
+                    <span class="text-xs bg-amber-200 text-amber-800 px-2.5 py-1 rounded-lg font-bold">Yönetici</span>
+                </button>
+            </div>
+
+            <!-- Şifre Giriş Alanı (Merkez Seçildiğinde Açılır) -->
+            <div id="passwordSection" class="hidden space-y-3 bg-stone-50 p-4 rounded-2xl border border-stone-200 animate-fadeIn">
+                <div class="flex items-center justify-between">
+                    <label id="passwordLabel" class="text-xs font-bold text-stone-700 uppercase tracking-wider"></label>
+                    <button type="button" onclick="cancelPassword()" class="text-xs text-stone-400 hover:text-stone-600 font-bold">İptal</button>
+                </div>
+                <input type="password" id="branchPasswordInput" placeholder="Şifrenizi girin..." class="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+                <button type="button" onclick="verifyPasswordAndLogin()" class="w-full py-3 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xl text-sm shadow-md transition-all">
+                    Doğrula ve Giriş Yap
+                </button>
+            </div>
+
         </div>
     </div>
 
-    <!-- ANA İÇERİK ALANI -->
-    <div style="width: 100%; max-width: 100%; margin: 0 auto; padding: 8px;">
-        
+    <!-- ANA UYGULAMA PANELİ -->
+    <div id="appContainer" class="hidden flex-1 flex flex-col">
         <!-- Üst Header -->
-        <header style="background: #fff; border: 1px solid #fcd34d; border-radius: 12px; padding: 10px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 36px; height: 36px; background: #fffbeb; border: 1px solid #78350f; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
-                        <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('branchLogoFallback').style.display='flex';">
-                        <div id="branchLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 8px; display: none; align-items: center; justify-content: center;">LOGO</div>
-                    </div>
+        <header class="bg-white border-b border-stone-200 sticky top-0 z-30 shadow-xs">
+            <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center text-white font-bold shadow-md shadow-amber-500/20">🧇</div>
                     <div>
-                        <h1 id="panelTitle" style="font-size: 13px; font-weight: 900; color: #451a03; margin: 0;">Şube Paneli</h1>
-                        <p id="panelSubtitle" style="font-size: 9px; color: #6b7280; margin: 0;">Günlük Rapor ve Masraf Girişi</p>
+                        <h2 id="activePanelTitle" class="font-bold text-stone-900 text-base leading-tight">Yönetim Paneli</h2>
+                        <span id="activePanelSubtitle" class="text-xs text-amber-700 font-semibold uppercase tracking-wider">Aktif Çalışma Alanı</span>
                     </div>
                 </div>
-                
-                <div>
-                    <button type="button" onclick="forceLogout()" style="background: #451a03; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Şube Değiştir / Kilitle</button>
+                <div class="flex items-center space-x-3">
+                    <button onclick="logout()" class="px-3.5 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold rounded-xl transition-all flex items-center space-x-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        <span>Şube Değiştir / Kilitle</span>
+                    </button>
                 </div>
             </div>
         </header>
 
-        <!-- Çıktı Alma Butonları -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 8px; margin-bottom: 12px; display: flex; gap: 8px; justify-content: flex-end;">
-            <button type="button" onclick="exportToExcel()" style="background: #047857; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Excel Çıktısı Al</button>
-            <button type="button" onclick="exportToPDF()" style="background: #b91c1c; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">PDF Çıktısı Al</button>
-        </div>
-
-        <!-- Özet Kartları -->
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
-            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
-                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM NAKİT</div>
-                <div id="statTotalCash" style="font-size: 14px; font-weight: 900; color: #047857;">0</div>
-            </div>
-            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
-                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM BANKA</div>
-                <div id="statTotalBank" style="font-size: 14px; font-weight: 900; color: #1d4ed8;">0</div>
-            </div>
-            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
-                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM YEMEK KARTLARI</div>
-                <div id="statTotalPlatforms" style="font-size: 14px; font-weight: 900; color: #047857;">0</div>
-            </div>
-            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
-                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM CİRO</div>
-                <div id="statTotalRevenue" style="font-size: 14px; font-weight: 900; color: #b45309;">0</div>
-            </div>
-            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center; grid-column: span 2;">
-                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM MASRAF</div>
-                <div id="statTotalExpense" style="font-size: 14px; font-weight: 900; color: #dc2626;">0</div>
-            </div>
-        </div>
-
-        <!-- GÜNLÜK RAPOR GİRİŞ FORMU -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <h3 id="formSectionTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Günlük Rapor ve Masraf Girişi</h3>
-            <form id="branchReportForm" style="display: flex; flex-direction: column; gap: 8px;">
-                
-                <div>
-                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Tarih</label>
-                    <input type="date" id="reportDate" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+        <!-- Ana İçerik -->
+        <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
+            
+            <!-- Özet Kartları -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs">
+                    <p class="text-xs font-bold text-stone-400 uppercase tracking-wider">Toplam Nakit</p>
+                    <h3 id="statTotalCash" class="text-xl font-extrabold text-emerald-600 mt-1">₺0.00</h3>
                 </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Nakit Tutar (TL)</label>
-                        <input type="number" step="any" id="reportCash" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                    </div>
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Banka / Kredi Kartı (TL)</label>
-                        <input type="number" step="any" id="reportBank" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                    </div>
+                <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs">
+                    <p class="text-xs font-bold text-stone-400 uppercase tracking-wider">Toplam Banka</p>
+                    <h3 id="statTotalBank" class="text-xl font-extrabold text-blue-600 mt-1">₺0.00</h3>
                 </div>
+                <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs">
+                    <p class="text-xs font-bold text-stone-400 uppercase tracking-wider">Toplam Ciro</p>
+                    <h3 id="statTotalRevenue" class="text-xl font-extrabold text-amber-700 mt-1">₺0.00</h3>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs">
+                    <p class="text-xs font-bold text-stone-400 uppercase tracking-wider">Toplam Masraf</p>
+                    <h3 id="statTotalExpense" class="text-xl font-extrabold text-rose-600 mt-1">₺0.00</h3>
+                </div>
+            </div>
 
-                <div style="background: #fffbeb; padding: 8px; border-radius: 8px; border: 1px solid #fde68a;">
-                    <label style="font-size: 10px; font-weight: bold; color: #78350f; display: block; margin-bottom: 4px;">Yemek Kartı Platformları</label>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 8px;">
-                        <input type="number" step="any" id="reportPluxee" placeholder="Pluxee" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportEdenred" placeholder="Edenred" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportMultiNet" placeholder="MultiNet" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportSetcard" placeholder="Setcard" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportMetropol" placeholder="Metropol" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportToken" placeholder="TokenFlex" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                    </div>
-
-                    <div style="border-top: 1px dashed #fcd34d; padding-top: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <!-- Veri Giriş Formu (Sadece şube modundayken veya merkezden hızlı ekleme için) -->
+            <div id="reportFormContainer" class="bg-white rounded-2xl border border-stone-200 shadow-xs p-5">
+                <h3 id="formTitle" class="text-xs font-bold text-stone-700 uppercase tracking-wider mb-4">Günlük Rapor ve Masraf Girişi</h3>
+                <form id="branchReportForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label style="font-size: 9px; font-weight: bold; color: #dc2626; display: block; margin-bottom: 2px;">Masraf Tutarı (TL)</label>
-                            <input type="number" step="any" id="reportExpense" placeholder="0" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                            <label class="block text-xs font-semibold text-stone-500 mb-1">Tarih</label>
+                            <input type="date" id="reportDate" required class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
                         </div>
                         <div>
-                            <label style="font-size: 9px; font-weight: bold; color: #451a03; display: block; margin-bottom: 2px;">Masraf Açıklaması</label>
-                            <input type="text" id="reportExpenseDesc" placeholder="Ne için yapıldı?" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                            <label class="block text-xs font-semibold text-stone-500 mb-1">Nakit Tutar (TL)</label>
+                            <input type="number" step="any" id="reportCash" placeholder="0" class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
                         </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-500 mb-1">Banka / Kredi Kartı (TL)</label>
+                            <input type="number" step="any" id="reportBank" placeholder="0" class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-stone-100">
+                        <div>
+                            <label class="block text-xs font-semibold text-rose-600 mb-1">Masraf Tutarı (TL)</label>
+                            <input type="number" step="any" id="reportExpense" placeholder="0" class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Masraf Açıklaması</label>
+                            <input type="text" id="reportExpenseDesc" placeholder="Ne için harcandı?" class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button type="submit" class="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-sm shadow-md transition-all">
+                            Raporu Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tablo Alanı -->
+            <div class="bg-white rounded-2xl border border-stone-200 shadow-xs overflow-hidden">
+                <div class="p-5 border-b border-stone-100 flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                        <h3 id="tableTitle" class="font-bold text-stone-900 text-sm uppercase tracking-wide">Rapor Listesi</h3>
+                        <p class="text-xs text-stone-500 mt-0.5">Seçilen şubeye ait kayıtlar listelenmektedir.</p>
                     </div>
                 </div>
 
-                <div>
-                    <button type="submit" style="width: 100%; background: #78350f; color: #fff; padding: 9px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Günlük Raporu Kaydet</button>
-                </div>
-            </form>
-        </div>
-
-        <!-- YEMEK KARTLARI PLATFORM DETAYLARI -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Yemek Kartı Platformları Toplamları</h3>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                    <div style="font-size: 8px; color: #6b7280;">Pluxee</div>
-                    <div id="sumPluxee" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
-                </div>
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                    <div style="font-size: 8px; color: #6b7280;">Edenred</div>
-                    <div id="sumEdenred" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
-                </div>
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                    <div style="font-size: 8px; color: #6b7280;">MultiNet</div>
-                    <div id="sumMultiNet" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
-                </div>
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                    <div style="font-size: 8px; color: #6b7280;">Setcard</div>
-                    <div id="sumSetcard" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
-                </div>
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                    <div style="font-size: 8px; color: #6b7280;">MetropolCard</div>
-                    <div id="sumMetropol" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
-                </div>
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                    <div style="font-size: 8px; color: #6b7280;">TokenFlex</div>
-                    <div id="sumToken" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-stone-50 text-stone-400 font-bold uppercase tracking-wider border-b border-stone-200">
+                                <th id="thBranchHeader" class="p-4">Şube</th>
+                                <th class="p-4">Tarih</th>
+                                <th class="p-4">Nakit</th>
+                                <th class="p-4">Banka</th>
+                                <th class="p-4">Ciro</th>
+                                <th class="p-4">Masraf & Açıklama</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody" class="divide-y divide-stone-100 text-stone-700 font-medium">
+                            <!-- Dinamik Dolacak -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-
-        <!-- Raporlar / Liste Tablosu -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <h3 id="tableHeaderTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Raporlar Listesi</h3>
-            <div style="width: 100%; overflow-x: auto;">
-                <table style="width: 100%; min-width: 700px; border-collapse: collapse; font-size: 10px;">
-                    <thead>
-                        <tr style="background: #fffbeb; color: #78350f;">
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
-                        </tr>
-                    </thead>
-                    <tbody id="allReportsTableBody"></tbody>
-                    <tfoot id="allReportsTableFooter" style="background: #fffbeb; font-weight: bold; border-top: 1px solid #fde68a;"></tfoot>
-                </table>
-            </div>
-        </div>
+        </main>
     </div>
 
     <script>
@@ -205,100 +205,114 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Şifreler
+        // Şifre Tanımları (Merkez şifresi ve şube şifreleri)
         const branchPasswords = {
-            'Merkez': '1985',
             'Kurtkoy': '2025',
             'Soganlik': '2026',
-            'Ortadag': '2027'
+            'Ortadag': '2027',
+            'Merkez': '2026' // <-- MERKEZ YÖNETİM ŞİFRESİ BURADAN DEĞİŞTİRİLEBİLİR
         };
 
-        let allDataCache = [];
-        let currentSelectedBranch = localStorage.getItem('sweet_waffle_active_branch') || '';
+        let selectedBranchTemp = '';
+        let currentActiveBranch = localStorage.getItem('sweet_waffle_active_branch') || '';
+        let allReportsCache = [];
 
         document.getElementById('reportDate').valueAsDate = new Date();
 
-        // Sayfa açıldığında kayıtlı aktif şube yoksa mutlaka şifre ekranını göster
         window.addEventListener('DOMContentLoaded', () => {
-            if (!currentSelectedBranch || !branchPasswords[currentSelectedBranch]) {
-                forceLogout();
+            if (currentActiveBranch && currentActiveBranch in branchPasswords) {
+                document.getElementById('loginModal').style.display = 'none';
+                initApp(currentActiveBranch);
             } else {
-                document.getElementById('welcomeScreenModal').style.display = 'none';
-                applyBranchUI(currentSelectedBranch);
-                fetchAllReports();
+                logout();
             }
         });
 
-        function forceLogout() {
-            localStorage.removeItem('sweet_waffle_active_branch');
-            currentSelectedBranch = '';
-            document.getElementById('welcomeScreenModal').style.display = 'flex';
+        function selectBranch(branchKey) {
+            selectedBranchTemp = branchKey;
+            let branchNames = {
+                'Kurtkoy': 'Kurtköy Şubesi',
+                'Soganlik': 'Soğanlık Şubesi',
+                'Ortadag': 'Ortadağ Şubesi',
+                'Merkez': 'Merkez Yönetim Paneli'
+            };
+
+            // Her şube ve merkez için şifre doğrulama zorunluluğu aktif
+            document.getElementById('passwordLabel').innerText = `${branchNames[branchKey]} Şifresini Giriniz`;
+            document.getElementById('passwordSection').classList.remove('hidden');
+            document.getElementById('branchPasswordInput').value = '';
+            document.getElementById('branchPasswordInput').focus();
         }
 
-        function verifyAndEnter(branchName) {
-            let displayName = branchName === 'Merkez' ? 'Merkez' : (branchName === 'Kurtkoy' ? 'Kurtköy' : (branchName === 'Soganlik' ? 'Soğanlık' : 'Ortadağ'));
-            let passwordInput = prompt(`${displayName} için şifreyi giriniz:`);
+        function cancelPassword() {
+            selectedBranchTemp = '';
+            document.getElementById('passwordSection').classList.add('hidden');
+        }
 
-            if (passwordInput === null) return; // İptal edilirse
-
-            if (passwordInput === branchPasswords[branchName]) {
-                currentSelectedBranch = branchName;
-                localStorage.setItem('sweet_waffle_active_branch', branchName);
-                document.getElementById('welcomeScreenModal').style.display = 'none';
-                applyBranchUI(branchName);
-                fetchAllReports();
+        function verifyPasswordAndLogin() {
+            let enteredPass = document.getElementById('branchPasswordInput').value;
+            if (enteredPass === branchPasswords[selectedBranchTemp]) {
+                currentActiveBranch = selectedBranchTemp;
+                localStorage.setItem('sweet_waffle_active_branch', currentActiveBranch);
+                document.getElementById('loginModal').style.display = 'none';
+                initApp(currentActiveBranch);
             } else {
                 alert('Hatalı şifre! Lütfen tekrar deneyin.');
+                document.getElementById('branchPasswordInput').value = '';
             }
         }
 
-        function applyBranchUI(branchName) {
-            let displayName = branchName === 'Merkez' ? 'Merkez' : (branchName === 'Kurtkoy' ? 'Kurtköy' : (branchName === 'Soganlik' ? 'Soğanlık' : 'Ortadağ'));
-            document.getElementById('panelTitle').innerText = displayName + " Paneli";
-            document.getElementById('formSectionTitle').innerText = displayName + " - Günlük Rapor ve Masraf Girişi";
-            document.getElementById('tableHeaderTitle').innerText = displayName + " Raporları Listesi";
+        function logout() {
+            localStorage.removeItem('sweet_waffle_active_branch');
+            currentActiveBranch = '';
+            selectedBranchTemp = '';
+            document.getElementById('passwordSection').classList.add('hidden');
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('appContainer').classList.add('hidden');
         }
 
-        function formatMoney(val) {
-            if (val === null || val === undefined || val === '') return '0';
-            let num = Number(val);
-            if (isNaN(num)) return '0';
-            return num.toLocaleString('tr-TR', { maximumFractionDigits: 2 });
+        function initApp(branch) {
+            document.getElementById('appContainer').classList.remove('hidden');
+            let titles = {
+                'Kurtkoy': 'Kurtköy Şubesi',
+                'Soganlik': 'Soğanlık Şubesi',
+                'Ortadag': 'Ortadağ Şubesi',
+                'Merkez': 'Merkez Yönetim (Tüm Şubeler)'
+            };
+            document.getElementById('activePanelTitle').innerText = titles[branch];
+            
+            if (branch === 'Merkez') {
+                document.getElementById('activePanelSubtitle').innerText = 'Tüm Şube Verileri Toplu Görünüm';
+                document.getElementById('thBranchHeader').style.display = '';
+            } else {
+                document.getElementById('activePanelSubtitle').innerText = 'Şube Operasyon Paneli';
+                document.getElementById('thBranchHeader').style.display = 'none';
+            }
+
+            fetchReports();
         }
 
-        function cleanVal(val) {
-            let num = Number(val);
-            return isNaN(num) ? 0 : num;
-        }
-
-        async function fetchAllReports() {
+        async function fetchReports() {
             try {
                 const { data, error } = await supabaseClient.from('reports').select('*').order('date', { ascending: false });
                 if (error) throw error;
-                allDataCache = data || [];
-                renderReports();
-            } catch (err) { console.error('Hata:', err); }
+                allReportsCache = data || [];
+                renderTableAndStats();
+            } catch (err) {
+                console.error('Veri çekme hatası:', err);
+            }
         }
 
         document.getElementById('branchReportForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            if (!currentSelectedBranch) {
-                alert('Lütfen önce şube seçimi ve şifre doğrulaması yapın!');
-                forceLogout();
-                return;
-            }
+            // Merkezden veri eklenirse varsayılan olarak Kurtköy'e veya merkeze kaydetsin
+            let targetBranchForSave = currentActiveBranch === 'Merkez' ? 'Kurtkoy' : currentActiveBranch;
 
             const payload = {
-                branch: currentSelectedBranch,
+                branch: targetBranchForSave,
                 date: document.getElementById('reportDate').value,
                 cash: parseFloat(document.getElementById('reportCash').value) || 0,
                 bank: parseFloat(document.getElementById('reportBank').value) || 0,
-                platform_pluxee: parseFloat(document.getElementById('reportPluxee').value) || 0,
-                platform_edenred: parseFloat(document.getElementById('reportEdenred').value) || 0,
-                platform_multinet: parseFloat(document.getElementById('reportMultiNet').value) || 0,
-                platform_setcard: parseFloat(document.getElementById('reportSetcard').value) || 0,
-                platform_metropol: parseFloat(document.getElementById('reportMetropol').value) || 0,
-                platform_token: parseFloat(document.getElementById('reportToken').value) || 0,
                 expense: parseFloat(document.getElementById('reportExpense').value) || 0,
                 expense_desc: document.getElementById('reportExpenseDesc').value || ''
             };
@@ -306,151 +320,64 @@
             try {
                 const { error } = await supabaseClient.from('reports').insert([payload]);
                 if (error) throw error;
-                alert('Günlük rapor ve masraf başarıyla kaydedildi.');
+                alert('Rapor başarıyla kaydedildi.');
                 document.getElementById('branchReportForm').reset();
                 document.getElementById('reportDate').valueAsDate = new Date();
-                fetchAllReports();
+                fetchReports();
             } catch (err) {
                 alert('Kayıt başarısız: ' + err.message);
             }
         });
 
-        function renderReports() {
-            const tbody = document.getElementById('allReportsTableBody');
-            const tfoot = document.getElementById('allReportsTableFooter');
-            
+        function renderTableAndStats() {
+            const tbody = document.getElementById('reportsTableBody');
             tbody.innerHTML = '';
-            tfoot.innerHTML = '';
 
-            let filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            // MERKEZ SEÇİLDİYSE TÜM ŞUBELERİ LİSTELE, ŞUBE SEÇİLDİYSE SADECE O ŞUBEYİ FİLTRELE
+            let filteredData = [];
+            if (currentActiveBranch === 'Merkez') {
+                filteredData = allReportsCache;
+            } else {
+                filteredData = allReportsCache.filter(row => row.branch && row.branch.toLowerCase() === currentActiveBranch.toLowerCase());
+            }
 
-            let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalRevenue = 0, totalExpense = 0;
-            let sumPluxee = 0, sumEdenred = 0, sumMultiNet = 0, sumSetcard = 0, sumMetropol = 0, sumToken = 0;
+            let tCash = 0, tBank = 0, tRev = 0, tExp = 0;
 
             if (filteredData.length > 0) {
                 filteredData.forEach(row => {
-                    const rawC = cleanVal(row.cash);
-                    const rawB = cleanVal(row.bank);
-                    const pPluxee = cleanVal(row.platform_pluxee);
-                    const pEdenred = cleanVal(row.platform_edenred);
-                    const pMultiNet = cleanVal(row.platform_multinet);
-                    const pSetcard = cleanVal(row.platform_setcard);
-                    const pMetropol = cleanVal(row.platform_metropol);
-                    const pToken = cleanVal(row.platform_token);
-                    
-                    const rowPlatformTotal = pPluxee + pEdenred + pMultiNet + pSetcard + pMetropol + pToken;
-                    const rawR = rawC + rawB;
-                    const rawE = cleanVal(row.expense);
-                    const expDesc = row.expense_desc ? ` (${row.expense_desc})` : '';
+                    let cash = Number(row.cash) || 0;
+                    let bank = Number(row.bank) || 0;
+                    let ciro = cash + bank;
+                    let exp = Number(row.expense) || 0;
+                    let expDesc = row.expense_desc ? ` (${row.expense_desc})` : '';
 
-                    totalCash += rawC; 
-                    totalBank += rawB; 
-                    totalPlatforms += rowPlatformTotal;
-                    totalRevenue += rawR; 
-                    totalExpense += rawE;
+                    tCash += cash;
+                    tBank += bank;
+                    tRev += ciro;
+                    tExp += exp;
 
-                    sumPluxee += pPluxee;
-                    sumEdenred += pEdenred;
-                    sumMultiNet += pMultiNet;
-                    sumSetcard += pSetcard;
-                    sumMetropol += pMetropol;
-                    sumToken += pToken;
+                    let branchCol = currentActiveBranch === 'Merkez' ? `<td class="p-4 font-bold text-amber-800">${row.branch || '-'}</td>` : '';
 
                     const tr = document.createElement('tr');
-                    tr.style.borderBottom = '1px solid #f3f4f6';
+                    tr.className = "hover:bg-stone-50/80 transition-colors";
                     tr.innerHTML = `
-                        <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
-                        <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
-                        <td style="padding: 6px; color: #1f2937;">${formatMoney(rawC)}</td>
-                        <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
-                        <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
-                        <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
-                        <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
+                        ${branchCol}
+                        <td class="p-4 text-stone-600">${row.date || '-'}</td>
+                        <td class="p-4 text-emerald-600 font-bold">₺${cash.toLocaleString('tr-TR', {minimumFractionDigits: 2})}</td>
+                        <td class="p-4 text-blue-600 font-bold">₺${bank.toLocaleString('tr-TR', {minimumFractionDigits: 2})}</td>
+                        <td class="p-4 text-amber-700 font-bold">₺${ciro.toLocaleString('tr-TR', {minimumFractionDigits: 2})}</td>
+                        <td class="p-4 text-rose-600 font-bold">₺${exp.toLocaleString('tr-TR', {minimumFractionDigits: 2})}${expDesc}</td>
                     `;
                     tbody.appendChild(tr);
                 });
-
-                tfoot.innerHTML = `
-                    <tr>
-                        <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
-                        <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
-                        <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
-                        <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
-                        <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
-                        <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
-                    </tr>
-                `;
             } else {
-                tbody.innerHTML = `<tr><td colspan="7" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-stone-400">Henüz kayıt bulunmuyor.</td></tr>`;
             }
 
-            document.getElementById('statTotalCash').innerText = formatMoney(totalCash);
-            document.getElementById('statTotalBank').innerText = formatMoney(totalBank);
-            document.getElementById('statTotalPlatforms').innerText = formatMoney(totalPlatforms);
-            document.getElementById('statTotalRevenue').innerText = formatMoney(totalRevenue);
-            document.getElementById('statTotalExpense').innerText = formatMoney(totalExpense);
-
-            document.getElementById('sumPluxee').innerText = formatMoney(sumPluxee);
-            document.getElementById('sumEdenred').innerText = formatMoney(sumEdenred);
-            document.getElementById('sumMultiNet').innerText = formatMoney(sumMultiNet);
-            document.getElementById('sumSetcard').innerText = formatMoney(sumSetcard);
-            document.getElementById('sumMetropol').innerText = formatMoney(sumMetropol);
-            document.getElementById('sumToken').innerText = formatMoney(sumToken);
-        }
-
-        function exportToExcel() {
-            let filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
-            let dataToExport = filteredData.map(row => {
-                const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
-                return {
-                    "Şube": row.branch || '',
-                    "Tarih": row.date || '',
-                    "Nakit": cleanVal(row.cash),
-                    "Banka": cleanVal(row.bank),
-                    "Yemek Kartları": pTotal,
-                    "Ciro": cleanVal(row.cash) + cleanVal(row.bank),
-                    "Masraf": cleanVal(row.expense),
-                    "Masraf Açıklaması": row.expense_desc || ''
-                };
-            });
-
-            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "SubeRaporlari");
-            XLSX.writeFile(workbook, `SweetWaffle_${currentSelectedBranch}_Raporlar.xlsx`);
-        }
-
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape');
-
-            doc.setFontSize(14);
-            doc.text(`Sweet Waffle - ${currentSelectedBranch} Şube Raporları`, 14, 15);
-
-            let filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
-            let tableRows = filteredData.map(row => {
-                const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
-                const ciro = cleanVal(row.cash) + cleanVal(row.bank);
-                const expInfo = cleanVal(row.expense) + (row.expense_desc ? ` (${row.expense_desc})` : '');
-                return [
-                    row.branch || '',
-                    row.date || '',
-                    formatMoney(row.cash),
-                    formatMoney(row.bank),
-                    formatMoney(pTotal),
-                    formatMoney(ciro),
-                    expInfo
-                ];
-            });
-
-            doc.autoTable({
-                head: [['Şube', 'Tarih', 'Nakit', 'Banka', 'Yemek Kartı', 'Ciro', 'Masraf & Açıklama']],
-                body: tableRows,
-                startY: 20,
-                styles: { fontSize: 8 }
-            });
-
-            doc.save(`SweetWaffle_${currentSelectedBranch}_Raporlar.pdf`);
+            document.getElementById('statTotalCash').innerText = '₺' + tCash.toLocaleString('tr-TR', {minimumFractionDigits: 2});
+            document.getElementById('statTotalBank').innerText = '₺' + tBank.toLocaleString('tr-TR', {minimumFractionDigits: 2});
+            document.getElementById('statTotalRevenue').innerText = '₺' + tRev.toLocaleString('tr-TR', {minimumFractionDigits: 2});
+            document.getElementById('statTotalExpense').innerText = '₺' + tExp.toLocaleString('tr-TR', {minimumFractionDigits: 2});
         }
     </script>
 </body>
