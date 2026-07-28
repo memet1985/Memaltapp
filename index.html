@@ -18,7 +18,6 @@
     </style>
 </head>
 <body class="font-sans pb-10">
-    <!-- Ekranın tamamını dolduran esnek kapsayıcı -->
     <div style="width: 100%; max-width: 100%; margin: 0 auto; padding: 8px;">
         
         <!-- Üst Header -->
@@ -31,7 +30,7 @@
                     </div>
                     <div>
                         <h1 style="font-size: 13px; font-weight: 900; color: #451a03; margin: 0;">Merkez Paneli</h1>
-                        <p style="font-size: 9px; color: #6b7280; margin: 0;">Genel Durum Raporu</p>
+                        <p style="font-size: 9px; color: #6b7280; margin: 0;">Genel Durum ve Yemek Platformları Raporu</p>
                     </div>
                 </div>
                 
@@ -68,17 +67,39 @@
             </div>
         </div>
 
+        <!-- Yemek Platformları Merkez Toplam Kartı -->
+        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Yemek Platformları Toplamı (Tüm Şubeler)</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center;">
+                <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 6px; padding: 6px;">
+                    <div style="font-size: 8px; color: #b45309; font-weight: bold;">Trendyol</div>
+                    <div id="totalTrendyol" style="font-size: 11px; font-weight: 900; color: #78350f;">0</div>
+                </div>
+                <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 6px; padding: 6px;">
+                    <div style="font-size: 8px; color: #b45309; font-weight: bold;">Yemeksepeti</div>
+                    <div id="totalYemeksepeti" style="font-size: 11px; font-weight: 900; color: #78350f;">0</div>
+                </div>
+                <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 6px; padding: 6px;">
+                    <div style="font-size: 8px; color: #b45309; font-weight: bold;">Getir</div>
+                    <div id="totalGetir" style="font-size: 11px; font-weight: 900; color: #78350f;">0</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Tüm Şubelerin Genel Raporları -->
         <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Şube Raporları ve Yönetimi</h3>
             <div style="width: 100%; overflow-x: auto;">
-                <table style="width: 100%; min-width: 560px; border-collapse: collapse; font-size: 10px;">
+                <table style="width: 100%; min-width: 650px; border-collapse: collapse; font-size: 10px;">
                     <thead>
                         <tr style="background: #fffbeb; color: #78350f;">
                             <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">TRENDYOL</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEKSEPETİ</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">GETİR</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF</th>
                             <th style="padding: 6px; text-align: center; font-weight: 600;">İŞLEMLER</th>
@@ -93,7 +114,7 @@
 
     <!-- Düzenleme Modalı -->
     <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 16px;">
-        <div style="background: #fff; border-radius: 12px; padding: 16px; width: 100%; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div style="background: #fff; border-radius: 12px; padding: 16px; width: 100%; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto;">
             <h3 style="font-size: 13px; font-weight: bold; color: #78350f; margin: 0 0 12px 0;">Kaydı Düzenle</h3>
             <input type="hidden" id="editId">
             <div style="margin-bottom: 8px;">
@@ -107,6 +128,18 @@
             <div style="margin-bottom: 8px;">
                 <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Banka</label>
                 <input type="number" id="editBank" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+            </div>
+            <div style="margin-bottom: 8px;">
+                <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Trendyol</label>
+                <input type="number" id="editTrendyol" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+            </div>
+            <div style="margin-bottom: 8px;">
+                <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Yemeksepeti</label>
+                <input type="number" id="editYemeksepeti" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+            </div>
+            <div style="margin-bottom: 8px;">
+                <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Getir</label>
+                <input type="number" id="editGetir" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
             </div>
             <div style="margin-bottom: 12px;">
                 <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Masraf</label>
@@ -124,11 +157,17 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        function formatMoney(val) {
+            if (val === null || val === undefined || val === '') return '0';
+            let num = Number(val);
+            if (isNaN(num)) return '0';
+            return num.toLocaleString('tr-TR');
+        }
+
         function cleanVal(val) {
             if (val === null || val === undefined || val === '') return 0;
             let num = Number(val);
-            if (isNaN(num)) return 0;
-            return num % 1 === 0 ? Math.trunc(num) : num;
+            return isNaN(num) ? 0 : num;
         }
 
         async function fetchAllReports() {
@@ -141,18 +180,24 @@
                 tbody.innerHTML = '';
                 tfoot.innerHTML = '';
 
-                let totalCash = 0, totalBank = 0, totalRevenue = 0, totalExpense = 0;
+                let totalCash = 0, totalBank = 0, totalTrendyol = 0, totalYemeksepeti = 0, totalGetir = 0, totalRevenue = 0, totalExpense = 0;
                 let totalCount = data ? data.length : 0;
 
                 if (data && data.length > 0) {
                     data.forEach(row => {
                         const c = cleanVal(row.cash);
                         const b = cleanVal(row.bank);
-                        const r = c + b;
+                        const trn = cleanVal(row.trendyol);
+                        const yms = cleanVal(row.yemeksepeti);
+                        const gtr = cleanVal(row.getir);
+                        const r = c + b + trn + yms + gtr;
                         const e = cleanVal(row.expense);
 
                         totalCash += c; 
                         totalBank += b; 
+                        totalTrendyol += trn;
+                        totalYemeksepeti += yms;
+                        totalGetir += gtr;
                         totalRevenue += r; 
                         totalExpense += e;
 
@@ -161,12 +206,15 @@
                         tr.innerHTML = `
                             <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
                             <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
-                            <td style="padding: 6px; color: #1f2937;">${c}</td>
-                            <td style="padding: 6px; color: #1f2937;">${b}</td>
-                            <td style="padding: 6px; font-weight: bold; color: #b45309;">${r}</td>
-                            <td style="padding: 6px; color: #dc2626;">${e}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(c)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(b)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(trn)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(yms)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(gtr)}</td>
+                            <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(r)}</td>
+                            <td style="padding: 6px; color: #dc2626;">${formatMoney(e)}</td>
                             <td style="padding: 6px; text-align: center; white-space: nowrap;">
-                                <button onclick="openEditModal('${row.id}', '${row.date || ''}', '${row.cash || 0}', '${row.bank || 0}', '${row.expense || 0}')" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
+                                <button onclick="openEditModal('${row.id}', '${row.date || ''}', '${row.cash || 0}', '${row.bank || 0}', '${row.trendyol || 0}', '${row.yemeksepeti || 0}', '${row.getir || 0}', '${row.expense || 0}')" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
                                 <button onclick="deleteReport('${row.id}')" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
                             </td>
                         `;
@@ -176,31 +224,41 @@
                     tfoot.innerHTML = `
                         <tr>
                             <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
-                            <td style="padding: 6px; color: #1f2937;">${cleanVal(totalCash)}</td>
-                            <td style="padding: 6px; color: #1f2937;">${cleanVal(totalBank)}</td>
-                            <td style="padding: 6px; color: #b45309;">${cleanVal(totalRevenue)}</td>
-                            <td style="padding: 6px; color: #dc2626;">${cleanVal(totalExpense)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalTrendyol)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalYemeksepeti)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalGetir)}</td>
+                            <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
+                            <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
                             <td></td>
                         </tr>
                     `;
                 } else {
-                    tbody.innerHTML = `<tr><td colspan="7" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="10" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
                 }
 
-                document.getElementById('statTotalCount').innerText = totalCount;
-                document.getElementById('statTotalCash').innerText = cleanVal(totalCash);
-                document.getElementById('statTotalBank').innerText = cleanVal(totalBank);
-                document.getElementById('statTotalRevenue').innerText = cleanVal(totalRevenue);
-                document.getElementById('statTotalExpense').innerText = cleanVal(totalExpense);
+                document.getElementById('statTotalCount').innerText = formatMoney(totalCount);
+                document.getElementById('statTotalCash').innerText = formatMoney(totalCash);
+                document.getElementById('statTotalBank').innerText = formatMoney(totalBank);
+                document.getElementById('statTotalRevenue').innerText = formatMoney(totalRevenue);
+                document.getElementById('statTotalExpense').innerText = formatMoney(totalExpense);
+
+                document.getElementById('totalTrendyol').innerText = formatMoney(totalTrendyol);
+                document.getElementById('totalYemeksepeti').innerText = formatMoney(totalYemeksepeti);
+                document.getElementById('totalGetir').innerText = formatMoney(totalGetir);
 
             } catch (err) { console.error('Hata:', err); }
         }
 
-        function openEditModal(id, date, cash, bank, expense) {
+        function openEditModal(id, date, cash, bank, trendyol, yemeksepeti, getir, expense) {
             document.getElementById('editId').value = id;
             document.getElementById('editDate').value = date;
             document.getElementById('editCash').value = cash;
             document.getElementById('editBank').value = bank;
+            document.getElementById('editTrendyol').value = trendyol;
+            document.getElementById('editYemeksepeti').value = yemeksepeti;
+            document.getElementById('editGetir').value = getir;
             document.getElementById('editExpense').value = expense;
             document.getElementById('editModal').style.display = 'flex';
         }
@@ -214,6 +272,9 @@
             const date = document.getElementById('editDate').value;
             const cash = parseFloat(document.getElementById('editCash').value) || 0;
             const bank = parseFloat(document.getElementById('editBank').value) || 0;
+            const trendyol = parseFloat(document.getElementById('editTrendyol').value) || 0;
+            const yemeksepeti = parseFloat(document.getElementById('editYemeksepeti').value) || 0;
+            const getir = parseFloat(document.getElementById('editGetir').value) || 0;
             const expense = parseFloat(document.getElementById('editExpense').value) || 0;
 
             try {
@@ -225,7 +286,7 @@
                         'Content-Type': 'application/json',
                         'Prefer': 'return=minimal'
                     },
-                    body: JSON.stringify({ date, cash, bank, expense })
+                    body: JSON.stringify({ date, cash, bank, trendyol, yemeksepeti, getir, expense })
                 });
 
                 if (!response.ok) throw new Error('Güncelleme başarısız oldu.');
