@@ -89,6 +89,7 @@
                 <table style="width: 100%; min-width: 600px; border-collapse: collapse; font-size: 10px;">
                     <thead>
                         <tr style="background: #fffbeb; color: #78350f;">
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
@@ -116,13 +117,16 @@
         const branchMap = {
             'Kurtkoy': 'Kurtköy',
             'Soganlik': 'Soğanlık',
-            'Ortadag': 'Ortadağ'
+            'Ortadag': 'Ortadağ',
+            'Kurtköy': 'Kurtköy',
+            'Soğanlık': 'Soğanlık',
+            'Ortadağ': 'Ortadağ'
         };
 
         const currentBranchName = branchMap[branchParam] || branchParam;
-        document.getElementById('branchTitle').innerText = currentBranchName + ' Şubesi';
+        const alternativeBranchName = Object.keys(branchMap).find(key => branchMap[key] === currentBranchName && key !== currentBranchName) || currentBranchName;
 
-        // Bugünün tarihini otomatik atama
+        document.getElementById('branchTitle').innerText = currentBranchName + ' Şubesi';
         document.getElementById('reportDate').valueAsDate = new Date();
 
         function formatMoney(val) {
@@ -140,10 +144,11 @@
 
         async function fetchBranchReports() {
             try {
+                // Veritabanındaki şube adlarının tüm olası yazılış biçimlerini kapsayacak şekilde filtreleme yapıyoruz
                 const { data, error } = await supabaseClient
                     .from('reports')
                     .select('*')
-                    .eq('branch', currentBranchName)
+                    .or(`branch.eq.${currentBranchName},branch.eq.${branchParam},branch.eq.${alternativeBranchName},branch.ilike.%${currentBranchName}%`)
                     .order('date', { ascending: false });
 
                 if (error) throw error;
@@ -164,6 +169,7 @@
                         const tr = document.createElement('tr');
                         tr.style.borderBottom = '1px solid #f3f4f6';
                         tr.innerHTML = `
+                            <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
                             <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
                             <td style="padding: 6px; color: #1f2937;">${formatMoney(c)}</td>
                             <td style="padding: 6px; color: #1f2937;">${formatMoney(b)}</td>
@@ -176,10 +182,11 @@
                         tbody.appendChild(tr);
                     });
                 } else {
-                    tbody.innerHTML = `<tr><td colspan="8" style="padding: 12px; text-align: center; color: #9ca3a0;">Bu şubeye ait kayıt bulunmuyor.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="9" style="padding: 12px; text-align: center; color: #9ca3a0;">Bu şubeye ait kayıt bulunmuyor.</td></tr>`;
                 }
             } catch (err) {
                 console.error('Veri çekme hatası:', err);
+                document.getElementById('branchReportsTableBody').innerHTML = `<tr><td colspan="9" style="padding: 12px; text-align: center; color: #dc2626;">Hata: ${err.message}</td></tr>`;
             }
         }
 
