@@ -24,21 +24,21 @@
 </head>
 <body class="font-sans pb-10">
 
-    <!-- ŞUBE SEÇİM VE ŞİFRE EKRANI -->
-    <div id="welcomeScreenModal" style="position: fixed; inset: 0; background: rgba(78, 35, 15, 0.95); z-index: 999; display: flex; align-items: center; justify-content: center; padding: 16px;">
-        <div style="background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+    <!-- ZORUNLU ŞUBE SEÇİM VE ŞİFRE EKRANI -->
+    <div id="welcomeScreenModal" style="position: fixed; inset: 0; background: rgba(78, 35, 15, 0.98); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
             <div style="width: 60px; height: 60px; background: #fffbeb; border: 2px solid #78350f; border-radius: 12px; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; overflow: hidden;">
                 <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('welcomeLogoFallback').style.display='flex';">
                 <div id="welcomeLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 10px; display: none; align-items: center; justify-content: center;">SW</div>
             </div>
             <h2 style="font-size: 18px; font-weight: 900; color: #451a03; margin: 0 0 6px 0;">Sweet Waffle</h2>
-            <p style="font-size: 11px; color: #6b7280; margin: 0 0 20px 0;">Lütfen İşlem Yapmak İstediğiniz Birimi Seçin ve Şifrenizi Girin</p>
+            <p style="font-size: 11px; color: #6b7280; margin: 0 0 20px 0;">Devam etmek için lütfen şube seçip şifrenizi girin</p>
             
             <div style="display: flex; flex-direction: column; gap: 8px;">
-                <button type="button" onclick="handleBranchSelection('Merkez')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Merkez</button>
-                <button type="button" onclick="handleBranchSelection('Kurtkoy')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Kurtköy Şubesi</button>
-                <button type="button" onclick="handleBranchSelection('Soganlik')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Soğanlık Şubesi</button>
-                <button type="button" onclick="handleBranchSelection('Ortadag')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Ortadağ Şubesi</button>
+                <button type="button" onclick="verifyAndEnter('Merkez')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Merkez</button>
+                <button type="button" onclick="verifyAndEnter('Kurtkoy')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Kurtköy Şubesi</button>
+                <button type="button" onclick="verifyAndEnter('Soganlik')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Soğanlık Şubesi</button>
+                <button type="button" onclick="verifyAndEnter('Ortadag')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Ortadağ Şubesi</button>
             </div>
         </div>
     </div>
@@ -61,7 +61,7 @@
                 </div>
                 
                 <div>
-                    <button type="button" onclick="lockAndOpenWelcome()" style="background: #451a03; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Şube Değiştir / Kilitle</button>
+                    <button type="button" onclick="forceLogout()" style="background: #451a03; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Şube Değiştir / Kilitle</button>
                 </div>
             </div>
         </header>
@@ -201,11 +201,18 @@
     </div>
 
     <script>
+        // CACHE KIRICI VERSİYON KONTROLÜ (Vercel ve Tarayıcı Hafızasını Tamamen Sıfırlar)
+        const CURRENT_VERSION = 'v2026_force_lock';
+        if (localStorage.getItem('sweet_waffle_app_version') !== CURRENT_VERSION) {
+            localStorage.clear();
+            localStorage.setItem('sweet_waffle_app_version', CURRENT_VERSION);
+        }
+
         const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Belirttiğiniz Şube Şifreleri
+        // Şifreler
         const branchPasswords = {
             'Merkez': '1985',
             'Kurtkoy': '2025',
@@ -214,30 +221,36 @@
         };
 
         let allDataCache = [];
-        let currentSelectedBranch = '';
+        let currentSelectedBranch = localStorage.getItem('sweet_waffle_active_branch') || '';
 
         document.getElementById('reportDate').valueAsDate = new Date();
 
-        // Sayfa her açıldığında hafızayı temizle ve şifre ekranını zorla
+        // Sayfa açıldığında kayıtlı aktif şube yoksa mutlaka şifre ekranını göster
         window.addEventListener('DOMContentLoaded', () => {
-            lockAndOpenWelcome();
+            if (!currentSelectedBranch || !branchPasswords[currentSelectedBranch]) {
+                forceLogout();
+            } else {
+                document.getElementById('welcomeScreenModal').style.display = 'none';
+                applyBranchUI(currentSelectedBranch);
+                fetchAllReports();
+            }
         });
 
-        function lockAndOpenWelcome() {
-            localStorage.removeItem('sweet_waffle_selected_branch');
+        function forceLogout() {
+            localStorage.removeItem('sweet_waffle_active_branch');
             currentSelectedBranch = '';
             document.getElementById('welcomeScreenModal').style.display = 'flex';
         }
 
-        function handleBranchSelection(branchName) {
+        function verifyAndEnter(branchName) {
             let displayName = branchName === 'Merkez' ? 'Merkez' : (branchName === 'Kurtkoy' ? 'Kurtköy' : (branchName === 'Soganlik' ? 'Soğanlık' : 'Ortadağ'));
-            let enteredPassword = prompt(`${displayName} için şifreyi giriniz:`);
+            let passwordInput = prompt(`${displayName} için şifreyi giriniz:`);
 
-            if (enteredPassword === null) return; // İptal edilirse çık
+            if (passwordInput === null) return; // İptal edilirse
 
-            if (enteredPassword === branchPasswords[branchName]) {
+            if (passwordInput === branchPasswords[branchName]) {
                 currentSelectedBranch = branchName;
-                localStorage.setItem('sweet_waffle_selected_branch', branchName);
+                localStorage.setItem('sweet_waffle_active_branch', branchName);
                 document.getElementById('welcomeScreenModal').style.display = 'none';
                 applyBranchUI(branchName);
                 fetchAllReports();
@@ -278,7 +291,7 @@
             e.preventDefault();
             if (!currentSelectedBranch) {
                 alert('Lütfen önce şube seçimi ve şifre doğrulaması yapın!');
-                lockAndOpenWelcome();
+                forceLogout();
                 return;
             }
 
