@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sweet Waffle - Merkez Yönetim Paneli</title>
+    <title>Sweet Waffle - Yönetim ve Karşılama Ekranı</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#78350f">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,7 +11,6 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- PDF ve Excel export kütüphaneleri -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -24,6 +23,29 @@
     </style>
 </head>
 <body class="font-sans pb-10">
+
+    <!-- 1. GİRİŞ VE KARŞILAMA EKRANI (MODAL / OVERLAY) -->
+    <div id="welcomeScreenModal" style="position: fixed; inset: 0; background: rgba(78, 35, 15, 0.95); z-index: 999; display: flex; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+            <div style="width: 60px; height: 60px; background: #fffbeb; border: 2px solid #78350f; border-radius: 12px; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('welcomeLogoFallback').style.display='flex';">
+                <div id="welcomeLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 10px; display: none; align-items: center; justify-content: center;">SW</div>
+            </div>
+            <h2 style="font-size: 18px; font-weight: 900; color: #451a03; margin: 0 0 6px 0;">Sweet Waffle</h2>
+            <p style="font-size: 11px; color: #6b7280; margin: 0 0 20px 0;">Yönetim ve Raporlama Sistemine Hoş Geldiniz</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button type="button" onclick="closeWelcomeScreen()" style="background: #78350f; color: #fff; padding: 12px; border-radius: 8px; font-weight: bold; border: none; font-size: 12px; cursor: pointer;">Merkez Paneline Giriş Yap</button>
+                <div style="font-size: 10px; color: #9ca3af; margin: 4px 0;">Veya bir şube seçerek devam edin:</div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                    <a href="sube.html?ad=Kurtkoy" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Kurtköy</a>
+                    <a href="sube.html?ad=Soganlik" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Soğanlık</a>
+                    <a href="sube.html?ad=Ortadag" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Ortadağ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div style="width: 100%; max-width: 100%; margin: 0 auto; padding: 8px;">
         
         <!-- Üst Header -->
@@ -280,6 +302,10 @@
         let filteredDataCache = [];
 
         document.getElementById('shipDate').valueAsDate = new Date();
+
+        function closeWelcomeScreen() {
+            document.getElementById('welcomeScreenModal').style.display = 'none';
+        }
 
         function formatMoney(val) {
             if (val === null || val === undefined || val === '') return '0';
