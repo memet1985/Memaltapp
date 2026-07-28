@@ -93,10 +93,58 @@
                 <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM CİRO</div>
                 <div id="statTotalRevenue" style="font-size: 14px; font-weight: 900; color: #b45309;">0</div>
             </div>
-            <div id="statExpenseContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center; grid-column: span 2;">
+            <div id="statExpenseContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center; grid-column: span 2; display: none;">
                 <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM MASRAF</div>
                 <div id="statTotalExpense" style="font-size: 14px; font-weight: 900; color: #dc2626;">0</div>
             </div>
+        </div>
+
+        <!-- ŞUBELER İÇİN GÜNLÜK RAPOR GİRİŞ FORMU (Sadece Şube Panellerinde Görünür) -->
+        <div id="branchReportInputSection" style="display: none; background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <h3 id="formSectionTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Günlük Rapor ve Masraf Girişi</h3>
+            <form id="branchReportForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Tarih</label>
+                    <input type="date" id="reportDate" required style="width: 100%; padding: 5px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+                </div>
+                <div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Nakit Tutar</label>
+                    <input type="number" step="any" id="reportCash" placeholder="0" style="width: 100%; padding: 5px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+                </div>
+                <div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Banka / Kredi Kartı</label>
+                    <input type="number" step="any" id="reportBank" placeholder="0" style="width: 100%; padding: 5px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+                </div>
+
+                <!-- Yemek Kartları & Altında Masraf/Açıklama Alanı -->
+                <div style="grid-column: span 2; background: #fffbeb; padding: 8px; border-radius: 8px; border: 1px solid #fde68a;">
+                    <label style="font-size: 10px; font-weight: bold; color: #78350f; display: block; margin-bottom: 4px;">Yemek Kartı Platformları</label>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 8px;">
+                        <input type="number" step="any" id="reportPluxee" placeholder="Pluxee" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 4px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportEdenred" placeholder="Edenred" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 4px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportMultiNet" placeholder="MultiNet" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 4px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportSetcard" placeholder="Setcard" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 4px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportMetropol" placeholder="Metropol" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 4px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportToken" placeholder="TokenFlex" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 4px; font-size: 10px; background: #fff;">
+                    </div>
+
+                    <!-- Yemek Kartlarının Altındaki Masraf ve Açıklama Bölümü -->
+                    <div style="border-top: 1px dashed #fcd34d; padding-top: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                        <div>
+                            <label style="font-size: 9px; font-weight: bold; color: #dc2626;">Masraf Tutarı (TL)</label>
+                            <input type="number" step="any" id="reportExpense" placeholder="0" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 4px; font-size: 10px; background: #fff;">
+                        </div>
+                        <div>
+                            <label style="font-size: 9px; font-weight: bold; color: #451a03;">Masraf Açıklaması</label>
+                            <input type="text" id="reportExpenseDesc" placeholder="Ne için yapıldı?" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 4px; font-size: 10px; background: #fff;">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="grid-column: span 2;">
+                    <button type="submit" style="width: 100%; background: #78350f; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Günlük Raporu Kaydet</button>
+                </div>
+            </form>
         </div>
 
         <!-- YEMEK KARTLARI PLATFORM DETAYLARI -->
@@ -227,7 +275,7 @@
         </div>
     </div>
 
-    <!-- Düzenleme Modalı (Sadece Merkez tarafından kullanılabilir) -->
+    <!-- Düzenleme Modalı -->
     <div id="editModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 10px;">
         <div style="background: #fff; border-radius: 12px; padding: 16px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto;">
             <h3 style="font-size: 12px; font-weight: bold; color: #78350f; margin-bottom: 10px; text-transform: uppercase;">Kayıt Düzenle</h3>
@@ -257,8 +305,8 @@
                     <input type="number" step="any" id="editExpense" style="width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 6px; font-size: 11px;">
                 </div>
                 <div>
-                    <label style="font-size: 9px; color: #6b7280;">Masraf Açıklaması (Ne için yapıldı?)</label>
-                    <input type="text" id="editExpenseDesc" placeholder="Örn: Elektrik faturası / Temizlik malzemesi" style="width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 6px; font-size: 11px;">
+                    <label style="font-size: 9px; color: #6b7280;">Masraf Açıklaması</label>
+                    <input type="text" id="editExpenseDesc" style="width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 6px; font-size: 11px;">
                 </div>
                 <div style="display: flex; gap: 6px; margin-top: 8px;">
                     <button type="button" onclick="closeEditModal()" style="flex: 1; background: #e5e7eb; color: #374151; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">İptal</button>
@@ -278,6 +326,7 @@
         let currentSelectedView = 'merkez'; 
 
         document.getElementById('shipDate').valueAsDate = new Date();
+        document.getElementById('reportDate').valueAsDate = new Date();
 
         function openWelcomeScreen() {
             document.getElementById('welcomeScreenModal').style.display = 'flex';
@@ -292,21 +341,26 @@
             const merkezStockSection = document.getElementById('merkezStockSection');
             const merkezAnalysisSection = document.getElementById('merkezAnalysisSection');
             const tableHeaderTitle = document.getElementById('tableHeaderTitle');
+            const branchReportInputSection = document.getElementById('branchReportInputSection');
             const statExpenseContainer = document.getElementById('statExpenseContainer');
+            const formSectionTitle = document.getElementById('formSectionTitle');
 
             if (viewName === 'merkez') {
                 panelTitle.innerText = "Merkez Paneli";
                 panelSubtitle.innerText = "Genel Durum ve Otomatik Arşiv";
                 merkezStockSection.style.display = 'block';
                 merkezAnalysisSection.style.display = 'block';
+                branchReportInputSection.style.display = 'none';
                 tableHeaderTitle.innerText = "Tüm Şube Raporları Listesi";
-                statExpenseContainer.style.display = 'block';
+                statExpenseContainer.style.display = 'none';
             } else {
                 let displayName = viewName === 'Kurtkoy' ? 'Kurtköy' : (viewName === 'Soganlik' ? 'Soğanlık' : 'Ortadağ');
                 panelTitle.innerText = displayName + " Şube Paneli";
                 panelSubtitle.innerText = "Şube Raporlama ve Takip Ekranı";
                 merkezStockSection.style.display = 'none';
                 merkezAnalysisSection.style.display = 'none';
+                branchReportInputSection.style.display = 'block';
+                formSectionTitle.innerText = displayName + " - Günlük Rapor ve Masraf Girişi";
                 tableHeaderTitle.innerText = displayName + " Raporları Listesi";
                 statExpenseContainer.style.display = 'block';
             }
@@ -361,6 +415,38 @@
                 filterStockAnalysis();
             } catch (err) { console.error('Hata:', err); }
         }
+
+        // Şube Raporu Kaydetme (Şube ekranından yeni rapor ve masraf girişi)
+        document.getElementById('branchReportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (currentSelectedView === 'merkez') return;
+
+            const payload = {
+                branch: currentSelectedView,
+                date: document.getElementById('reportDate').value,
+                cash: parseFloat(document.getElementById('reportCash').value) || 0,
+                bank: parseFloat(document.getElementById('reportBank').value) || 0,
+                platform_pluxee: parseFloat(document.getElementById('reportPluxee').value) || 0,
+                platform_edenred: parseFloat(document.getElementById('reportEdenred').value) || 0,
+                platform_multinet: parseFloat(document.getElementById('reportMultiNet').value) || 0,
+                platform_setcard: parseFloat(document.getElementById('reportSetcard').value) || 0,
+                platform_metropol: parseFloat(document.getElementById('reportMetropol').value) || 0,
+                platform_token: parseFloat(document.getElementById('reportToken').value) || 0,
+                expense: parseFloat(document.getElementById('reportExpense').value) || 0,
+                expense_desc: document.getElementById('reportExpenseDesc').value || ''
+            };
+
+            try {
+                const { error } = await supabaseClient.from('reports').insert([payload]);
+                if (error) throw error;
+                alert('Günlük rapor ve masraf başarıyla kaydedildi.');
+                document.getElementById('branchReportForm').reset();
+                document.getElementById('reportDate').valueAsDate = new Date();
+                fetchAllReports();
+            } catch (err) {
+                alert('Kayıt başarısız: ' + err.message);
+            }
+        });
 
         document.getElementById('stockShipmentForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -451,7 +537,7 @@
 
             let isMerkez = (currentSelectedView === 'merkez');
 
-            // Tablo Başlıklarını Görünüme Göre Ayarla (Şubelerde Sil/Düzenle yok, masraf var)
+            // Merkezde masraf sütunu yok, şubelerde masraf ve açıklama sütunu var (sil/düzenle yok)
             if (isMerkez) {
                 theadRow.innerHTML = `
                     <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
@@ -460,7 +546,6 @@
                     <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
                     <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
                     <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
                     <th style="padding: 6px; text-align: center; font-weight: 600;">İŞLEMLER</th>
                 `;
             } else {
@@ -518,7 +603,6 @@
                             <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
                             <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
                             <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
-                            <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
                             <td style="padding: 6px; text-align: center;">
                                 <div style="display: flex; gap: 4px; justify-content: center;">
                                     <button type="button" onclick="openEditModalFromStr('${row.id}')" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Düzenle</button>
@@ -547,12 +631,11 @@
                         <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
                         <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
                         <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
-                        <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
-                        ${isMerkez ? '<td></td>' : ''}
+                        ${isMerkez ? '<td></td>' : `<td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>`}
                     </tr>
                 `;
             } else {
-                let colSpanCount = isMerkez ? 8 : 7;
+                let colSpanCount = isMerkez ? 7 : 7;
                 tbody.innerHTML = `<tr><td colspan="${colSpanCount}" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
             }
 
