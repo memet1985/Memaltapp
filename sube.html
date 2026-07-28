@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sweet Waffle - Şube Yönetim Paneli</title>
+    <title>Sweet Waffle - Şube Raporlama Paneli</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#78350f">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -23,6 +23,27 @@
     </style>
 </head>
 <body class="font-sans pb-10">
+
+    <!-- ŞUBE SEÇİM EKRANI (İLK AÇILIŞ) -->
+    <div id="welcomeScreenModal" style="position: fixed; inset: 0; background: rgba(78, 35, 15, 0.95); z-index: 999; display: flex; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+            <div style="width: 60px; height: 60px; background: #fffbeb; border: 2px solid #78350f; border-radius: 12px; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('welcomeLogoFallback').style.display='flex';">
+                <div id="welcomeLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 10px; display: none; align-items: center; justify-content: center;">SW</div>
+            </div>
+            <h2 style="font-size: 18px; font-weight: 900; color: #451a03; margin: 0 0 6px 0;">Sweet Waffle</h2>
+            <p style="font-size: 11px; color: #6b7280; margin: 0 0 20px 0;">Lütfen Rapor Girişi Yapacağınız Birimi Seçin</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button type="button" onclick="promptBranchPassword('Merkez')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Merkez</button>
+                <button type="button" onclick="promptBranchPassword('Kurtkoy')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Kurtköy Şubesi</button>
+                <button type="button" onclick="promptBranchPassword('Soganlik')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Soğanlık Şubesi</button>
+                <button type="button" onclick="promptBranchPassword('Ortadag')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Ortadağ Şubesi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANA İÇERİK ALANI -->
     <div style="width: 100%; max-width: 100%; margin: 0 auto; padding: 8px;">
         
         <!-- Üst Header -->
@@ -30,103 +51,140 @@
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div style="width: 36px; height: 36px; background: #fffbeb; border: 1px solid #78350f; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
-                        <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('subeLogoFallback').style.display='flex';">
-                        <div id="subeLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 8px; display: none; align-items: center; justify-content: center;">LOGO</div>
+                        <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('branchLogoFallback').style.display='flex';">
+                        <div id="branchLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 8px; display: none; align-items: center; justify-content: center;">LOGO</div>
                     </div>
                     <div>
-                        <h1 id="pageTitle" style="font-size: 13px; font-weight: 900; color: #451a03; margin: 0;">Şube Paneli</h1>
-                        <p style="font-size: 9px; color: #6b7280; margin: 0;">Günlük Rapor ve İşlem Ekranı</p>
+                        <h1 id="panelTitle" style="font-size: 13px; font-weight: 900; color: #451a03; margin: 0;">Şube Paneli</h1>
+                        <p id="panelSubtitle" style="font-size: 9px; color: #6b7280; margin: 0;">Günlük Rapor ve Masraf Girişi</p>
                     </div>
                 </div>
                 
-                <!-- Şubeler Arası Geçiş Navigasyonu -->
-                <div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
-                    <a href="index.html" id="navIndex" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">MERKEZ</a>
-                    <a href="sube.html?ad=Kurtkoy" id="navKurtkoy" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Kurtköy</a>
-                    <a href="sube.html?ad=Soganlik" id="navSoganlik" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Soğanlık</a>
-                    <a href="sube.html?ad=Ortadag" id="navOrtadag" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Ortadağ</a>
+                <div>
+                    <button type="button" onclick="openWelcomeScreen()" style="background: #451a03; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Şube Değiştir</button>
                 </div>
             </div>
         </header>
 
-        <!-- Çıktı Alma (PDF / Excel) Butonları -->
+        <!-- Çıktı Alma Butonları -->
         <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 8px; margin-bottom: 12px; display: flex; gap: 8px; justify-content: flex-end;">
             <button type="button" onclick="exportToExcel()" style="background: #047857; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Excel Çıktısı Al</button>
             <button type="button" onclick="exportToPDF()" style="background: #b91c1c; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">PDF Çıktısı Al</button>
         </div>
 
-        <!-- Şube Günlük Rapor Giriş Formu -->
+        <!-- Özet Kartları -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM NAKİT</div>
+                <div id="statTotalCash" style="font-size: 14px; font-weight: 900; color: #047857;">0</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM BANKA</div>
+                <div id="statTotalBank" style="font-size: 14px; font-weight: 900; color: #1d4ed8;">0</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM YEMEK KARTLARI</div>
+                <div id="statTotalPlatforms" style="font-size: 14px; font-weight: 900; color: #047857;">0</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM CİRO</div>
+                <div id="statTotalRevenue" style="font-size: 14px; font-weight: 900; color: #b45309;">0</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center; grid-column: span 2;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM MASRAF</div>
+                <div id="statTotalExpense" style="font-size: 14px; font-weight: 900; color: #dc2626;">0</div>
+            </div>
+        </div>
+
+        <!-- GÜNLÜK RAPOR GİRİŞ FORMU -->
         <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Günlük Rapor ve Masraf Girişi</h3>
-            <form id="dailyReportForm" style="display: flex; flex-direction: column; gap: 8px;">
+            <h3 id="formSectionTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Günlük Rapor ve Masraf Girişi</h3>
+            <form id="branchReportForm" style="display: flex; flex-direction: column; gap: 8px;">
+                
                 <div>
-                    <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Tarih</label>
-                    <input type="date" id="reportDate" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Nakit (TL)</label>
-                        <input type="number" step="any" id="reportCash" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
-                    </div>
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Normal Banka / Kredi Kartı</label>
-                        <input type="number" step="any" id="reportBank" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
-                    </div>
-                </div>
-
-                <!-- Yemek Kartları Alanı -->
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 8px;">
-                    <label style="font-size: 9px; font-weight: bold; color: #78350f; display: block; margin-bottom: 4px;">Yemek Kartları Ciro Detayları</label>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
-                        <div>
-                            <span style="font-size: 8px; color: #6b7280;">Pluxee</span>
-                            <input type="number" step="any" id="platformPluxee" placeholder="0" style="width: 100%; padding: 5px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 10px; background: #fff;">
-                        </div>
-                        <div>
-                            <span style="font-size: 8px; color: #6b7280;">Edenred</span>
-                            <input type="number" step="any" id="platformEdenred" placeholder="0" style="width: 100%; padding: 5px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 10px; background: #fff;">
-                        </div>
-                        <div>
-                            <span style="font-size: 8px; color: #6b7280;">MultiNet</span>
-                            <input type="number" step="any" id="platformMultiNet" placeholder="0" style="width: 100%; padding: 5px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 10px; background: #fff;">
-                        </div>
-                        <div>
-                            <span style="font-size: 8px; color: #6b7280;">Setcard</span>
-                            <input type="number" step="any" id="platformSetcard" placeholder="0" style="width: 100%; padding: 5px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 10px; background: #fff;">
-                        </div>
-                        <div>
-                            <span style="font-size: 8px; color: #6b7280;">MetropolCard</span>
-                            <input type="number" step="any" id="platformMetropol" placeholder="0" style="width: 100%; padding: 5px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 10px; background: #fff;">
-                        </div>
-                        <div>
-                            <span style="font-size: 8px; color: #6b7280;">TokenFlex</span>
-                            <input type="number" step="any" id="platformToken" placeholder="0" style="width: 100%; padding: 5px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 10px; background: #fff;">
-                        </div>
-                    </div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Tarih</label>
+                    <input type="date" id="reportDate" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                     <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Masraf Tutarı (TL)</label>
-                        <input type="number" step="any" id="reportExpense" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Nakit Tutar (TL)</label>
+                        <input type="number" step="any" id="reportCash" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
                     </div>
                     <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Masraf Açıklaması (Ne için?)</label>
-                        <input type="text" id="reportExpenseDesc" placeholder="Örn: Su faturası / Pazar alışverişi" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Banka / Kredi Kartı (TL)</label>
+                        <input type="number" step="any" id="reportBank" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
                     </div>
                 </div>
 
-                <button type="submit" style="width: 100%; background: #78350f; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer; margin-top: 4px;">Günlük Raporu Kaydet</button>
+                <div style="background: #fffbeb; padding: 8px; border-radius: 8px; border: 1px solid #fde68a;">
+                    <label style="font-size: 10px; font-weight: bold; color: #78350f; display: block; margin-bottom: 4px;">Yemek Kartı Platformları</label>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 8px;">
+                        <input type="number" step="any" id="reportPluxee" placeholder="Pluxee" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportEdenred" placeholder="Edenred" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportMultiNet" placeholder="MultiNet" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportSetcard" placeholder="Setcard" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportMetropol" placeholder="Metropol" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportToken" placeholder="TokenFlex" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                    </div>
+
+                    <div style="border-top: 1px dashed #fcd34d; padding-top: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                        <div>
+                            <label style="font-size: 9px; font-weight: bold; color: #dc2626; display: block; margin-bottom: 2px;">Masraf Tutarı (TL)</label>
+                            <input type="number" step="any" id="reportExpense" placeholder="0" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        </div>
+                        <div>
+                            <label style="font-size: 9px; font-weight: bold; color: #451a03; display: block; margin-bottom: 2px;">Masraf Açıklaması</label>
+                            <input type="text" id="reportExpenseDesc" placeholder="Ne için yapıldı?" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" style="width: 100%; background: #78350f; color: #fff; padding: 9px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Günlük Raporu Kaydet</button>
+                </div>
             </form>
         </div>
 
-        <!-- Şube Geçmiş Raporlar Tablosu -->
+        <!-- YEMEK KARTLARI PLATFORM DETAYLARI -->
+        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Yemek Kartı Platformları Toplamları</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                    <div style="font-size: 8px; color: #6b7280;">Pluxee</div>
+                    <div id="sumPluxee" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                </div>
+                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                    <div style="font-size: 8px; color: #6b7280;">Edenred</div>
+                    <div id="sumEdenred" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                </div>
+                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                    <div style="font-size: 8px; color: #6b7280;">MultiNet</div>
+                    <div id="sumMultiNet" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                </div>
+                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                    <div style="font-size: 8px; color: #6b7280;">Setcard</div>
+                    <div id="sumSetcard" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                </div>
+                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                    <div style="font-size: 8px; color: #6b7280;">MetropolCard</div>
+                    <div id="sumMetropol" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                </div>
+                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                    <div style="font-size: 8px; color: #6b7280;">TokenFlex</div>
+                    <div id="sumToken" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Raporlar / Liste Tablosu -->
         <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Şube Geçmiş Raporları</h3>
+            <h3 id="tableHeaderTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Raporlar Listesi</h3>
             <div style="width: 100%; overflow-x: auto;">
-                <table style="width: 100%; min-width: 600px; border-collapse: collapse; font-size: 10px;">
+                <table style="width: 100%; min-width: 700px; border-collapse: collapse; font-size: 10px;">
                     <thead>
                         <tr style="background: #fffbeb; color: #78350f;">
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
@@ -135,8 +193,8 @@
                             <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
                         </tr>
                     </thead>
-                    <tbody id="branchReportsTableBody"></tbody>
-                    <tfoot id="branchReportsTableFooter" style="background: #fffbeb; font-weight: bold; border-top: 1px solid #fde68a;"></tfoot>
+                    <tbody id="allReportsTableBody"></tbody>
+                    <tfoot id="allReportsTableFooter" style="background: #fffbeb; font-weight: bold; border-top: 1px solid #fde68a;"></tfoot>
                 </table>
             </div>
         </div>
@@ -147,29 +205,57 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const branchParam = urlParams.get('ad') || 'Kurtkoy';
-        
-        let branchDataCache = [];
-        document.getElementById('pageTitle').innerText = `${branchParam} Şube Paneli`;
+        // Şube Şifre Tanımlamaları
+        const branchPasswords = {
+            'Merkez': '1985',
+            'Kurtkoy': '2025',
+            'Soganlik': '2026',
+            'Ortadag': '2027'
+        };
+
+        let allDataCache = [];
+        let currentSelectedBranch = localStorage.getItem('sweet_waffle_selected_branch') || '';
+
         document.getElementById('reportDate').valueAsDate = new Date();
 
-        const allNavIds = ['navKurtkoy', 'navSoganlik', 'navOrtadag'];
-        allNavIds.forEach(id => {
-            const btn = document.getElementById(id);
-            if (btn) {
-                btn.style.background = '#fffbeb';
-                btn.style.color = '#78350f';
-                btn.style.border = '1px solid #fde68a';
-            }
-        });
+        if (!currentSelectedBranch) {
+            openWelcomeScreen();
+        } else {
+            document.getElementById('welcomeScreenModal').style.display = 'none';
+            applyBranchUI(currentSelectedBranch);
+            fetchAllReports();
+        }
 
-        const activeNavId = 'nav' + branchParam;
-        const activeBtn = document.getElementById(activeNavId);
-        if (activeBtn) {
-            activeBtn.style.background = '#78350f';
-            activeBtn.style.color = '#fff';
-            activeBtn.style.border = '1px solid #78350f';
+        function openWelcomeScreen() {
+            document.getElementById('welcomeScreenModal').style.display = 'flex';
+        }
+
+        function promptBranchPassword(branchName) {
+            let displayName = branchName === 'Merkez' ? 'Merkez' : (branchName === 'Kurtkoy' ? 'Kurtköy' : (branchName === 'Soganlik' ? 'Soğanlık' : 'Ortadağ'));
+            let passwordInput = prompt(`${displayName} şubesi için şifreyi giriniz:`);
+            
+            if (passwordInput === null) return; // İptal edilirse
+
+            if (passwordInput === branchPasswords[branchName]) {
+                selectBranch(branchName);
+            } else {
+                alert('Hatalı şifre! Lütfen tekrar deneyin.');
+            }
+        }
+
+        function selectBranch(branchName) {
+            currentSelectedBranch = branchName;
+            localStorage.setItem('sweet_waffle_selected_branch', branchName);
+            document.getElementById('welcomeScreenModal').style.display = 'none';
+            applyBranchUI(branchName);
+            fetchAllReports();
+        }
+
+        function applyBranchUI(branchName) {
+            let displayName = branchName === 'Merkez' ? 'Merkez' : (branchName === 'Kurtkoy' ? 'Kurtköy' : (branchName === 'Soganlik' ? 'Soğanlık' : 'Ortadağ'));
+            document.getElementById('panelTitle').innerText = displayName + " Paneli";
+            document.getElementById('formSectionTitle').innerText = displayName + " - Günlük Rapor ve Masraf Girişi";
+            document.getElementById('tableHeaderTitle').innerText = displayName + " Raporları Listesi";
         }
 
         function formatMoney(val) {
@@ -184,94 +270,99 @@
             return isNaN(num) ? 0 : num;
         }
 
-        async function fetchBranchReports() {
+        async function fetchAllReports() {
             try {
-                const { data, error } = await supabaseClient
-                    .from('reports')
-                    .select('*')
-                    .ilike('branch', branchParam)
-                    .order('date', { ascending: false });
-                
+                const { data, error } = await supabaseClient.from('reports').select('*').order('date', { ascending: false });
                 if (error) throw error;
-                branchDataCache = data || [];
-                renderBranchReports(branchDataCache);
+                allDataCache = data || [];
+                renderReports();
             } catch (err) { console.error('Hata:', err); }
         }
 
-        document.getElementById('dailyReportForm').addEventListener('submit', async function(e) {
+        document.getElementById('branchReportForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const date = document.getElementById('reportDate').value;
-            const cash = parseFloat(document.getElementById('reportCash').value) || 0;
-            const bank = parseFloat(document.getElementById('reportBank').value) || 0;
-            
-            const pPluxee = parseFloat(document.getElementById('platformPluxee').value) || 0;
-            const pEdenred = parseFloat(document.getElementById('platformEdenred').value) || 0;
-            const pMultiNet = parseFloat(document.getElementById('platformMultiNet').value) || 0;
-            const pSetcard = parseFloat(document.getElementById('platformSetcard').value) || 0;
-            const pMetropol = parseFloat(document.getElementById('platformMetropol').value) || 0;
-            const pToken = parseFloat(document.getElementById('platformToken').value) || 0;
-
-            const expense = parseFloat(document.getElementById('reportExpense').value) || 0;
-            const expenseDesc = document.getElementById('reportExpenseDesc').value;
+            if (!currentSelectedBranch) {
+                alert('Lütfen önce şube seçimi yapın!');
+                openWelcomeScreen();
+                return;
+            }
 
             const payload = {
-                branch: branchParam,
-                date: date,
-                cash: cash,
-                bank: bank,
-                platform_pluxee: pPluxee,
-                platform_edenred: pEdenred,
-                platform_multinet: pMultiNet,
-                platform_setcard: pSetcard,
-                platform_metropol: pMetropol,
-                platform_token: pToken,
-                expense: expense,
-                expense_desc: expenseDesc
+                branch: currentSelectedBranch,
+                date: document.getElementById('reportDate').value,
+                cash: parseFloat(document.getElementById('reportCash').value) || 0,
+                bank: parseFloat(document.getElementById('reportBank').value) || 0,
+                platform_pluxee: parseFloat(document.getElementById('reportPluxee').value) || 0,
+                platform_edenred: parseFloat(document.getElementById('reportEdenred').value) || 0,
+                platform_multinet: parseFloat(document.getElementById('reportMultiNet').value) || 0,
+                platform_setcard: parseFloat(document.getElementById('reportSetcard').value) || 0,
+                platform_metropol: parseFloat(document.getElementById('reportMetropol').value) || 0,
+                platform_token: parseFloat(document.getElementById('reportToken').value) || 0,
+                expense: parseFloat(document.getElementById('reportExpense').value) || 0,
+                expense_desc: document.getElementById('reportExpenseDesc').value || ''
             };
 
             try {
                 const { error } = await supabaseClient.from('reports').insert([payload]);
                 if (error) throw error;
-                alert('Günlük rapor başarıyla kaydedildi.');
-                document.getElementById('dailyReportForm').reset();
+                alert('Günlük rapor ve masraf başarıyla kaydedildi.');
+                document.getElementById('branchReportForm').reset();
                 document.getElementById('reportDate').valueAsDate = new Date();
-                fetchBranchReports();
+                fetchAllReports();
             } catch (err) {
                 alert('Kayıt başarısız: ' + err.message);
             }
         });
 
-        function renderBranchReports(data) {
-            const tbody = document.getElementById('branchReportsTableBody');
-            const tfoot = document.getElementById('branchReportsTableFooter');
+        function renderReports() {
+            const tbody = document.getElementById('allReportsTableBody');
+            const tfoot = document.getElementById('allReportsTableFooter');
+            
             tbody.innerHTML = '';
             tfoot.innerHTML = '';
 
-            let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalRevenue = 0, totalExpense = 0;
+            let filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
 
-            if (data.length > 0) {
-                data.forEach(row => {
+            let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalRevenue = 0, totalExpense = 0;
+            let sumPluxee = 0, sumEdenred = 0, sumMultiNet = 0, sumSetcard = 0, sumMetropol = 0, sumToken = 0;
+
+            if (filteredData.length > 0) {
+                filteredData.forEach(row => {
                     const rawC = cleanVal(row.cash);
                     const rawB = cleanVal(row.bank);
-                    const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
+                    const pPluxee = cleanVal(row.platform_pluxee);
+                    const pEdenred = cleanVal(row.platform_edenred);
+                    const pMultiNet = cleanVal(row.platform_multinet);
+                    const pSetcard = cleanVal(row.platform_setcard);
+                    const pMetropol = cleanVal(row.platform_metropol);
+                    const pToken = cleanVal(row.platform_token);
+                    
+                    const rowPlatformTotal = pPluxee + pEdenred + pMultiNet + pSetcard + pMetropol + pToken;
                     const rawR = rawC + rawB;
                     const rawE = cleanVal(row.expense);
                     const expDesc = row.expense_desc ? ` (${row.expense_desc})` : '';
 
-                    totalCash += rawC;
-                    totalBank += rawB;
-                    totalPlatforms += pTotal;
-                    totalRevenue += rawR;
+                    totalCash += rawC; 
+                    totalBank += rawB; 
+                    totalPlatforms += rowPlatformTotal;
+                    totalRevenue += rawR; 
                     totalExpense += rawE;
+
+                    sumPluxee += pPluxee;
+                    sumEdenred += pEdenred;
+                    sumMultiNet += pMultiNet;
+                    sumSetcard += pSetcard;
+                    sumMetropol += pMetropol;
+                    sumToken += pToken;
 
                     const tr = document.createElement('tr');
                     tr.style.borderBottom = '1px solid #f3f4f6';
-
                     tr.innerHTML = `
+                        <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
                         <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
                         <td style="padding: 6px; color: #1f2937;">${formatMoney(rawC)}</td>
                         <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
-                        <td style="padding: 6px; color: #047857;">${formatMoney(pTotal)}</td>
+                        <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
                         <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
                         <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
                     `;
@@ -280,7 +371,7 @@
 
                 tfoot.innerHTML = `
                     <tr>
-                        <td style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
+                        <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
                         <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
                         <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
                         <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
@@ -289,12 +380,26 @@
                     </tr>
                 `;
             } else {
-                tbody.innerHTML = `<tr><td colspan="6" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
             }
+
+            document.getElementById('statTotalCash').innerText = formatMoney(totalCash);
+            document.getElementById('statTotalBank').innerText = formatMoney(totalBank);
+            document.getElementById('statTotalPlatforms').innerText = formatMoney(totalPlatforms);
+            document.getElementById('statTotalRevenue').innerText = formatMoney(totalRevenue);
+            document.getElementById('statTotalExpense').innerText = formatMoney(totalExpense);
+
+            document.getElementById('sumPluxee').innerText = formatMoney(sumPluxee);
+            document.getElementById('sumEdenred').innerText = formatMoney(sumEdenred);
+            document.getElementById('sumMultiNet').innerText = formatMoney(sumMultiNet);
+            document.getElementById('sumSetcard').innerText = formatMoney(sumSetcard);
+            document.getElementById('sumMetropol').innerText = formatMoney(sumMetropol);
+            document.getElementById('sumToken').innerText = formatMoney(sumToken);
         }
 
         function exportToExcel() {
-            let dataToExport = branchDataCache.map(row => {
+            let filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            let dataToExport = filteredData.map(row => {
                 const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
                 return {
                     "Şube": row.branch || '',
@@ -310,8 +415,8 @@
 
             const worksheet = XLSX.utils.json_to_sheet(dataToExport);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, `${branchParam}_Raporlari`);
-            XLSX.writeFile(workbook, `${branchParam}_SweetWaffle_Raporlar.xlsx`);
+            XLSX.utils.book_append_sheet(workbook, worksheet, "SubeRaporlari");
+            XLSX.writeFile(workbook, `SweetWaffle_${currentSelectedBranch}_Raporlar.xlsx`);
         }
 
         function exportToPDF() {
@@ -319,13 +424,15 @@
             const doc = new jsPDF('landscape');
 
             doc.setFontSize(14);
-            doc.text(`Sweet Waffle - ${branchParam} Sube Raporlari Listesi`, 14, 15);
+            doc.text(`Sweet Waffle - ${currentSelectedBranch} Şube Raporları`, 14, 15);
 
-            let tableRows = branchDataCache.map(row => {
+            let filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            let tableRows = filteredData.map(row => {
                 const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
                 const ciro = cleanVal(row.cash) + cleanVal(row.bank);
                 const expInfo = cleanVal(row.expense) + (row.expense_desc ? ` (${row.expense_desc})` : '');
                 return [
+                    row.branch || '',
                     row.date || '',
                     formatMoney(row.cash),
                     formatMoney(row.bank),
@@ -336,16 +443,14 @@
             });
 
             doc.autoTable({
-                head: [['Tarih', 'Nakit', 'Banka', 'Yemek Kartı', 'Ciro', 'Masraf & Açıklama']],
+                head: [['Şube', 'Tarih', 'Nakit', 'Banka', 'Yemek Kartı', 'Ciro', 'Masraf & Açıklama']],
                 body: tableRows,
                 startY: 20,
                 styles: { fontSize: 8 }
             });
 
-            doc.save(`${branchParam}_SweetWaffle_Raporlar.pdf`);
+            doc.save(`SweetWaffle_${currentSelectedBranch}_Raporlar.pdf`);
         }
-
-        fetchBranchReports();
     </script>
 </body>
 </html>
