@@ -15,6 +15,9 @@
     <style>
         * { box-sizing: border-box; -webkit-text-size-adjust: 100%; }
         html, body { width: 100%; max-width: 100vw; overflow-x: hidden; margin: 0; padding: 0; background-color: #f9fafb; }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
     </style>
 </head>
 <body class="font-sans pb-10">
@@ -57,37 +60,71 @@
                     <input type="date" id="date" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; color: #1f2937; background: #fff;" required>
                 </div>
 
+                <!-- Temel Ciro Alanları -->
                 <div>
-                    <label style="display: block; font-size: 10px; font-weight: 600; color: #78350f; margin-bottom: 3px;">Ciro Bilgileri (TL)</label>
+                    <label style="display: block; font-size: 10px; font-weight: 600; color: #78350f; margin-bottom: 3px;">Temel Cirolar (TL)</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                         <div>
-                            <input type="text" inputmode="decimal" id="cash" placeholder="" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
+                            <input type="number" step="any" id="cash" placeholder="0" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
                             <span style="font-size: 8px; color: #6b7280;">Nakit</span>
                         </div>
                         <div>
-                            <input type="text" inputmode="decimal" id="bank" placeholder="" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
-                            <span style="font-size: 8px; color: #6b7280;">Banka / Kart</span>
+                            <input type="number" step="any" id="bank" placeholder="0" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
+                            <span style="font-size: 8px; color: #6b7280;">Normal Banka / Kredi Kartı</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- Yemek Kartı Platformları -->
+                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 8px;">
+                    <label style="display: block; font-size: 10px; font-weight: bold; color: #78350f; margin-bottom: 6px;">Yemek Kartı Platformları</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                        <div>
+                            <input type="number" step="any" id="platformPluxee" placeholder="0" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 5px; font-size: 11px; background: #fff;">
+                            <span style="font-size: 8px; color: #6b7280;">Pluxee (Sodexo)</span>
+                        </div>
+                        <div>
+                            <input type="number" step="any" id="platformEdenred" placeholder="0" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 5px; font-size: 11px; background: #fff;">
+                            <span style="font-size: 8px; color: #6b7280;">Edenred</span>
+                        </div>
+                        <div>
+                            <input type="number" step="any" id="platformMultiNet" placeholder="0" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 5px; font-size: 11px; background: #fff;">
+                            <span style="font-size: 8px; color: #6b7280;">MultiNet</span>
+                        </div>
+                        <div>
+                            <input type="number" step="any" id="platformSetcard" placeholder="0" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 5px; font-size: 11px; background: #fff;">
+                            <span style="font-size: 8px; color: #6b7280;">Setcard</span>
+                        </div>
+                        <div>
+                            <input type="number" step="any" id="platformMetropolCard" placeholder="0" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 5px; font-size: 11px; background: #fff;">
+                            <span style="font-size: 8px; color: #6b7280;">MetropolCard</span>
+                        </div>
+                        <div>
+                            <input type="number" step="any" id="platformTokenFlex" placeholder="0" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 5px; font-size: 11px; background: #fff;">
+                            <span style="font-size: 8px; color: #6b7280;">TokenFlex</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Masraf Alanı -->
                 <div>
                     <label style="display: block; font-size: 10px; font-weight: 600; color: #78350f; margin-bottom: 3px;">Masraf (Opsiyonel)</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                         <div>
-                            <input type="text" inputmode="decimal" id="expense" placeholder="" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
+                            <input type="number" step="any" id="expense" placeholder="0" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
                             <span style="font-size: 8px; color: #6b7280;">Tutar (TL)</span>
                         </div>
                         <div>
-                            <input type="text" id="expenseDesc" placeholder="" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
+                            <input type="text" id="expenseDesc" placeholder="Açıklama" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
                             <span style="font-size: 8px; color: #6b7280;">Açıklama</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- Stok Alanı ve Manuel Ürün Ekleme -->
                 <div>
                     <label style="display: block; font-size: 10px; font-weight: 600; color: #78350f; margin-bottom: 3px;">Stok (Opsiyonel)</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px;">
+                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 6px; margin-bottom: 4px; align-items: center;">
                         <select id="stockItemSelect" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 11px; background: #fff;">
                             <option value="">-- Ürün Seç --</option>
                             <option value="Waffle Hamuru">Waffle Hamuru</option>
@@ -95,6 +132,7 @@
                             <option value="Muz / Çilek">Muz / Çilek</option>
                             <option value="Kutu / Ambalaj">Kutu / Ambalaj</option>
                         </select>
+                        <button type="button" onclick="addNewProduct()" style="background: #78350f; color: #fff; border: none; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: bold; cursor: pointer;" title="Manuel Ürün Ekle">+</button>
                         <select id="stockUnit" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 11px; background: #fff;">
                             <option value="KG">KG</option>
                             <option value="Adet">Adet</option>
@@ -104,11 +142,11 @@
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                         <div>
-                            <input type="text" inputmode="decimal" id="stockQty" placeholder="" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
+                            <input type="number" step="any" id="stockQty" placeholder="0" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
                             <span style="font-size: 8px; color: #6b7280;">Miktar</span>
                         </div>
                         <div>
-                            <input type="text" inputmode="decimal" id="stockAmount" placeholder="" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
+                            <input type="number" step="any" id="stockAmount" placeholder="0" style="width: 100%; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; font-size: 12px; background: #fff;">
                             <span style="font-size: 8px; color: #6b7280;">Tutar (TL)</span>
                         </div>
                     </div>
@@ -170,6 +208,27 @@
         }
         setTodayDate();
 
+        // Binlik ayracını ve temiz sayı formatını sağlayan yardımcı fonksiyon
+        function formatMoney(val) {
+            if (val === null || val === undefined || val === '') return '0';
+            let num = Number(val);
+            if (isNaN(num)) return '0';
+            return num.toLocaleString('tr-TR', { maximumFractionDigits: 2 });
+        }
+
+        // Manuel ürün ekleme fonksiyonu (+)
+        function addNewProduct() {
+            const newProd = prompt('Eklemek istediğiniz yeni ürün adını girin:');
+            if (newProd && newProd.trim() !== '') {
+                const select = document.getElementById('stockItemSelect');
+                const opt = document.createElement('option');
+                opt.value = newProd.trim();
+                opt.textContent = newProd.trim();
+                select.appendChild(opt);
+                select.value = newProd.trim();
+            }
+        }
+
         async function fetchBranchReports() {
             try {
                 const { data, error } = await supabaseClient.from('reports').select('*').order('date', { ascending: false });
@@ -199,12 +258,12 @@
                         const tr = document.createElement('tr');
                         tr.style.borderBottom = '1px solid #f3f4f6';
                         tr.innerHTML = `
-                            <td style="padding: 6px; color: #4b5563;">${row.date}</td>
-                            <td style="padding: 6px; color: #1f2937;">${row.cash !== null && row.cash !== '' ? row.cash : 0}</td>
-                            <td style="padding: 6px; color: #1f2937;">${row.bank !== null && row.bank !== '' ? row.bank : 0}</td>
-                            <td style="padding: 6px; font-weight: bold; color: #b45309;">${r}</td>
-                            <td style="padding: 6px; color: #dc2626;">${row.expense !== null && row.expense !== '' ? row.expense : 0}</td>
-                            <td style="padding: 6px; color: #78350f;">${row.stock_amount !== null && row.stock_amount !== '' ? row.stock_amount : 0}</td>
+                            <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(c)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(b)}</td>
+                            <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(r)}</td>
+                            <td style="padding: 6px; color: #dc2626;">${formatMoney(e)}</td>
+                            <td style="padding: 6px; color: #78350f;">${formatMoney(s)}</td>
                         `;
                         tbody.appendChild(tr);
                     });
@@ -212,11 +271,11 @@
                     tfoot.innerHTML = `
                         <tr>
                             <td style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
-                            <td style="padding: 6px; color: #1f2937;">${totalCash}</td>
-                            <td style="padding: 6px; color: #1f2937;">${totalBank}</td>
-                            <td style="padding: 6px; color: #b45309;">${totalRevenue}</td>
-                            <td style="padding: 6px; color: #dc2626;">${totalExpense}</td>
-                            <td style="padding: 6px; color: #451a03;">${totalStock}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
+                            <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
+                            <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
+                            <td style="padding: 6px; color: #451a03;">${formatMoney(totalStock)}</td>
                         </tr>
                     `;
                 } else {
@@ -227,17 +286,29 @@
 
         document.getElementById('reportForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+
+            // Yemek kartı tutarlarını alıp normal banka/kart tutarına topluyoruz (böylece merkeze tam yansır)
+            const baseBank = parseFloat(document.getElementById('bank').value) || 0;
+            const pPluxee = parseFloat(document.getElementById('platformPluxee').value) || 0;
+            const pEdenred = parseFloat(document.getElementById('platformEdenred').value) || 0;
+            const pMultiNet = parseFloat(document.getElementById('platformMultiNet').value) || 0;
+            const pSetcard = parseFloat(document.getElementById('platformSetcard').value) || 0;
+            const pMetropol = parseFloat(document.getElementById('platformMetropolCard').value) || 0;
+            const pToken = parseFloat(document.getElementById('platformTokenFlex').value) || 0;
+
+            const totalBankVal = baseBank + pPluxee + pEdenred + pMultiNet + pSetcard + pMetropol + pToken;
+
             const payload = {
                 branch: currentBranch,
                 date: document.getElementById('date').value,
-                cash: document.getElementById('cash').value ? parseFloat(document.getElementById('cash').value) : 0,
-                bank: document.getElementById('bank').value ? parseFloat(document.getElementById('bank').value) : 0,
-                expense: document.getElementById('expense').value ? parseFloat(document.getElementById('expense').value) : 0,
+                cash: parseFloat(document.getElementById('cash').value) || 0,
+                bank: totalBankVal,
+                expense: parseFloat(document.getElementById('expense').value) || 0,
                 expense_desc: document.getElementById('expenseDesc').value,
                 stock_item: document.getElementById('stockItemSelect').value,
-                stock_qty: document.getElementById('stockQty').value ? parseFloat(document.getElementById('stockQty').value) : 0,
+                stock_qty: parseFloat(document.getElementById('stockQty').value) || 0,
                 stock_unit: document.getElementById('stockUnit').value,
-                stock_amount: document.getElementById('stockAmount').value ? parseFloat(document.getElementById('stockAmount').value) : 0
+                stock_amount: parseFloat(document.getElementById('stockAmount').value) || 0
             };
 
             try {
