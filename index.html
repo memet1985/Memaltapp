@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 
-                <!-- Aktif Buton Vurgulu Navigasyon -->
+                <!-- Navigasyon (Merkez Seçili: Merkez Renkli, Diğerleri Şeffaf) -->
                 <div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
                     <a href="index.html" style="background: #78350f; color: #fff; border: 1px solid #78350f; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">MERKEZ</a>
                     <a href="sube.html?ad=Kurtkoy" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Kurtköy</a>
@@ -594,7 +594,6 @@
             }
         }
 
-        // Excel Çıktısı Al
         function exportToExcel() {
             let dataToExport = filteredDataCache.map(row => {
                 const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
@@ -620,7 +619,6 @@
             XLSX.writeFile(workbook, "SweetWaffle_Raporlar.xlsx");
         }
 
-        // PDF Çıktısı Al
         function exportToPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('landscape');
