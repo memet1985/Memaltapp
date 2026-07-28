@@ -61,6 +61,7 @@
 
     <script>
         const sifreler = {
+            'Merkez': '1985',
             'Kurtkoy': '2025',
             'Soganlik': '2026',
             'Ortadag': '2027'
@@ -74,7 +75,7 @@
         let aktifSube = getSubeParam();
 
         window.onload = function() {
-            let gorunenAd = aktifSube === 'Kurtkoy' ? 'Kurtköy Şubesi' : aktifSube === 'Soganlik' ? 'Soğanlık Şubesi' : 'Ortadağ Şubesi';
+            let gorunenAd =aktifSube === 'Merkez' ? 'Merkez Yönetim' aktifSube === 'Kurtkoy' ? 'Kurtköy Şubesi' : aktifSube === 'Soganlik' ? 'Soğanlık Şubesi' : aktifSube === 'Ortadağ' ?'Ortadağ Şubesi';
             
             let baslikElementi = document.getElementById('baslikSubeAdi');
             if (baslikElementi) baslikElementi.innerText = gorunenAd;
