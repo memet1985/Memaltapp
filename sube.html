@@ -75,20 +75,13 @@
 
         window.onload = function() {
             let gorunenAd = aktifSube === 'Kurtkoy' ? 'Kurtköy Şubesi' : aktifSube === 'Soganlik' ? 'Soğanlık Şubesi' : 'Ortadağ Şubesi';
-            
-            let baslikElementi = document.getElementById('baslikSubeAdi');
-            if (baslikElementi) baslikElementi.innerText = gorunenAd;
-
-            let sifreBaslikElementi = document.getElementById('sifreBaslik');
-            if (sifreBaslikElementi) sifreBaslikElementi.innerText = gorunenAd + ' Girişi';
+            document.getElementById('baslikSubeAdi').innerText = gorunenAd;
+            document.getElementById('sifreBaslik').innerText = gorunenAd + ' Girişi';
 
             if (sessionStorage.getItem('sube_auth_' + aktifSube) === 'true') {
                 document.getElementById('authContainer').style.display = 'block';
                 document.getElementById('sifreEkrani').style.display = 'none';
                 stoklariYukle();
-            } else {
-                document.getElementById('authContainer').style.display = 'none';
-                document.getElementById('sifreEkrani').style.display = 'flex';
             }
         };
 
