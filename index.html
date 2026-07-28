@@ -18,7 +18,7 @@
     </style>
 </head>
 <body class="font-sans pb-10">
-    <!-- Ekranın tamamını dolduran, telefonda ve cihazlarda tam oturan esnek kapsayıcı -->
+    <!-- Ekranın tamamını dolduran esnek kapsayıcı -->
     <div style="width: 100%; max-width: 100%; margin: 0 auto; padding: 8px;">
         
         <!-- Üst Header -->
@@ -71,10 +71,12 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // ,00 gibi küsuratları temizleyen kesin fonksiyon
         function cleanVal(val) {
             if (val === null || val === undefined || val === '') return 0;
-            let num = parseFloat(val);
+            let num = Number(val);
             if (isNaN(num)) return 0;
+            // Eğer küsuratı yoksa (örn: 500.00 -> 500), direkt tam sayı yap
             return num % 1 === 0 ? Math.trunc(num) : num;
         }
 
@@ -121,10 +123,10 @@
                     tfoot.innerHTML = `
                         <tr>
                             <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
-                            <td style="padding: 6px; color: #1f2937;">${totalCash}</td>
-                            <td style="padding: 6px; color: #1f2937;">${totalBank}</td>
-                            <td style="padding: 6px; color: #b45309;">${totalRevenue}</td>
-                            <td style="padding: 6px; color: #dc2626;">${totalExpense}</td>
+                            <td style="padding: 6px; color: #1f2937;">${cleanVal(totalCash)}</td>
+                            <td style="padding: 6px; color: #1f2937;">${cleanVal(totalBank)}</td>
+                            <td style="padding: 6px; color: #b45309;">${cleanVal(totalRevenue)}</td>
+                            <td style="padding: 6px; color: #dc2626;">${cleanVal(totalExpense)}</td>
                             <td></td>
                         </tr>
                     `;
