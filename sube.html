@@ -3,6 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sweet Waffle - Şube Yönetimi</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#78350f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { box-sizing: border-box; -webkit-text-size-adjust: 100%; }
+        html, body { width: 100%; max-width: 100vw; overflow-x: hidden; margin: 0; padding: 0; background-color: #f9fafb; font-family: sans-serif; }
+    </style>
+</head>
+<body class="p-4 max-w-md mx-auto">
+
+    <!-- Şifre Kontrolü ve İçerik -->
+    <div id="authContainer" style="display:none;">
+        
+        <!-- Üst Bilgi ve Ana Sayfaya Dönüş Butonu -->
+        <div style="background: #78350f; color: white; padding: 16px; border-radius: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <div>
+                <h1 id="baslikSubeAdi" style="font-size: 15px; font-weight: bold; margin: 0;">Şube Paneli</h1>
+                <p style="font-size: 11px; margin: 2px 0 0 0; opacity: 0.8;">Stok ve Yönetim</p>
+            </div>
+            <a href="index.html" style="background: #fffbeb; color: #78350f; padding: 8px 12px; border-radius: 8px; font-size: 11px; text-decoration: none; font-weight: bold; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">🏠 Ana Sayfa</a>
+        </div>
+
+        <!-- Manuel Stok Ekleme Alanı -->
+        <div style="background: #fff; border: 1px solid #fcd34d; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <h2 style="font-size: 14px; font-weight: bold; color: #451a03; margin: 0 0 10px 0;">📦 Manuel Stok Ekle / Güncelle</h2>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="text" id="yeniUrunAdi" placeholder="Ürün Adı (Örn: Waffle Kutusu)" style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; outline: none;">
+                <div style="display: flex; gap: 8px;">
+                    <input type="number" id="yeniUrunMiktar" placeholder="Miktar" style="flex: 1; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; outline: none;">
+                    <button onclick="manuelStokEkle()" style="background: #78350f; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">Ekle / Güncelle</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stok Listesi -->
+        <div style="background: #fff; border: 1px solid #fcd34d; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <h2 id="listeBaslik" style="font-size: 14px; font-weight: bold; color: #451a03; margin: 0 0 10px 0;">Stok Listesi</h2>
+            <div id="stokListesiContainer"></div>
+        </div>
+    </div>
+
+    <!-- Şifre Giriş Ekranı (Yetkisizse) -->
+    <div id="sifreEkrani" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; text-align:center;">
+        <div style="width: 100%; max-width: 320px; background: #fff; border: 1px solid #fcd34d; border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h2 id="sifreBaslik" style="font-size: 15px; font-weight: bold; color: #451a03; margin-bottom: 8px;">Şube Girişi</h2>
+            <p style="font-size: 11px; color: #6b7280; margin-bottom: 16px;">Lütfen şube şifresini giriniz</p>
+            <input type="password" id="sifreInput" placeholder="Şifre" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; margin-bottom: 12px; font-size: 14px; text-align: center; outline: none;">
+            <button onclick="sifreKontrolEt()" style="width: 100%; background: #78350f; color: white; border: none; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer;">Giriş Yap</button>
+            <br><br>
+            <a href="index.html" style="font-size: 12px; color: #78350f; text-decoration: underline;">🏠 Ana Sayfaya Dön</a>
+        </div>
+    </div>
+
+    <script>
+        const sifreler = {
+            'Kurtkoy': '2025',
+            'Soganlik': '2026',
+            'Ortadag': '2027'
+        };
+
+        function getSubeParam() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('ad') || 'Kurtkoy';
+        }
+
+        let aktifSube = getSubeParam();
+
+        window.onload = function() {
+            let gorunenAd = aktifSube === 'Kurtkoy' ? 'Kurtköy Şubesi' : aktifSube === 'Soganlik' ? 'Soğanlık Şubesi' : 'Ortadağ Şubesi';
+            document.getElementById('baslikSubeAdi').innerText = gorunenAd;
+            document.getElementById('sifreBaslik').innerText = gorunenAd + ' Girişi';
+
+            if (sessionStorage.getItem('sube_auth_' + aktifSube) === 'true') {
+                document.getElementById('authContainer').style.display = 'block';
+                document.getElementById('sifreEkrani').style.display = 'none';
+                stoklariYukle();
+            }
+        };
+
+        function sifreKontrolEt() {
+            let girilen = document.getElementById('sifreInput').value;
+            if (girilen === sifreler[aktifSube]) {
+                sessionStorage.setItem('sube_auth_' + aktifSube, 'true');
+                document.getElementById('sifreEkrani').style.display = 'none';
+                document.getElementById('authContainer').style.display = 'block';
+                stoklariYukle();
+            } else {
+                alert('Hatalı şifre!');
+            }
+        }
+
+        function getStokKey() {
+            return 'stok_' + aktifSube;
+        }
+
+        function stoklariYukle() {
+            let gorunenAd = aktifSube === 'Kurtkoy' ? 'Kurtköy Şubesi' : aktifSube === 'Soganlik' ? 'Soğanlık Şubesi' : 'Ortadağ Şubesi';
+            document.getElementById('listeBaslik').innerText = gorunenAd + ' Stok Listesi';
+            
+            let stoklar = JSON.parse(localStorage.getItem(getStokKey())) || {
+                "Waffle Kutusu": 150,
+                "Çikolata (Kg)": 15,
+                "Muz (Kg)": 10,
+                "Çilek (Kg)": 8
+            };
+
+            let container = document.getElementById('stokListesiContainer');
+            let html = '<table style="width:100%; border-collapse:collapse; font-size:12px;">';
+            html += '<tr style="border-bottom:1px solid #e5e7eb; text-align:left; color:#6b7280;"><th style="padding:6px;">Ürün</th><th style="padding:6px;">Miktar</th><th style="padding:6px; text-align:right;">İşlem</th></tr>';
+            
+            for (let urun in stoklar) {
+                html += `<tr style="border-bottom:1px solid #f3f4f6;">
+                    <td style="padding:8px 6px; font-weight:bold; color:#1f2937;">${urun}</td>
+                    <td style="padding:8px 6px; color:#4b5563;">${stoklar[urun]}</td>
+                    <td style="padding:8px 6px; text-align:right;">
+                        <button onclick="stokMiktarDegis('${urun}', -1)" style="background:#ef4444; color:white; border:none; padding:2px 6px; border-radius:4px; cursor:pointer; font-size:10px; margin-right:4px;">-</button>
+                        <button onclick="stokMiktarDegis('${urun}', 1)" style="background:#10b981; color:white; border:none; padding:2px 6px; border-radius:4px; cursor:pointer; font-size:10px; margin-right:4px;">+</button>
+                        <button onclick="urunSil('${urun}')" style="background:#9ca3af; color:white; border:none; padding:2px 6px; border-radius:4px; cursor:pointer; font-size:10px;">Sil</button>
+                    </td>
+                </tr>`;
+            }
+            html += '</table>';
+            container.innerHTML = html;
+        }
+
+        function manuelStokEkle() {
+            let ad = document.getElementById('yeniUrunAdi').value.trim();
+            let miktar = parseInt(document.getElementById('yeniUrunMiktar').value);
+            
+            if (!ad || isNaN(miktar)) {
+                alert('Lütfen ürün adını ve geçerli bir miktar giriniz.');
+                return;
+            }
+
+            let stoklar = JSON.parse(localStorage.getItem(getStokKey())) || {};
+            stoklar[ad] = (stoklar[ad] || 0) + miktar;
+            localStorage.setItem(getStokKey(), JSON.stringify(stoklar));
+
+            document.getElementById('yeniUrunAdi').value = '';
+            document.getElementById('yeniUrunMiktar').value = '';
+            stoklariYukle();
+        }
+
+        function stokMiktarDegis(urun, miktarDegisimi) {
+            let stoklar = JSON.parse(localStorage.getItem(getStokKey())) || {};
+            if (stoklar[urun] !== undefined) {
+                stoklar[urun] += miktarDegisimi;
+                if (stoklar[urun] < 0) stoklar[urun] = 0;
+                localStorage.setItem(getStokKey(), JSON.stringify(stoklar));
+                stoklariYukle();
+            }
+        }
+
+        function urunSil(urun) {
+            let stoklar = JSON.parse(localStorage.getItem(getStokKey())) || {};
+            if (stoklar[urun] !== undefined) {
+                delete stoklar[urun];
+                localStorage.setItem(getStokKey(), JSON.stringify(stoklar));
+                stoklariYukle();
+            }
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sweet Waffle - Şube Paneli</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#78350f">
