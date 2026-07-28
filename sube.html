@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sweet Waffle - Yönetim Paneli</title>
+    <title>Sweet Waffle - Şube Yönetimi</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#78350f">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,7 +22,7 @@
         <!-- Üst Bilgi ve Ana Sayfaya Dönüş Butonu -->
         <div style="background: #78350f; color: white; padding: 16px; border-radius: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <div>
-                <h1 id="baslikSubeAdi" style="font-size: 15px; font-weight: bold; margin: 0;">Yönetim Paneli</h1>
+                <h1 id="baslikSubeAdi" style="font-size: 15px; font-weight: bold; margin: 0;">Şube Paneli</h1>
                 <p style="font-size: 11px; margin: 2px 0 0 0; opacity: 0.8;">Stok ve Yönetim</p>
             </div>
             <a href="index.html" style="background: #fffbeb; color: #78350f; padding: 8px 12px; border-radius: 8px; font-size: 11px; text-decoration: none; font-weight: bold; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">🏠 Ana Sayfa</a>
@@ -50,8 +50,8 @@
     <!-- Şifre Giriş Ekranı (Yetkisizse) -->
     <div id="sifreEkrani" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; text-align:center;">
         <div style="width: 100%; max-width: 320px; background: #fff; border: 1px solid #fcd34d; border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h2 id="sifreBaslik" style="font-size: 15px; font-weight: bold; color: #451a03; margin-bottom: 8px;">Giriş</h2>
-            <p style="font-size: 11px; color: #6b7280; margin-bottom: 16px;">Lütfen şifreyi giriniz</p>
+            <h2 id="sifreBaslik" style="font-size: 15px; font-weight: bold; color: #451a03; margin-bottom: 8px;">Şube Girişi</h2>
+            <p style="font-size: 11px; color: #6b7280; margin-bottom: 16px;">Lütfen şube şifresini giriniz</p>
             <input type="password" id="sifreInput" placeholder="Şifre" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; margin-bottom: 12px; font-size: 14px; text-align: center; outline: none;">
             <button onclick="sifreKontrolEt()" style="width: 100%; background: #78350f; color: white; border: none; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer;">Giriş Yap</button>
             <br><br>
@@ -61,7 +61,6 @@
 
     <script>
         const sifreler = {
-            'Merkez': '1985',
             'Kurtkoy': '2025',
             'Soganlik': '2026',
             'Ortadag': '2027'
@@ -69,21 +68,13 @@
 
         function getSubeParam() {
             const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('ad') || 'Merkez';
+            return urlParams.get('ad') || 'Kurtkoy';
         }
 
         let aktifSube = getSubeParam();
 
-        function getBirimAdi(subeKodu) {
-            if (subeKodu === 'Merkez') return 'Merkez Yönetim';
-            if (subeKodu === 'Kurtkoy') return 'Kurtköy Şubesi';
-            if (subeKodu === 'Soganlik') return 'Soğanlık Şubesi';
-            if (subeKodu === 'Ortadag') return 'Ortadağ Şubesi';
-            return subeKodu;
-        }
-
         window.onload = function() {
-            let gorunenAd = getBirimAdi(aktifSube);
+            let gorunenAd = aktifSube === 'Kurtkoy' ? 'Kurtköy Şubesi' : aktifSube === 'Soganlik' ? 'Soğanlık Şubesi' : 'Ortadağ Şubesi';
             
             let baslikElementi = document.getElementById('baslikSubeAdi');
             if (baslikElementi) baslikElementi.innerText = gorunenAd;
@@ -118,7 +109,7 @@
         }
 
         function stoklariYukle() {
-            let gorunenAd = getBirimAdi(aktifSube);
+            let gorunenAd = aktifSube === 'Kurtkoy' ? 'Kurtköy Şubesi' : aktifSube === 'Soganlik' ? 'Soğanlık Şubesi' : 'Ortadağ Şubesi';
             document.getElementById('listeBaslik').innerText = gorunenAd + ' Stok Listesi';
             
             let stoklar = JSON.parse(localStorage.getItem(getStokKey())) || {
