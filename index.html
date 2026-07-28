@@ -183,12 +183,12 @@
     </div>
 
     <script>
-        // Merkez Paneli Şifre Kontrolü
+        // Merkez Paneli Şifre Kontrolü (Şifre: 1985)
         function checkPassword() {
             let savedAuth = sessionStorage.getItem('merkez_auth');
             if (savedAuth !== 'true') {
-                let pass = prompt('Merkez Paneli Şifresini Girin:');
-                if (pass === '12345') { // Şifreyi buradan değiştirebilirsin
+                let pass = prompt('Merkez Paneli Şifresini Girin (1985):');
+                if (pass === '1985') {
                     sessionStorage.setItem('merkez_auth', 'true');
                 } else {
                     alert('Hatalı şifre!');
