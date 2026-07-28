@@ -11,6 +11,11 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- PDF ve Excel export kütüphaneleri -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
         * { box-sizing: border-box; -webkit-text-size-adjust: 100%; }
         html, body { width: 100%; max-width: 100vw; overflow-x: hidden; margin: 0; padding: 0; background-color: #f9fafb; }
@@ -43,6 +48,12 @@
                 </div>
             </div>
         </header>
+
+        <!-- Çıktı Alma (PDF / Excel) Butonları -->
+        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 8px; margin-bottom: 12px; display: flex; gap: 8px; justify-content: flex-end;">
+            <button type="button" onclick="exportToExcel()" style="background: #047857; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Excel Çıktısı Al</button>
+            <button type="button" onclick="exportToPDF()" style="background: #b91c1c; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">PDF Çıktısı Al</button>
+        </div>
 
         <!-- Özet Kartları -->
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
@@ -99,7 +110,7 @@
             </div>
         </div>
 
-        <!-- MERKEZDEN ŞUBEYE STOK & SEVKİYAT GİRİŞ ALANI (YENİ EKLENDİ) -->
+        <!-- MERKEZDEN ŞUBEYE STOK & SEVKİYAT GİRİŞ ALANI -->
         <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkezden Şubeye Stok & Sevkiyat Girişi</h3>
             <form id="stockShipmentForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
@@ -135,8 +146,17 @@
                     <input type="number" step="any" id="shipQty" placeholder="Örn: 50" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
                 </div>
                 <div>
-                    <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Birim (Adet, Kg, Koli vb.)</label>
-                    <input type="text" id="shipUnit" placeholder="Örn: Adet / Kg" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Birim (Seç veya Yaz)</label>
+                    <div style="display: flex; gap: 4px;">
+                        <select id="shipUnitSelect" onchange="document.getElementById('shipUnit').value = this.value;" style="flex: 1; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                            <option value="Adet">Adet</option>
+                            <option value="Kg">Kg</option>
+                            <option value="Koli">Koli</option>
+                            <option value="Paket">Paket</option>
+                            <option value="Litre">Litre</option>
+                        </select>
+                        <input type="text" id="shipUnit" value="Adet" placeholder="Birim" style="flex: 1; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+                    </div>
                 </div>
                 <div style="grid-column: span 2;">
                     <label style="font-size: 9px; color: #6b7280; font-weight: bold;">Toplam Tutar (TL)</label>
@@ -189,7 +209,7 @@
         <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Şube Raporları Listesi</h3>
             <div style="width: 100%; overflow-x: auto;">
-                <table style="width: 100%; min-width: 700px; border-collapse: collapse; font-size: 10px;">
+                <table style="width: 100%; min-width: 800px; border-collapse: collapse; font-size: 10px;">
                     <thead>
                         <tr style="background: #fffbeb; color: #78350f;">
                             <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
@@ -198,7 +218,7 @@
                             <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
                             <th style="padding: 6px; text-align: center; font-weight: 600;">İŞLEMLER</th>
                         </tr>
                     </thead>
@@ -235,8 +255,12 @@
                     </div>
                 </div>
                 <div>
-                    <label style="font-size: 9px; color: #6b7280;">Masraf</label>
+                    <label style="font-size: 9px; color: #6b7280;">Masraf Tutarı</label>
                     <input type="number" step="any" id="editExpense" style="width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 6px; font-size: 11px;">
+                </div>
+                <div>
+                    <label style="font-size: 9px; color: #6b7280;">Masraf Açıklaması (Ne için yapıldı?)</label>
+                    <input type="text" id="editExpenseDesc" placeholder="Örn: Elektrik faturası / Temizlik malzemesi" style="width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 6px; font-size: 11px;">
                 </div>
                 <div style="display: flex; gap: 6px; margin-top: 8px;">
                     <button type="button" onclick="closeEditModal()" style="flex: 1; background: #e5e7eb; color: #374151; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">İptal</button>
@@ -252,8 +276,8 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let allDataCache = [];
+        let filteredDataCache = [];
 
-        // Varsayılan tarih olarak bugünü ata
         document.getElementById('shipDate').valueAsDate = new Date();
 
         function formatMoney(val) {
@@ -304,7 +328,6 @@
             } catch (err) { console.error('Hata:', err); }
         }
 
-        // Merkezden şubeye stok sevkiyatı kaydetme
         document.getElementById('stockShipmentForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const branch = document.getElementById('shipBranch').value;
@@ -332,6 +355,7 @@
                 alert('Stok sevkiyatı başarıyla kaydedildi.');
                 document.getElementById('stockShipmentForm').reset();
                 document.getElementById('shipDate').valueAsDate = new Date();
+                document.getElementById('shipUnit').value = 'Adet';
                 fetchAllReports();
             } catch (err) {
                 alert('Kayıt başarısız: ' + err.message);
@@ -380,6 +404,7 @@
                 filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === selectedBranch.toLowerCase());
             }
 
+            filteredDataCache = filteredData;
             renderReports(filteredData);
         }
 
@@ -406,6 +431,7 @@
                     const rowPlatformTotal = pPluxee + pEdenred + pMultiNet + pSetcard + pMetropol + pToken;
                     const rawR = rawC + rawB;
                     const rawE = cleanVal(row.expense);
+                    const expDesc = row.expense_desc ? ` (${row.expense_desc})` : '';
 
                     totalCash += rawC; 
                     totalBank += rawB; 
@@ -422,9 +448,6 @@
 
                     const tr = document.createElement('tr');
                     tr.style.borderBottom = '1px solid #f3f4f6';
-                    
-                    // Güvenli escape için row objesini güvenli işleme
-                    const rowJsonStr = JSON.stringify(row).replace(/"/g, '&quot;');
 
                     tr.innerHTML = `
                         <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
@@ -433,7 +456,7 @@
                         <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
                         <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
                         <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
-                        <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}</td>
+                        <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
                         <td style="padding: 6px; text-align: center;">
                             <div style="display: flex; gap: 4px; justify-content: center;">
                                 <button type="button" onclick="openEditModalFromStr('${row.id}')" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Düzenle</button>
@@ -521,6 +544,7 @@
             document.getElementById('editMetropol').value = row.platform_metropol || 0;
             document.getElementById('editToken').value = row.platform_token || 0;
             document.getElementById('editExpense').value = row.expense || 0;
+            document.getElementById('editExpenseDesc').value = row.expense_desc || '';
             document.getElementById('editModal').style.display = 'flex';
         }
 
@@ -541,7 +565,8 @@
                 platform_setcard: parseFloat(document.getElementById('editSetcard').value) || 0,
                 platform_metropol: parseFloat(document.getElementById('editMetropol').value) || 0,
                 platform_token: parseFloat(document.getElementById('editToken').value) || 0,
-                expense: parseFloat(document.getElementById('editExpense').value) || 0
+                expense: parseFloat(document.getElementById('editExpense').value) || 0,
+                expense_desc: document.getElementById('editExpenseDesc').value
             };
 
             try {
@@ -566,6 +591,66 @@
                     alert('Silme başarısız: ' + err.message);
                 }
             }
+        }
+
+        // Excel Çıktısı Al
+        function exportToExcel() {
+            let dataToExport = filteredDataCache.map(row => {
+                const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
+                return {
+                    "Şube": row.branch || '',
+                    "Tarih": row.date || '',
+                    "Nakit": cleanVal(row.cash),
+                    "Banka": cleanVal(row.bank),
+                    "Yemek Kartları": pTotal,
+                    "Ciro": cleanVal(row.cash) + cleanVal(row.bank),
+                    "Masraf": cleanVal(row.expense),
+                    "Masraf Açıklaması": row.expense_desc || '',
+                    "Ürün / Sevkiyat": row.stock_item || '',
+                    "Miktar": cleanVal(row.stock_qty),
+                    "Birim": row.stock_unit || '',
+                    "Tutar (TL)": cleanVal(row.stock_amount)
+                };
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Sube_Raporlari");
+            XLSX.writeFile(workbook, "SweetWaffle_Raporlar.xlsx");
+        }
+
+        // PDF Çıktısı Al
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+
+            doc.setFontSize(14);
+            doc.text("Sweet Waffle - Sube Raporlari Listesi", 14, 15);
+
+            let tableRows = filteredDataCache.map(row => {
+                const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
+                const ciro = cleanVal(row.cash) + cleanVal(row.bank);
+                const expInfo = cleanVal(row.expense) + (row.expense_desc ? ` (${row.expense_desc})` : '');
+                return [
+                    row.branch || '',
+                    row.date || '',
+                    formatMoney(row.cash),
+                    formatMoney(row.bank),
+                    formatMoney(pTotal),
+                    formatMoney(ciro),
+                    expInfo,
+                    row.stock_item ? `${row.stock_item} (${row.stock_qty} ${row.stock_unit})` : '-'
+                ];
+            });
+
+            doc.autoTable({
+                head: [['Şube', 'Tarih', 'Nakit', 'Banka', 'Yemek Kartı', 'Ciro', 'Masraf & Açıklama', 'Sevkiyat']],
+                body: tableRows,
+                startY: 20,
+                styles: { fontSize: 8 }
+            });
+
+            doc.save("SweetWaffle_Raporlar.pdf");
         }
 
         fetchAllReports();
