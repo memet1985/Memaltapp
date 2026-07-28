@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sweet Waffle - Yönetim ve Karşılama Ekranı</title>
+    <title>Sweet Waffle - Merkez Yönetim Paneli</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#78350f">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,17 +35,18 @@
             <p style="font-size: 11px; color: #6b7280; margin: 0 0 20px 0;">Yönetim ve Raporlama Sistemine Hoş Geldiniz</p>
             
             <div style="display: flex; flex-direction: column; gap: 8px;">
-                <button type="button" onclick="closeWelcomeScreen()" style="background: #78350f; color: #fff; padding: 12px; border-radius: 8px; font-weight: bold; border: none; font-size: 12px; cursor: pointer;">Merkez Paneline Giriş Yap</button>
+                <button type="button" onclick="selectView('merkez')" style="background: #78350f; color: #fff; padding: 12px; border-radius: 8px; font-weight: bold; border: none; font-size: 12px; cursor: pointer;">Merkez Paneline Giriş Yap</button>
                 <div style="font-size: 10px; color: #9ca3af; margin: 4px 0;">Veya bir şube seçerek devam edin:</div>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                    <a href="sube.html?ad=Kurtkoy" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Kurtköy</a>
-                    <a href="sube.html?ad=Soganlik" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Soğanlık</a>
-                    <a href="sube.html?ad=Ortadag" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Ortadağ</a>
+                    <button type="button" onclick="selectView('Kurtkoy')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 8px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Kurtköy</button>
+                    <button type="button" onclick="selectView('Soganlik')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 8px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Soğanlık</button>
+                    <button type="button" onclick="selectView('Ortadag')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 8px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Ortadağ</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ANA İÇERİK ALANI -->
     <div style="width: 100%; max-width: 100%; margin: 0 auto; padding: 8px;">
         
         <!-- Üst Header -->
@@ -57,17 +58,14 @@
                         <div id="merkezLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 8px; display: none; align-items: center; justify-content: center;">LOGO</div>
                     </div>
                     <div>
-                        <h1 style="font-size: 13px; font-weight: 900; color: #451a03; margin: 0;">Merkez Paneli</h1>
-                        <p style="font-size: 9px; color: #6b7280; margin: 0;">Genel Durum ve Otomatik Arşiv</p>
+                        <h1 id="panelTitle" style="font-size: 13px; font-weight: 900; color: #451a03; margin: 0;">Merkez Paneli</h1>
+                        <p id="panelSubtitle" style="font-size: 9px; color: #6b7280; margin: 0;">Genel Durum ve Otomatik Arşiv</p>
                     </div>
                 </div>
                 
-                <!-- Navigasyon (Merkez Seçili: Merkez Renkli, Diğerleri Şeffaf) -->
-                <div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
-                    <a href="index.html" style="background: #78350f; color: #fff; border: 1px solid #78350f; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">MERKEZ</a>
-                    <a href="sube.html?ad=Kurtkoy" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Kurtköy</a>
-                    <a href="sube.html?ad=Soganlik" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Soğanlık</a>
-                    <a href="sube.html?ad=Ortadag" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Ortadağ</a>
+                <!-- Ana Ekrana Dön Butonu -->
+                <div>
+                    <button type="button" onclick="openWelcomeScreen()" style="background: #451a03; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Ana Ekrana Dön</button>
                 </div>
             </div>
         </header>
@@ -102,7 +100,7 @@
             </div>
         </div>
 
-        <!-- MERKEZ YEMEK KARTLARI PLATFORM DETAYLARI -->
+        <!-- YEMEK KARTLARI PLATFORM DETAYLARI -->
         <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Yemek Kartı Platformları Toplamları</h3>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
@@ -133,8 +131,8 @@
             </div>
         </div>
 
-        <!-- MERKEZDEN ŞUBEYE STOK & SEVKİYAT GİRİŞ ALANI -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+        <!-- MERKEZDEN ŞUBEYE STOK & SEVKİYAT GİRİŞ ALANI (Sadece Merkezde Görünür) -->
+        <div id="merkezStockSection" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkezden Şubeye Stok & Sevkiyat Girişi</h3>
             <form id="stockShipmentForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                 <div>
@@ -191,23 +189,8 @@
             </form>
         </div>
 
-        <!-- ŞUBE FİLTRESİ VE TABLO KONTROLÜ -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-                <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0; text-transform: uppercase;">Şube Raporları Filtresi</h3>
-                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                    <select id="tableBranchFilter" style="padding: 6px; border: 1px solid #fde68a; border-radius: 6px; font-size: 11px; background: #fffbeb; color: #78350f; font-weight: bold;" onchange="filterTableReports()">
-                        <option value="">Tüm Şubeler</option>
-                        <option value="Kurtkoy">Kurtköy</option>
-                        <option value="Soganlik">Soğanlık</option>
-                        <option value="Ortadag">Ortadağ</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- MERKEZ STOK ANALİZ ALANI -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+        <!-- MERKEZ STOK ANALİZ ALANI (Sadece Merkezde Görünür) -->
+        <div id="merkezAnalysisSection" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkez Stok & Sevkiyat Analizi</h3>
             <div style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
                 <select id="filterMonth" style="padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; flex: 1; background: #fff;" onchange="filterStockAnalysis()">
@@ -228,9 +211,9 @@
             </div>
         </div>
 
-        <!-- Şube Raporları Tablosu -->
+        <!-- Raporlar / Liste Tablosu -->
         <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Şube Raporları Listesi</h3>
+            <h3 id="tableHeaderTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Raporlar Listesi</h3>
             <div style="width: 100%; overflow-x: auto;">
                 <table style="width: 100%; min-width: 800px; border-collapse: collapse; font-size: 10px;">
                     <thead>
@@ -300,11 +283,40 @@
 
         let allDataCache = [];
         let filteredDataCache = [];
+        let currentSelectedView = 'merkez'; // 'merkez' veya şube adı ('Kurtkoy', 'Soganlik', 'Ortadag')
 
         document.getElementById('shipDate').valueAsDate = new Date();
 
-        function closeWelcomeScreen() {
+        function openWelcomeScreen() {
+            document.getElementById('welcomeScreenModal').style.display = 'flex';
+        }
+
+        function selectView(viewName) {
+            currentSelectedView = viewName;
             document.getElementById('welcomeScreenModal').style.display = 'none';
+
+            const panelTitle = document.getElementById('panelTitle');
+            const panelSubtitle = document.getElementById('panelSubtitle');
+            const merkezStockSection = document.getElementById('merkezStockSection');
+            const merkezAnalysisSection = document.getElementById('merkezAnalysisSection');
+            const tableHeaderTitle = document.getElementById('tableHeaderTitle');
+
+            if (viewName === 'merkez') {
+                panelTitle.innerText = "Merkez Paneli";
+                panelSubtitle.innerText = "Genel Durum ve Otomatik Arşiv";
+                merkezStockSection.style.display = 'block';
+                merkezAnalysisSection.style.display = 'block';
+                tableHeaderTitle.innerText = "Tüm Şube Raporları Listesi";
+            } else {
+                let displayName = viewName === 'Kurtkoy' ? 'Kurtköy' : (viewName === 'Soganlik' ? 'Soğanlık' : 'Ortadağ');
+                panelTitle.innerText = displayName + " Şube Paneli";
+                panelSubtitle.innerText = "Şube Raporlama ve Takip Ekranı";
+                merkezStockSection.style.display = 'none';
+                merkezAnalysisSection.style.display = 'none';
+                tableHeaderTitle.innerText = displayName + " Raporları Listesi";
+            }
+
+            filterAndRender();
         }
 
         function formatMoney(val) {
@@ -350,7 +362,7 @@
                 allDataCache = data || [];
                 
                 populateFilters(allDataCache);
-                filterTableReports();
+                filterAndRender();
                 filterStockAnalysis();
             } catch (err) { console.error('Hata:', err); }
         }
@@ -423,12 +435,11 @@
             });
         }
 
-        function filterTableReports() {
-            const selectedBranch = document.getElementById('tableBranchFilter').value;
+        function filterAndRender() {
             let filteredData = allDataCache;
 
-            if (selectedBranch) {
-                filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === selectedBranch.toLowerCase());
+            if (currentSelectedView !== 'merkez') {
+                filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedView.toLowerCase());
             }
 
             filteredDataCache = filteredData;
@@ -641,7 +652,7 @@
 
             const worksheet = XLSX.utils.json_to_sheet(dataToExport);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Sube_Raporlari");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Raporlar");
             XLSX.writeFile(workbook, "SweetWaffle_Raporlar.xlsx");
         }
 
@@ -650,7 +661,7 @@
             const doc = new jsPDF('landscape');
 
             doc.setFontSize(14);
-            doc.text("Sweet Waffle - Sube Raporlari Listesi", 14, 15);
+            doc.text("Sweet Waffle - Raporlar Listesi", 14, 15);
 
             let tableRows = filteredDataCache.map(row => {
                 const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
