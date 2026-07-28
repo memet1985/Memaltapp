@@ -214,17 +214,15 @@
         };
 
         let allDataCache = [];
-        let currentSelectedBranch = localStorage.getItem('sweet_waffle_selected_branch') || '';
+        
+        // Sayfa açıldığında önbelleği sıfırlayıp her defasında şifre sormasını zorunlu kılıyoruz:
+        localStorage.removeItem('sweet_waffle_selected_branch');
+        let currentSelectedBranch = '';
 
         document.getElementById('reportDate').valueAsDate = new Date();
 
-        if (!currentSelectedBranch) {
-            openWelcomeScreen();
-        } else {
-            document.getElementById('welcomeScreenModal').style.display = 'none';
-            applyBranchUI(currentSelectedBranch);
-            fetchAllReports();
-        }
+        // Her zaman ilk açılışta şifre seçim ekranını göster
+        openWelcomeScreen();
 
         function openWelcomeScreen() {
             document.getElementById('welcomeScreenModal').style.display = 'flex';
@@ -232,7 +230,7 @@
 
         function promptBranchPassword(branchName) {
             let displayName = branchName === 'Merkez' ? 'Merkez' : (branchName === 'Kurtkoy' ? 'Kurtköy' : (branchName === 'Soganlik' ? 'Soğanlık' : 'Ortadağ'));
-            let passwordInput = prompt(`${displayName} şubesi için şifreyi giriniz:`);
+            let passwordInput = prompt(`${displayName} birimi için şifreyi giriniz:`);
             
             if (passwordInput === null) return; // İptal edilirse
 
