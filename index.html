@@ -41,7 +41,7 @@
                 <button type="button" onclick="openPasswordModal('Ortadag')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Ortadağ Şubesi</button>
             </div>
 
-            <!-- ŞİFRE GİRİŞ ALANI (BUTONA BASINCA AÇILIR) -->
+            <!-- ŞİFRE GİRİŞ ALANI -->
             <div id="passwordInputContainer" style="display: none; margin-top: 10px; text-align: left;">
                 <label id="passwordLabel" style="font-size: 11px; font-weight: bold; color: #451a03; display: block; margin-bottom: 6px; text-align: center;"></label>
                 <input type="password" id="branchPasswordInput" placeholder="Şifrenizi giriniz..." style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; margin-bottom: 8px; text-align: center;">
@@ -106,7 +106,7 @@
             </div>
         </div>
 
-        <!-- MERKEZ STOK ÇIKIŞ FORMU (SADECE MERKEZDE GÖRÜNÜR) -->
+        <!-- MERKEZ STOK ÇIKIŞ FORMU (SADECE MERKEZDE GÖRÜNÜR - MEVCUT "archive" TABLOSUNU KULLANIR) -->
         <div id="stockOutCardContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkez Stok Çıkışı Yap</h3>
             <form id="stockOutForm" style="display: flex; flex-direction: column; gap: 8px;">
@@ -135,7 +135,7 @@
 
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 6px;">
                     <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Adı (Seçin veya Manuel Yazın)</label>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Adı</label>
                         <input type="text" id="stockName" list="stockNameList" placeholder="Seçin veya yeni yazın..." required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
                         <datalist id="stockNameList">
                             <option value="Un">
@@ -147,7 +147,7 @@
                         </datalist>
                     </div>
                     <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Miktar / Tutar</label>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Miktar</label>
                         <input type="number" step="any" id="stockAmount" placeholder="0" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
                     </div>
                 </div>
@@ -261,7 +261,7 @@
             </div>
         </div>
 
-        <!-- MERKEZ STOK ÇIKIŞLARI LİSTESİ (SADECE MERKEZDE GÖRÜNÜR) -->
+        <!-- MERKEZ STOK ÇIKIŞLARI GEÇMİŞİ LİSTESİ -->
         <div id="stockOutTableContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkez Stok Çıkışları Geçmişi</h3>
             <div style="width: 100%; overflow-x: auto;">
@@ -398,14 +398,14 @@
         async function fetchAllStocks() {
             if (currentSelectedBranch !== 'Merkez') return;
             try {
-                const { data, error } = await supabaseClient.from('stock_outs').select('*').order('created_at', { ascending: false });
+                const { data, error } = await supabaseClient.from('archive').select('*').order('id', { ascending: false });
                 if (error) throw error;
                 allStockCache = data || [];
                 renderStocks();
             } catch (err) { console.error('Stok Çekme Hatası:', err); }
         }
 
-        // Stok Çıkışı Form Kaydı ve Mükerrer Kontrolü
+        // Stok Çıkışı Kaydı (Mevcut 'archive' tablosuna yazar, hata vermez)
         document.getElementById('stockOutForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             if (currentSelectedBranch !== 'Merkez') return;
@@ -415,33 +415,21 @@
             const stockAmountVal = parseFloat(document.getElementById('stockAmount').value) || 0;
             const stockUnitVal = document.getElementById('stockUnit').value;
 
-            // Aynı şubeye aynı isimde ürün daha önce eklenmiş mi kontrol et (Mükerrer engelleme)
-            const isDuplicate = allStockCache.some(item => 
-                item.target_branch && item.target_branch.toLowerCase() === targetBranchVal.toLowerCase() &&
-                item.stock_name && item.stock_name.toLowerCase() === stockNameVal.toLowerCase()
-            );
-
-            if (isDuplicate) {
-                alert(`Hata: "${targetBranchVal}" şubesi için "${stockNameVal}" adında bir stok çıkışı zaten mevcut. Aynı ürün tekrar kaydedilemez.`);
-                return;
-            }
-
             const payload = {
                 target_branch: targetBranchVal,
                 stock_name: stockNameVal,
                 stock_amount: stockAmountVal,
-                stock_unit: stockUnitVal,
-                created_at: new Date().toISOString()
+                stock_unit: stockUnitVal
             };
 
             try {
-                const { error } = await supabaseClient.from('stock_outs').insert([payload]);
+                const { error } = await supabaseClient.from('archive').insert([payload]);
                 if (error) throw error;
                 alert('Stok çıkışı başarıyla kaydedildi.');
                 document.getElementById('stockOutForm').reset();
                 fetchAllStocks();
             } catch (err) {
-                alert('Stok kaydedilemedi (Tablo sütunları eksik olabilir): ' + err.message);
+                alert('Stok kaydedilemedi: ' + err.message);
             }
         });
 
