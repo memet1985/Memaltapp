@@ -97,6 +97,10 @@
                 <div id="statTotalPlatforms" style="font-size: 14px; font-weight: 900; color: #047857;">0</div>
             </div>
             <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM ONLINE PLATFORM</div>
+                <div id="statTotalOnline" style="font-size: 14px; font-weight: 900; color: #7c3aed;">0</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center; grid-column: span 2;">
                 <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM CİRO</div>
                 <div id="statTotalRevenue" style="font-size: 14px; font-weight: 900; color: #b45309;">0</div>
             </div>
@@ -106,7 +110,7 @@
             </div>
         </div>
 
-        <!-- MERKEZ STOK ÇIKIŞ FORMU (SADECE MERKEZDE GÖRÜNÜR - MEVCUT "archive" TABLOSUNU KULLANIR) -->
+        <!-- MERKEZ STOK ÇIKIŞ FORMU (SADECE MERKEZDE GÖRÜNÜR) -->
         <div id="stockOutCardContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkez Stok Çıkışı Yap</h3>
             <form id="stockOutForm" style="display: flex; flex-direction: column; gap: 8px;">
@@ -115,9 +119,9 @@
                         <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Gidecek Şube</label>
                         <select id="targetBranch" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
                             <option value="">Şube Seçin...</option>
-                            <option value="Kurtköy">Kurtköy Şubesi</option>
-                            <option value="Soğanlık">Soğanlık Şubesi</option>
-                            <option value="Ortadağ">Ortadağ Şubesi</option>
+                            <option value="Kurtkoy">Kurtköy Şubesi</option>
+                            <option value="Soganlik">Soğanlık Şubesi</option>
+                            <option value="Ortadag">Ortadağ Şubesi</option>
                         </select>
                     </div>
                     <div>
@@ -179,6 +183,7 @@
                     </div>
                 </div>
 
+                <!-- Yemek Kartları -->
                 <div style="background: #fffbeb; padding: 8px; border-radius: 8px; border: 1px solid #fde68a;">
                     <label style="font-size: 10px; font-weight: bold; color: #78350f; display: block; margin-bottom: 4px;">Yemek Kartı Platformları</label>
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 8px;">
@@ -189,16 +194,28 @@
                         <input type="number" step="any" id="reportMetropol" placeholder="Metropol" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
                         <input type="number" step="any" id="reportToken" placeholder="TokenFlex" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
                     </div>
+                </div>
 
-                    <div style="border-top: 1px dashed #fcd34d; padding-top: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                        <div>
-                            <label style="font-size: 9px; font-weight: bold; color: #dc2626; display: block; margin-bottom: 2px;">Masraf Tutarı (TL)</label>
-                            <input type="number" step="any" id="reportExpense" placeholder="0" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        </div>
-                        <div>
-                            <label style="font-size: 9px; font-weight: bold; color: #451a03; display: block; margin-bottom: 2px;">Masraf Açıklaması</label>
-                            <input type="text" id="reportExpenseDesc" placeholder="Ne için yapıldı?" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        </div>
+                <!-- Online Yemek Platformları -->
+                <div style="background: #f5f3ff; padding: 8px; border-radius: 8px; border: 1px solid #ddd6fe;">
+                    <label style="font-size: 10px; font-weight: bold; color: #5b21b6; display: block; margin-bottom: 4px;">Online Yemek Platformları</label>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-bottom: 8px;">
+                        <input type="number" step="any" id="reportTrendyol" placeholder="Trendyol Yemek" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportYemeksepeti" placeholder="Yemeksepeti" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportGetir" placeholder="Getir Yemek" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportMigros" placeholder="Migros Yemek" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                    </div>
+                </div>
+
+                <!-- Masraf Alanı -->
+                <div style="border-top: 1px dashed #fcd34d; padding-top: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <div>
+                        <label style="font-size: 9px; font-weight: bold; color: #dc2626; display: block; margin-bottom: 2px;">Masraf Tutarı (TL)</label>
+                        <input type="number" step="any" id="reportExpense" placeholder="0" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; font-weight: bold; color: #451a03; display: block; margin-bottom: 2px;">Masraf Açıklaması</label>
+                        <input type="text" id="reportExpenseDesc" placeholder="Ne için yapıldı?" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
                     </div>
                 </div>
 
@@ -208,42 +225,74 @@
             </form>
         </div>
 
-        <!-- YEMEK KARTLARI PLATFORM DETAYLARI -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Yemek Kartı Platformları Toplamları</h3>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                    <div style="font-size: 8px; color: #6b7280;">Pluxee</div>
-                    <div id="sumPluxee" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+        <!-- PLATFORM DETAYLARI TOPLAMLARI -->
+        <div style="display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px;">
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Yemek Kartı Platformları Toplamları</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Pluxee</div>
+                        <div id="sumPluxee" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                    </div>
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Edenred</div>
+                        <div id="sumEdenred" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                    </div>
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">MultiNet</div>
+                        <div id="sumMultiNet" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                    </div>
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Setcard</div>
+                        <div id="sumSetcard" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                    </div>
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">MetropolCard</div>
+                        <div id="sumMetropol" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                    </div>
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">TokenFlex</div>
+                        <div id="sumToken" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+                    </div>
                 </div>
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                    <div style="font-size: 8px; color: #6b7280;">Edenred</div>
-                    <div id="sumEdenred" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
-                </div>
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                    <div style="font-size: 8px; color: #6b7280;">MultiNet</div>
-                    <div id="sumMultiNet" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
-                </div>
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                    <div style="font-size: 8px; color: #6b7280;">Setcard</div>
-                    <div id="sumSetcard" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
-                </div>
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                    <div style="font-size: 8px; color: #6b7280;">MetropolCard</div>
-                    <div id="sumMetropol" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
-                </div>
-                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                    <div style="font-size: 8px; color: #6b7280;">TokenFlex</div>
-                    <div id="sumToken" style="font-size: 11px; font-weight: bold; color: #78350f;">0</div>
+            </div>
+
+            <div style="background: #fff; border: 1px solid #ddd6fe; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <h3 style="font-size: 11px; font-weight: bold; color: #5b21b6; margin: 0 0 8px 0; text-transform: uppercase;">Online Yemek Platformları Toplamları</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
+                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Trendyol Yemek</div>
+                        <div id="sumTrendyol" style="font-size: 11px; font-weight: bold; color: #5b21b6;">0</div>
+                    </div>
+                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Yemeksepeti</div>
+                        <div id="sumYemeksepeti" style="font-size: 11px; font-weight: bold; color: #5b21b6;">0</div>
+                    </div>
+                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Getir Yemek</div>
+                        <div id="sumGetir" style="font-size: 11px; font-weight: bold; color: #5b21b6;">0</div>
+                    </div>
+                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Migros Yemek</div>
+                        <div id="sumMigros" style="font-size: 11px; font-weight: bold; color: #5b21b6;">0</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Raporlar / Liste Tablosu -->
         <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <h3 id="tableHeaderTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Raporlar Listesi</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                <h3 id="tableHeaderTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0; text-transform: uppercase;">Raporlar Listesi</h3>
+            </div>
+            
+            <!-- Biten Aylar Butonları Konteyneri -->
+            <div id="monthlyButtonsContainer" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #fde68a;">
+                <!-- Dinamik Ay Butonları Buraya Gelecek -->
+            </div>
+
             <div style="width: 100%; overflow-x: auto;">
-                <table style="width: 100%; min-width: 700px; border-collapse: collapse; font-size: 10px;">
+                <table style="width: 100%; min-width: 800px; border-collapse: collapse; font-size: 10px;">
                     <thead>
                         <tr style="background: #fffbeb; color: #78350f;">
                             <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
@@ -251,6 +300,7 @@
                             <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">ONLİNE PLATFORM</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
                         </tr>
@@ -261,9 +311,23 @@
             </div>
         </div>
 
-        <!-- MERKEZ STOK ÇIKIŞLARI GEÇMİŞİ LİSTESİ -->
-        <div id="stockOutTableContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
-            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkez Stok Çıkışları Geçmişi</h3>
+        <!-- MERKEZ STOK ÇIKIŞLARI GEÇMİŞİ / ŞUBELER İÇİN GELEN STOK LİSTESİ -->
+        <div id="stockOutTableContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                <h3 id="stockSectionHeading" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0; text-transform: uppercase;">Merkez Stok Çıkışları Geçmişi</h3>
+                
+                <!-- Filtreler -->
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <select id="filterStockBranch" onchange="renderStocks()" style="padding: 4px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 10px; background: #fff;">
+                        <option value="">Tüm Şubeler (Filtre)</option>
+                        <option value="Kurtkoy">Kurtköy</option>
+                        <option value="Soganlik">Soğanlık</option>
+                        <option value="Ortadag">Ortadağ</option>
+                    </select>
+                    <input type="text" id="filterStockName" oninput="renderStocks()" placeholder="Stok adı ara..." style="padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 10px; background: #fff;">
+                </div>
+            </div>
+
             <div style="width: 100%; overflow-x: auto;">
                 <table style="width: 100%; min-width: 450px; border-collapse: collapse; font-size: 10px;">
                     <thead>
@@ -298,6 +362,13 @@
         let allStockCache = [];
         let currentSelectedBranch = localStorage.getItem('sweet_waffle_active_branch') || '';
         let pendingBranchTarget = '';
+        let selectedMonthFilter = ''; // Seçilen YYYY-MM filtresi
+
+        const monthNamesTr = {
+            "01": "Ocak", "02": "Şubat", "03": "Mart", "04": "Nisan", 
+            "05": "Mayıs", "06": "Haziran", "07": "Temmuz", "08": "Ağustos", 
+            "09": "Eylül", "10": "Ekim", "11": "Kasım", "12": "Aralık"
+        };
 
         document.getElementById('reportDate').valueAsDate = new Date();
 
@@ -366,12 +437,15 @@
             if (branchName === 'Merkez') {
                 document.getElementById('formCardContainer').style.display = 'none';
                 document.getElementById('stockOutCardContainer').style.display = 'block';
-                document.getElementById('stockOutTableContainer').style.display = 'block';
+                document.getElementById('stockSectionHeading').innerText = "Merkez Stok Çıkışları Geçmişi";
+                document.getElementById('filterStockBranch').style.display = 'inline-block';
             } else {
                 document.getElementById('formCardContainer').style.display = 'block';
                 document.getElementById('stockOutCardContainer').style.display = 'none';
-                document.getElementById('stockOutTableContainer').style.display = 'none';
+                document.getElementById('stockSectionHeading').innerText = "Merkeften Gelen Stok Listesi";
+                document.getElementById('filterStockBranch').style.display = 'none';
             }
+            document.getElementById('stockOutTableContainer').style.display = 'block';
         }
 
         function formatMoney(val) {
@@ -391,12 +465,12 @@
                 const { data, error } = await supabaseClient.from('reports').select('*').order('date', { ascending: false });
                 if (error) throw error;
                 allDataCache = data || [];
+                renderMonthlyButtons();
                 renderReports();
             } catch (err) { console.error('Hata:', err); }
         }
 
         async function fetchAllStocks() {
-            if (currentSelectedBranch !== 'Merkez') return;
             try {
                 const { data, error } = await supabaseClient.from('archive').select('*').order('id', { ascending: false });
                 if (error) throw error;
@@ -405,7 +479,6 @@
             } catch (err) { console.error('Stok Çekme Hatası:', err); }
         }
 
-        // Stok Çıkışı Kaydı (Mevcut 'archive' tablosuna yazar, hata vermez)
         document.getElementById('stockOutForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             if (currentSelectedBranch !== 'Merkez') return;
@@ -451,6 +524,10 @@
                 platform_setcard: parseFloat(document.getElementById('reportSetcard').value) || 0,
                 platform_metropol: parseFloat(document.getElementById('reportMetropol').value) || 0,
                 platform_token: parseFloat(document.getElementById('reportToken').value) || 0,
+                platform_trendyol: parseFloat(document.getElementById('reportTrendyol').value) || 0,
+                platform_yemeksepeti: parseFloat(document.getElementById('reportYemeksepeti').value) || 0,
+                platform_getir: parseFloat(document.getElementById('reportGetir').value) || 0,
+                platform_migros: parseFloat(document.getElementById('reportMigros').value) || 0,
                 expense: parseFloat(document.getElementById('reportExpense').value) || 0,
                 expense_desc: document.getElementById('reportExpenseDesc').value || ''
             };
@@ -467,6 +544,48 @@
             }
         });
 
+        function renderMonthlyButtons() {
+            const container = document.getElementById('monthlyButtonsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Şubeye göre veya merkeze göre ham verilerden ayları türet
+            let branchData = currentSelectedBranch === 'Merkez' ? allDataCache : allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            
+            let monthsSet = new Set();
+            branchData.forEach(row => {
+                if (row.date && row.date.length >= 7) {
+                    monthsSet.add(row.date.substring(0, 7)); // YYYY-MM
+                }
+            });
+
+            let sortedMonths = Array.from(monthsSet).sort().reverse(); // En yeniden eskiye
+
+            // "Tüm Veriler" Butonu
+            let allBtn = document.createElement('button');
+            allBtn.type = 'button';
+            allBtn.innerText = "Tüm Veriler";
+            allBtn.style.cssText = `padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; border: 1px solid #78350f; background: ${selectedMonthFilter === '' ? '#78350f' : '#fff'}; color: ${selectedMonthFilter === '' ? '#fff' : '#78350f'};`;
+            allBtn.onclick = () => { selectedMonthFilter = ''; renderMonthlyButtons(); renderReports(); };
+            container.appendChild(allBtn);
+
+            sortedMonths.forEach(ym => {
+                let parts = ym.split('-');
+                let year = parts[0];
+                let monthNum = parts[1];
+                let monthName = monthNamesTr[monthNum] || monthNum;
+                let label = `${monthName} ${year}`;
+
+                let btn = document.createElement('button');
+                btn.type = 'button';
+                btn.innerText = label;
+                let isActive = selectedMonthFilter === ym;
+                btn.style.cssText = `padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; border: 1px solid #78350f; background: ${isActive ? '#78350f' : '#fff'}; color: ${isActive ? '#fff' : '#78350f'};`;
+                btn.onclick = () => { selectedMonthFilter = ym; renderMonthlyButtons(); renderReports(); };
+                container.appendChild(btn);
+            });
+        }
+
         function renderReports() {
             const tbody = document.getElementById('allReportsTableBody');
             const tfoot = document.getElementById('allReportsTableFooter');
@@ -481,13 +600,20 @@
                 filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
             }
 
-            let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalRevenue = 0, totalExpense = 0;
+            // Ay Filtresi Uygula
+            if (selectedMonthFilter) {
+                filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
+            }
+
+            let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalOnline = 0, totalRevenue = 0, totalExpense = 0;
             let sumPluxee = 0, sumEdenred = 0, sumMultiNet = 0, sumSetcard = 0, sumMetropol = 0, sumToken = 0;
+            let sumTrendyol = 0, sumYemeksepeti = 0, sumGetir = 0, sumMigros = 0;
 
             if (filteredData.length > 0) {
                 filteredData.forEach(row => {
                     const rawC = cleanVal(row.cash);
                     const rawB = cleanVal(row.bank);
+                    
                     const pPluxee = cleanVal(row.platform_pluxee);
                     const pEdenred = cleanVal(row.platform_edenred);
                     const pMultiNet = cleanVal(row.platform_multinet);
@@ -495,7 +621,13 @@
                     const pMetropol = cleanVal(row.platform_metropol);
                     const pToken = cleanVal(row.platform_token);
                     
+                    const pTrendyol = cleanVal(row.platform_trendyol);
+                    const pYemeksepeti = cleanVal(row.platform_yemeksepeti);
+                    const pGetir = cleanVal(row.platform_getir);
+                    const pMigros = cleanVal(row.platform_migros);
+
                     const rowPlatformTotal = pPluxee + pEdenred + pMultiNet + pSetcard + pMetropol + pToken;
+                    const rowOnlineTotal = pTrendyol + pYemeksepeti + pGetir + pMigros;
                     const rawR = rawC + rawB;
                     const rawE = cleanVal(row.expense);
                     const expDesc = row.expense_desc ? ` (${row.expense_desc})` : '';
@@ -503,6 +635,7 @@
                     totalCash += rawC; 
                     totalBank += rawB; 
                     totalPlatforms += rowPlatformTotal;
+                    totalOnline += rowOnlineTotal;
                     totalRevenue += rawR; 
                     totalExpense += rawE;
 
@@ -513,6 +646,11 @@
                     sumMetropol += pMetropol;
                     sumToken += pToken;
 
+                    sumTrendyol += pTrendyol;
+                    sumYemeksepeti += pYemeksepeti;
+                    sumGetir += pGetir;
+                    sumMigros += pMigros;
+
                     const tr = document.createElement('tr');
                     tr.style.borderBottom = '1px solid #f3f4f6';
                     tr.innerHTML = `
@@ -521,6 +659,7 @@
                         <td style="padding: 6px; color: #1f2937;">${formatMoney(rawC)}</td>
                         <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
                         <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
+                        <td style="padding: 6px; color: #7c3aed;">${formatMoney(rowOnlineTotal)}</td>
                         <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
                         <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
                     `;
@@ -533,17 +672,19 @@
                         <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
                         <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
                         <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
+                        <td style="padding: 6px; color: #7c3aed;">${formatMoney(totalOnline)}</td>
                         <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
                         <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
                     </tr>
                 `;
             } else {
-                tbody.innerHTML = `<tr><td colspan="7" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
             }
 
             document.getElementById('statTotalCash').innerText = formatMoney(totalCash);
             document.getElementById('statTotalBank').innerText = formatMoney(totalBank);
             document.getElementById('statTotalPlatforms').innerText = formatMoney(totalPlatforms);
+            document.getElementById('statTotalOnline').innerText = formatMoney(totalOnline);
             document.getElementById('statTotalRevenue').innerText = formatMoney(totalRevenue);
             document.getElementById('statTotalExpense').innerText = formatMoney(totalExpense);
 
@@ -553,6 +694,11 @@
             document.getElementById('sumSetcard').innerText = formatMoney(sumSetcard);
             document.getElementById('sumMetropol').innerText = formatMoney(sumMetropol);
             document.getElementById('sumToken').innerText = formatMoney(sumToken);
+
+            document.getElementById('sumTrendyol').innerText = formatMoney(sumTrendyol);
+            document.getElementById('sumYemeksepeti').innerText = formatMoney(sumYemeksepeti);
+            document.getElementById('sumGetir').innerText = formatMoney(sumGetir);
+            document.getElementById('sumMigros').innerText = formatMoney(sumMigros);
         }
 
         function renderStocks() {
@@ -560,8 +706,24 @@
             if (!stockTbody) return;
             stockTbody.innerHTML = '';
 
-            if (allStockCache.length > 0) {
-                allStockCache.forEach(item => {
+            let filteredStocks = allStockCache;
+
+            if (currentSelectedBranch === 'Merkez') {
+                const branchFilterVal = document.getElementById('filterStockBranch').value;
+                if (branchFilterVal) {
+                    filteredStocks = filteredStocks.filter(item => item.target_branch && item.target_branch.toLowerCase() === branchFilterVal.toLowerCase());
+                }
+            } else {
+                filteredStocks = filteredStocks.filter(item => item.target_branch && item.target_branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            }
+
+            const nameSearchVal = document.getElementById('filterStockName').value.trim().toLowerCase();
+            if (nameSearchVal) {
+                filteredStocks = filteredStocks.filter(item => item.stock_name && item.stock_name.toLowerCase().includes(nameSearchVal));
+            }
+
+            if (filteredStocks.length > 0) {
+                filteredStocks.forEach(item => {
                     let dateStr = item.created_at ? new Date(item.created_at).toLocaleDateString('tr-TR') : '-';
                     const tr = document.createElement('tr');
                     tr.style.borderBottom = '1px solid #f3f4f6';
@@ -575,20 +737,25 @@
                     stockTbody.appendChild(tr);
                 });
             } else {
-                stockTbody.innerHTML = `<tr><td colspan="5" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok çıkış kaydı bulunmuyor.</td></tr>`;
+                stockTbody.innerHTML = `<tr><td colspan="5" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok kaydı bulunmuyor.</td></tr>`;
             }
         }
 
         function exportToExcel() {
             let filteredData = currentSelectedBranch === 'Merkez' ? allDataCache : allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            if (selectedMonthFilter) {
+                filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
+            }
             let dataToExport = filteredData.map(row => {
                 const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
+                const oTotal = cleanVal(row.platform_trendyol) + cleanVal(row.platform_yemeksepeti) + cleanVal(row.platform_getir) + cleanVal(row.platform_migros);
                 return {
                     "Şube": row.branch || '',
                     "Tarih": row.date || '',
                     "Nakit": cleanVal(row.cash),
                     "Banka": cleanVal(row.bank),
                     "Yemek Kartları": pTotal,
+                    "Online Platform": oTotal,
                     "Ciro": cleanVal(row.cash) + cleanVal(row.bank),
                     "Masraf": cleanVal(row.expense),
                     "Masraf Açıklaması": row.expense_desc || ''
@@ -609,8 +776,12 @@
             doc.text(`Sweet Waffle - ${currentSelectedBranch === 'Merkez' ? 'Merkez (Tüm Şubeler)' : currentSelectedBranch} Raporları`, 14, 15);
 
             let filteredData = currentSelectedBranch === 'Merkez' ? allDataCache : allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            if (selectedMonthFilter) {
+                filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
+            }
             let tableRows = filteredData.map(row => {
                 const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
+                const oTotal = cleanVal(row.platform_trendyol) + cleanVal(row.platform_yemeksepeti) + cleanVal(row.platform_getir) + cleanVal(row.platform_migros);
                 const ciro = cleanVal(row.cash) + cleanVal(row.bank);
                 const expInfo = cleanVal(row.expense) + (row.expense_desc ? ` (${row.expense_desc})` : '');
                 return [
@@ -619,13 +790,14 @@
                     formatMoney(row.cash),
                     formatMoney(row.bank),
                     formatMoney(pTotal),
+                    formatMoney(oTotal),
                     formatMoney(ciro),
                     expInfo
                 ];
             });
 
             doc.autoTable({
-                head: [['Şube', 'Tarih', 'Nakit', 'Banka', 'Yemek Kartı', 'Ciro', 'Masraf & Açıklama']],
+                head: [['Şube', 'Tarih', 'Nakit', 'Banka', 'Yemek Kartı', 'Online Platform', 'Ciro', 'Masraf & Açıklama']],
                 body: tableRows,
                 startY: 20,
                 styles: { fontSize: 8 }
