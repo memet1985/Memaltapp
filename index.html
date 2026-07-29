@@ -100,14 +100,15 @@
         <div id="stockOutCardContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkez Stok Çıkışı Yap</h3>
             <form id="stockOutForm" style="display: flex; flex-direction: column; gap: 8px;">
-                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 6px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                     <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Adı</label>
-                        <input type="text" id="stockName" placeholder="Örn: Un, Şeker, Kutu..." required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                    </div>
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Tutarı / Miktarı</label>
-                        <input type="number" step="any" id="stockAmount" placeholder="0" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Gidecek Şube</label>
+                        <select id="targetBranch" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                            <option value="">Şube Seçin...</option>
+                            <option value="Kurtköy">Kurtköy Şubesi</option>
+                            <option value="Soğanlık">Soğanlık Şubesi</option>
+                            <option value="Ortadağ">Ortadağ Şubesi</option>
+                        </select>
                     </div>
                     <div>
                         <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Birimi</label>
@@ -121,6 +122,26 @@
                         </select>
                     </div>
                 </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 6px;">
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Adı (Seçin veya Manuel Yazın)</label>
+                        <input type="text" id="stockName" list="stockNameList" placeholder="Seçin veya yeni yazın..." required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                        <datalist id="stockNameList">
+                            <option value="Un">
+                            <option value="Şeker">
+                            <option value="Waffle Kutusu">
+                            <option value="Çikolata Sosu">
+                            <option value="Bardak">
+                            <option value="Pçk. Çatal/Bıçak">
+                        </datalist>
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Miktar / Tutar</label>
+                        <input type="number" step="any" id="stockAmount" placeholder="0" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                    </div>
+                </div>
+
                 <div>
                     <button type="submit" style="width: 100%; background: #047857; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Stok Çıkışını Kaydet</button>
                 </div>
@@ -234,12 +255,13 @@
         <div id="stockOutTableContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkez Stok Çıkışları Geçmişi</h3>
             <div style="width: 100%; overflow-x: auto;">
-                <table style="width: 100%; min-width: 400px; border-collapse: collapse; font-size: 10px;">
+                <table style="width: 100%; min-width: 450px; border-collapse: collapse; font-size: 10px;">
                     <thead>
                         <tr style="background: #fffbeb; color: #78350f;">
                             <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">GİDECEK ŞUBE</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">STOK ADI</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">MİKTAR / TUTAR</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">MİKTAR</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">BİRİM</th>
                         </tr>
                     </thead>
@@ -310,7 +332,6 @@
             document.getElementById('formSectionTitle').innerText = displayName + " - Günlük Rapor ve Masraf Girişi";
             document.getElementById('tableHeaderTitle').innerText = displayName + " Raporları Listesi";
 
-            // Sadece Merkez şubede stok çıkış kartı ve tablosu görünür, günlük ciro giriş formu gizlenir
             if (branchName === 'Merkez') {
                 document.getElementById('formCardContainer').style.display = 'none';
                 document.getElementById('stockOutCardContainer').style.display = 'block';
@@ -353,15 +374,32 @@
             } catch (err) { console.error('Stok Çekme Hatası:', err); }
         }
 
-        // Stok Çıkışı Form Kaydı
+        // Stok Çıkışı Form Kaydı ve Mükerrer Kontrolü
         document.getElementById('stockOutForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             if (currentSelectedBranch !== 'Merkez') return;
 
+            const targetBranchVal = document.getElementById('targetBranch').value;
+            const stockNameVal = document.getElementById('stockName').value.trim();
+            const stockAmountVal = parseFloat(document.getElementById('stockAmount').value) || 0;
+            const stockUnitVal = document.getElementById('stockUnit').value;
+
+            // Aynı şubeye aynı isimde ürün daha önce eklenmiş mi kontrol et (Mükerrer engelleme)
+            const isDuplicate = allStockCache.some(item => 
+                item.target_branch && item.target_branch.toLowerCase() === targetBranchVal.toLowerCase() &&
+                item.stock_name && item.stock_name.toLowerCase() === stockNameVal.toLowerCase()
+            );
+
+            if (isDuplicate) {
+                alert(`Hata: "${targetBranchVal}" şubesi için "${stockNameVal" adında bir stok çıkışı zaten mevcut. Aynı ürün tekrar kaydedilemez.`);
+                return;
+            }
+
             const payload = {
-                stock_name: document.getElementById('stockName').value,
-                stock_amount: parseFloat(document.getElementById('stockAmount').value) || 0,
-                stock_unit: document.getElementById('stockUnit').value,
+                target_branch: targetBranchVal,
+                stock_name: stockNameVal,
+                stock_amount: stockAmountVal,
+                stock_unit: stockUnitVal,
                 created_at: new Date().toISOString()
             };
 
@@ -372,7 +410,7 @@
                 document.getElementById('stockOutForm').reset();
                 fetchAllStocks();
             } catch (err) {
-                alert('Stok kaydedilemedi (Tablo oluşturulmamış olabilir): ' + err.message);
+                alert('Stok kaydedilemedi (Tablo sütunları eksik olabilir): ' + err.message);
             }
         });
 
@@ -510,6 +548,7 @@
                     tr.style.borderBottom = '1px solid #f3f4f6';
                     tr.innerHTML = `
                         <td style="padding: 6px; color: #4b5563;">${dateStr}</td>
+                        <td style="padding: 6px; font-weight: bold; color: #1d4ed8;">${item.target_branch || '-'}</td>
                         <td style="padding: 6px; font-weight: bold; color: #78350f;">${item.stock_name || '-'}</td>
                         <td style="padding: 6px; color: #1f2937;">${formatMoney(item.stock_amount)}</td>
                         <td style="padding: 6px; color: #047857; font-weight: bold;">${item.stock_unit || '-'}</td>
@@ -517,7 +556,7 @@
                     stockTbody.appendChild(tr);
                 });
             } else {
-                stockTbody.innerHTML = `<tr><td colspan="4" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok çıkış kaydı bulunmuyor.</td></tr>`;
+                stockTbody.innerHTML = `<tr><td colspan="5" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok çıkış kaydı bulunmuyor.</td></tr>`;
             }
         }
 
