@@ -96,12 +96,42 @@
             </div>
         </div>
 
-        <!-- GÜNLÜK RAPOR GİRİŞ / DÜZENLEME FORMU -->
+        <!-- MERKEZ STOK ÇIKIŞ FORMU (SADECE MERKEZDE GÖRÜNÜR) -->
+        <div id="stockOutCardContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
+            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkez Stok Çıkışı Yap</h3>
+            <form id="stockOutForm" style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 6px;">
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Adı</label>
+                        <input type="text" id="stockName" placeholder="Örn: Un, Şeker, Kutu..." required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Tutarı / Miktarı</label>
+                        <input type="number" step="any" id="stockAmount" placeholder="0" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Birimi</label>
+                        <select id="stockUnit" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                            <option value="Kg">Kg</option>
+                            <option value="Adet">Adet</option>
+                            <option value="Paket">Paket</option>
+                            <option value="Koli">Koli</option>
+                            <option value="Litre">Litre</option>
+                            <option value="Gram">Gram</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" style="width: 100%; background: #047857; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Stok Çıkışını Kaydet</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- GÜNLÜK RAPOR GİRİŞ FORMU -->
         <div id="formCardContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <h3 id="formSectionTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Günlük Rapor ve Masraf Girişi</h3>
             <form id="branchReportForm" style="display: flex; flex-direction: column; gap: 8px;">
-                <input type="hidden" id="editingRecordId" value="">
-
+                
                 <div>
                     <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Tarih</label>
                     <input type="date" id="reportDate" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
@@ -141,9 +171,8 @@
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 6px;">
-                    <button type="submit" id="submitButtonText" style="flex: 1; background: #78350f; color: #fff; padding: 9px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Günlük Raporu Kaydet</button>
-                    <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="display: none; background: #6b7280; color: #fff; padding: 9px 12px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">İptal</button>
+                <div>
+                    <button type="submit" style="width: 100%; background: #78350f; color: #fff; padding: 9px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Günlük Raporu Kaydet</button>
                 </div>
             </form>
         </div>
@@ -180,13 +209,19 @@
         </div>
 
         <!-- Raporlar / Liste Tablosu -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <h3 id="tableHeaderTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Raporlar Listesi</h3>
             <div style="width: 100%; overflow-x: auto;">
-                <table style="width: 100%; min-width: 750px; border-collapse: collapse; font-size: 10px;">
+                <table style="width: 100%; min-width: 700px; border-collapse: collapse; font-size: 10px;">
                     <thead>
-                        <tr id="tableHeaderRow" style="background: #fffbeb; color: #78350f;">
-                            <!-- Dinamik olarak doldurulacak -->
+                        <tr style="background: #fffbeb; color: #78350f;">
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
                         </tr>
                     </thead>
                     <tbody id="allReportsTableBody"></tbody>
@@ -194,6 +229,25 @@
                 </table>
             </div>
         </div>
+
+        <!-- MERKEZ STOK ÇIKIŞLARI LİSTESİ (SADECE MERKEZDE GÖRÜNÜR) -->
+        <div id="stockOutTableContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
+            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkez Stok Çıkışları Geçmişi</h3>
+            <div style="width: 100%; overflow-x: auto;">
+                <table style="width: 100%; min-width: 400px; border-collapse: collapse; font-size: 10px;">
+                    <thead>
+                        <tr style="background: #fffbeb; color: #78350f;">
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">STOK ADI</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">MİKTAR / TUTAR</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">BİRİM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockOutTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -209,6 +263,7 @@
         };
 
         let allDataCache = [];
+        let allStockCache = [];
         let currentSelectedBranch = localStorage.getItem('sweet_waffle_active_branch') || '';
 
         document.getElementById('reportDate').valueAsDate = new Date();
@@ -220,6 +275,7 @@
                 document.getElementById('welcomeScreenModal').style.display = 'none';
                 applyBranchUI(currentSelectedBranch);
                 fetchAllReports();
+                fetchAllStocks();
             }
         });
 
@@ -241,6 +297,7 @@
                 document.getElementById('welcomeScreenModal').style.display = 'none';
                 applyBranchUI(branchName);
                 fetchAllReports();
+                fetchAllStocks();
             } else {
                 alert('Hatalı şifre! Lütfen tekrar deneyin.');
             }
@@ -249,33 +306,19 @@
         function applyBranchUI(branchName) {
             let displayName = branchName === 'Merkez' ? 'Merkez Yönetimi (Tüm Şubeler)' : (branchName === 'Kurtkoy' ? 'Kurtköy Şubesi' : (branchName === 'Soganlik' ? 'Soğanlık Şubesi' : 'Ortadağ Şubesi'));
             document.getElementById('panelTitle').innerText = displayName;
-            document.getElementById('panelSubtitle').innerText = branchName === 'Merkez' ? 'Tüm Şube Verileri Toplu Görünüm ve Yönetim' : 'Günlük Rapor ve Masraf Girişi';
-            document.getElementById('formSectionTitle').innerText = branchName === 'Merkez' ? 'Merkez: Veri Güncelleme Paneli' : displayName + " - Günlük Rapor ve Masraf Girişi";
+            document.getElementById('panelSubtitle').innerText = branchName === 'Merkez' ? 'Tüm Şube Verileri Toplu Görünüm ve Stok Yönetimi' : 'Günlük Rapor ve Masraf Girişi';
+            document.getElementById('formSectionTitle').innerText = displayName + " - Günlük Rapor ve Masraf Girişi";
             document.getElementById('tableHeaderTitle').innerText = displayName + " Raporları Listesi";
 
-            // Tablo başlıklarını merkeze veya şubeye göre ayarlama
-            const theadRow = document.getElementById('tableHeaderRow');
+            // Sadece Merkez şubede stok çıkış kartı ve tablosu görünür, günlük ciro giriş formu gizlenir
             if (branchName === 'Merkez') {
-                theadRow.innerHTML = `
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
-                    <th style="padding: 6px; text-align: center; font-weight: 600; width: 90px;">İŞLEMLER</th>
-                `;
+                document.getElementById('formCardContainer').style.display = 'none';
+                document.getElementById('stockOutCardContainer').style.display = 'block';
+                document.getElementById('stockOutTableContainer').style.display = 'block';
             } else {
-                theadRow.innerHTML = `
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
-                    <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
-                `;
+                document.getElementById('formCardContainer').style.display = 'block';
+                document.getElementById('stockOutCardContainer').style.display = 'none';
+                document.getElementById('stockOutTableContainer').style.display = 'none';
             }
         }
 
@@ -300,24 +343,48 @@
             } catch (err) { console.error('Hata:', err); }
         }
 
+        async function fetchAllStocks() {
+            if (currentSelectedBranch !== 'Merkez') return;
+            try {
+                const { data, error } = await supabaseClient.from('stock_outs').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                allStockCache = data || [];
+                renderStocks();
+            } catch (err) { console.error('Stok Çekme Hatası:', err); }
+        }
+
+        // Stok Çıkışı Form Kaydı
+        document.getElementById('stockOutForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (currentSelectedBranch !== 'Merkez') return;
+
+            const payload = {
+                stock_name: document.getElementById('stockName').value,
+                stock_amount: parseFloat(document.getElementById('stockAmount').value) || 0,
+                stock_unit: document.getElementById('stockUnit').value,
+                created_at: new Date().toISOString()
+            };
+
+            try {
+                const { error } = await supabaseClient.from('stock_outs').insert([payload]);
+                if (error) throw error;
+                alert('Stok çıkışı başarıyla kaydedildi.');
+                document.getElementById('stockOutForm').reset();
+                fetchAllStocks();
+            } catch (err) {
+                alert('Stok kaydedilemedi (Tablo oluşturulmamış olabilir): ' + err.message);
+            }
+        });
+
         document.getElementById('branchReportForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            if (!currentSelectedBranch) {
-                alert('Lütfen önce şube seçimi yapın!');
+            if (!currentSelectedBranch || currentSelectedBranch === 'Merkez') {
+                alert('Merkez hesabından doğrudan rapor eklenemez!');
                 return;
             }
 
-            const recordId = document.getElementById('editingRecordId').value;
-            let targetBranch = currentSelectedBranch;
-            if (recordId) {
-                let existingRec = allDataCache.find(r => r.id == recordId);
-                if (existingRec) targetBranch = existingRec.branch;
-            } else if (targetBranch === 'Merkez') {
-                targetBranch = 'Merkez';
-            }
-
             const payload = {
-                branch: targetBranch,
+                branch: currentSelectedBranch,
                 date: document.getElementById('reportDate').value,
                 cash: parseFloat(document.getElementById('reportCash').value) || 0,
                 bank: parseFloat(document.getElementById('reportBank').value) || 0,
@@ -332,66 +399,16 @@
             };
 
             try {
-                if (recordId) {
-                    const { error } = await supabaseClient.from('reports').update(payload).eq('id', recordId);
-                    if (error) throw error;
-                    alert('Kayıt başarıyla güncellendi.');
-                    cancelEdit();
-                } else {
-                    const { error } = await supabaseClient.from('reports').insert([payload]);
-                    if (error) throw error;
-                    alert('Günlük rapor ve masraf başarıyla kaydedildi.');
-                    document.getElementById('branchReportForm').reset();
-                    document.getElementById('reportDate').valueAsDate = new Date();
-                }
+                const { error } = await supabaseClient.from('reports').insert([payload]);
+                if (error) throw error;
+                alert('Günlük rapor ve masraf başarıyla kaydedildi.');
+                document.getElementById('branchReportForm').reset();
+                document.getElementById('reportDate').valueAsDate = new Date();
                 fetchAllReports();
             } catch (err) {
-                alert('İşlem başarısız: ' + err.message);
+                alert('Kayıt başarısız: ' + err.message);
             }
         });
-
-        function editRecord(id) {
-            let record = allDataCache.find(r => r.id == id);
-            if (!record) return;
-
-            document.getElementById('editingRecordId').value = record.id;
-            document.getElementById('reportDate').value = record.date || '';
-            document.getElementById('reportCash').value = record.cash || '';
-            document.getElementById('reportBank').value = record.bank || '';
-            document.getElementById('reportPluxee').value = record.platform_pluxee || '';
-            document.getElementById('reportEdenred').value = record.platform_edenred || '';
-            document.getElementById('reportMultiNet').value = record.platform_multinet || '';
-            document.getElementById('reportSetcard').value = record.platform_setcard || '';
-            document.getElementById('reportMetropol').value = record.platform_metropol || '';
-            document.getElementById('reportToken').value = record.platform_token || '';
-            document.getElementById('reportExpense').value = record.expense || '';
-            document.getElementById('reportExpenseDesc').value = record.expense_desc || '';
-
-            document.getElementById('submitButtonText').innerText = 'Değişiklikleri Güncelle';
-            document.getElementById('cancelEditBtn').style.display = 'block';
-
-            window.scrollTo({ top: 300, behavior: 'smooth' });
-        }
-
-        function cancelEdit() {
-            document.getElementById('editingRecordId').value = '';
-            document.getElementById('branchReportForm').reset();
-            document.getElementById('reportDate').valueAsDate = new Date();
-            document.getElementById('submitButtonText').innerText = 'Günlük Raporu Kaydet';
-            document.getElementById('cancelEditBtn').style.display = 'none';
-        }
-
-        async function deleteRecord(id) {
-            if (!confirm('Bu kaydı silmek istediğinize emin misiniz?')) return;
-            try {
-                const { error } = await supabaseClient.from('reports').delete().eq('id', id);
-                if (error) throw error;
-                alert('Kayıt başarıyla silindi.');
-                fetchAllReports();
-            } catch (err) {
-                alert('Silme başarısız: ' + err.message);
-            }
-        }
 
         function renderReports() {
             const tbody = document.getElementById('allReportsTableBody');
@@ -441,62 +458,30 @@
 
                     const tr = document.createElement('tr');
                     tr.style.borderBottom = '1px solid #f3f4f6';
-
-                    if (currentSelectedBranch === 'Merkez') {
-                        tr.innerHTML = `
-                            <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
-                            <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
-                            <td style="padding: 6px; color: #1f2937;">${formatMoney(rawC)}</td>
-                            <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
-                            <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
-                            <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
-                            <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
-                            <td style="padding: 6px; text-align: center;">
-                                <button onclick="editRecord('${row.id}')" style="background: #d97706; color: white; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 2px;">Düzenle</button>
-                                <button onclick="deleteRecord('${row.id}')" style="background: #dc2626; color: white; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
-                            </td>
-                        `;
-                    } else {
-                        tr.innerHTML = `
-                            <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
-                            <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
-                            <td style="padding: 6px; color: #1f2937;">${formatMoney(rawC)}</td>
-                            <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
-                            <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
-                            <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
-                            <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
-                        `;
-                    }
+                    tr.innerHTML = `
+                        <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
+                        <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(rawC)}</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
+                        <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
+                        <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
+                        <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
+                    `;
                     tbody.appendChild(tr);
                 });
 
-                if (currentSelectedBranch === 'Merkez') {
-                    tfoot.innerHTML = `
-                        <tr>
-                            <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
-                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
-                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
-                            <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
-                            <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
-                            <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
-                            <td></td>
-                        </tr>
-                    `;
-                } else {
-                    tfoot.innerHTML = `
-                        <tr>
-                            <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
-                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
-                            <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
-                            <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
-                            <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
-                            <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
-                        </tr>
-                    `;
-                }
+                tfoot.innerHTML = `
+                    <tr>
+                        <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
+                        <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
+                        <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
+                        <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
+                    </tr>
+                `;
             } else {
-                let colSpanCount = currentSelectedBranch === 'Merkez' ? 8 : 7;
-                tbody.innerHTML = `<tr><td colspan="${colSpanCount}" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
             }
 
             document.getElementById('statTotalCash').innerText = formatMoney(totalCash);
@@ -511,6 +496,29 @@
             document.getElementById('sumSetcard').innerText = formatMoney(sumSetcard);
             document.getElementById('sumMetropol').innerText = formatMoney(sumMetropol);
             document.getElementById('sumToken').innerText = formatMoney(sumToken);
+        }
+
+        function renderStocks() {
+            const stockTbody = document.getElementById('stockOutTableBody');
+            if (!stockTbody) return;
+            stockTbody.innerHTML = '';
+
+            if (allStockCache.length > 0) {
+                allStockCache.forEach(item => {
+                    let dateStr = item.created_at ? new Date(item.created_at).toLocaleDateString('tr-TR') : '-';
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = '1px solid #f3f4f6';
+                    tr.innerHTML = `
+                        <td style="padding: 6px; color: #4b5563;">${dateStr}</td>
+                        <td style="padding: 6px; font-weight: bold; color: #78350f;">${item.stock_name || '-'}</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(item.stock_amount)}</td>
+                        <td style="padding: 6px; color: #047857; font-weight: bold;">${item.stock_unit || '-'}</td>
+                    `;
+                    stockTbody.appendChild(tr);
+                });
+            } else {
+                stockTbody.innerHTML = `<tr><td colspan="4" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok çıkış kaydı bulunmuyor.</td></tr>`;
+            }
         }
 
         function exportToExcel() {
