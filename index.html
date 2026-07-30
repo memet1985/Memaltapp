@@ -2,7 +2,6 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <!-- Mobilde ekran taşmalarını ve ölçekleme sorunlarını çözen meta etiketi -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sweet Waffle - Personel ve Yönetim Paneli</title>
     <link rel="manifest" href="manifest.json">
@@ -213,7 +212,8 @@
             </div>
         </div>
 
-        <button class="btn btn-qr-scan" onclick="openQrScannerWithGpsCheck()">📍📷 Konumlu QR Kod Okut</button>
+        <!-- QR Tarama Butonu (Hata uyarısı kaldırıldı, direkt kamera açılır) -->
+        <button class="btn btn-qr-scan" onclick="openQrScannerDirectly()">📍📷 QR Kod Okut ve İşe Başla</button>
 
         <div class="card" style="padding: 10px;">
             <strong style="font-size: 11px; color: var(--waffle-dark); display: block; margin-bottom: 6px; text-transform: uppercase;">⏱️ Hızlı Çalışma İşlemleri</strong>
@@ -243,7 +243,7 @@
     <!-- 3.B. QR KAMERA TARAYICI EKRANI -->
     <div id="qr-scanner-screen" class="hidden">
         <h3>📷 Şube QR Kod Tarayıcı</h3>
-        <p style="text-align: center; font-size: 11px; color: #666;">Konumunuz doğrulanıyor, lütfen kamerayı QR koda tutun.</p>
+        <p style="text-align: center; font-size: 11px; color: #666;">Lütfen şubenin QR kodunu kameraya okutun.</p>
         <div id="reader"></div>
         <button class="btn btn-back" onclick="closeQrScanner()">Kamerayı Kapat</button>
     </div>
@@ -258,9 +258,9 @@
             </div>
         </div>
 
-        <!-- ŞUBE QR KODLARI YÖNETİM ALANI (MOBİL & TABLET UYUMLU JPG İNDİR) -->
+        <!-- ŞUBE QR KODLARI YÖNETİM ALANI (JPG İNDİR) -->
         <div class="card" style="background: #fffdf9; border: 2px solid var(--waffle-gold);">
-            <strong style="font-size: 11px; color: var(--waffle-dark); display: block; margin-bottom: 4px;">🖼️ Şube Konum Bazlı QR Kodlar (Mobil & Tablet JPG İndir)</strong>
+            <strong style="font-size: 11px; color: var(--waffle-dark); display: block; margin-bottom: 4px;">🖼️ Şube Konum Bazlı QR Kodlar (Plus Code & Koordinatlı JPG İndir)</strong>
             <p style="font-size: 10px; color: #666; margin-bottom:6px;">Şubelere ait QR kodları telefondan veya bilgisayardan anında JPG olarak indirebilirsiniz:</p>
             <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                 <button class="btn btn-branch" style="width: auto; padding: 6px 10px; margin: 0; font-size: 11px;" onclick="downloadQrJpg('Kurtköy')">📍 Kurtköy QR (JPG)</button>
@@ -361,11 +361,26 @@
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Güncel şube GPS koordinatları sisteme işlendi
+    // Güncel şube GPS koordinatları ve Plus Code verileri işlendi
     const database = {
-        "Kurtköy": { staff: [{ name: "Nesrin POLAT", pass: "1234" }, { name: "Mehmet Demir", pass: "1234" }], lat: 40.916286, lng: 29.303978 },
-        "Soğanlık": { staff: [{ name: "Can Çelik", pass: "1234" }, { name: "Elif Demir", pass: "1234" }], lat: 40.914869, lng: 29.203213 },
-        "Yeni": { staff: [{ name: "Burak Şahin", pass: "1234" }, { name: "Zeynep Koç", pass: "1234" }], lat: 41.00820, lng: 28.97840 }
+        "Kurtköy": { 
+            staff: [{ name: "Nesrin POLAT", pass: "1234" }, { name: "Mehmet Demir", pass: "1234" }], 
+            lat: 40.916286, 
+            lng: 29.303978, 
+            plusCode: "W883+CH" 
+        },
+        "Soğanlık": { 
+            staff: [{ name: "Can Çelik", pass: "1234" }, { name: "Elif Demir", pass: "1234" }], 
+            lat: 40.914869, 
+            lng: 29.203213, 
+            plusCode: "W673+W7" 
+        },
+        "Yeni": { 
+            staff: [{ name: "Burak Şahin", pass: "1234" }, { name: "Zeynep Koç", pass: "1234" }], 
+            lat: 41.00820, 
+            lng: 28.97840, 
+            plusCode: "F4V3+3G" 
+        }
     };
 
     const ADMIN_PASS = "5678";
@@ -447,12 +462,12 @@
         }
     }
 
-    // MOBİL VE TABLET UYUMLU GARANTİLİ JPG QR KOD İNDİRME FONKSİYONU
+    // PLUS CODE VE KOORDİNAT DESTEKLİ GARANTİLİ JPG QR KOD İNDİRME
     function downloadQrJpg(branchKey) {
         const branchInfo = database[branchKey];
         if (!branchInfo) return;
 
-        const qrText = `SWEET_WAFFLE_BRANCH:${branchKey}_LAT:${branchInfo.lat}_LNG:${branchInfo.lng}`;
+        const qrText = `SWEET_WAFFLE_BRANCH:${branchKey}_LAT:${branchInfo.lat}_LNG:${branchInfo.lng}_PLUSCODE:${branchInfo.plusCode}`;
         const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(qrText)}`;
 
         const imageObj = new Image();
@@ -469,15 +484,13 @@
             ctx.drawImage(imageObj, 0, 0, 500, 500);
             
             let imageUri = canvas.toDataURL("image/jpeg", 1.0);
-            let filename = `SweetWaffle_${branchKey}_Subesi_Konum_QR.jpg`;
+            let filename = `SweetWaffle_${branchKey}_${branchInfo.plusCode}_QR.jpg`;
 
             const isIOS = /ipad|iphone|ipod/i.test(navigator.userAgent.toLowerCase());
 
             if (isIOS) {
                 const newWindow = window.open(imageUri, '_blank');
-                if (!newWindow) {
-                    window.location.href = imageUri;
-                }
+                if (!newWindow) { window.location.href = imageUri; }
                 return;
             }
 
@@ -825,55 +838,29 @@
         }
     }
 
-    function openQrScannerWithGpsCheck() {
-        if (!navigator.geolocation) { 
-            alert("Tarayıcınız veya cihazınız konum servislerini desteklemiyor."); 
-            return; 
-        }
-        
-        alert("Konumunuz alınıyor, lütfen bekleyin...");
-        
-        navigator.geolocation.getCurrentPosition(position => {
-            let userLat = position.coords.latitude;
-            let userLng = position.coords.longitude;
-            let targetLat = database[currentBranch].lat;
-            let targetLng = database[currentBranch].lng;
-            
-            let dist = calculateDistance(userLat, userLng, targetLat, targetLng);
-            
-            // Tolerans mesafesi 750 metre
-            if (dist > 750) { 
-                alert(`Şube konumundan uzaktasınız! Ölçülen uzaklık: ${Math.round(dist)}m. (İzin verilen maksimum mesafe: 750m)`); 
-                return; 
-            }
-            
-            startCameraScanner();
-        }, (error) => {
-            console.error(error);
-            alert("Konum alınamadı! Lütfen telefonunuzun konum/GPS servisinin açık olduğundan ve tarayıcıya konum izni verdiğinizden emin olun.");
-        }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
-    }
-
-    function startCameraScanner() {
+    // Mesafe uyarısını tamamen kaldıran doğrudan tarayıcı açma fonksiyonu
+    function openQrScannerDirectly() {
         document.getElementById("panel-screen").classList.add("hidden");
         document.getElementById("qr-scanner-screen").classList.remove("hidden");
+        
         html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } }, decodedText => {
-            if (decodedText.includes(currentBranch) || decodedText.includes("SWEET_WAFFLE_BRANCH")) {
-                closeQrScanner();
-                triggerAction('GPS + QR Onaylı İşe Giriş', 0);
-            } else {
-                alert("Hatalı veya farklı bir şubenin QR kodu okutuldu!");
-            }
-        }, () => {});
-    }
-
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        let R = 6371e3;
-        let dLat = (lat2 - lat1) * Math.PI / 180;
-        let dLon = (lon2 - lon1) * Math.PI / 180;
-        let a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
-        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+        html5QrCode.start(
+            { facingMode: "environment" }, 
+            { fps: 10, qrbox: { width: 250, height: 250 } }, 
+            decodedText => {
+                if (decodedText.includes(currentBranch) || decodedText.includes("SWEET_WAFFLE_BRANCH")) {
+                    closeQrScanner();
+                    triggerAction('QR Kod Onaylı İşe Giriş', 0);
+                } else {
+                    alert("Hatalı veya farklı bir şubenin QR kodu okutuldu!");
+                }
+            }, 
+            () => {}
+        ).catch(err => {
+            console.error(err);
+            alert("Kamera başlatılamadı. Lütfen tarayıcı kamera izinlerini kontrol edin.");
+            closeQrScanner();
+        });
     }
 
     function closeQrScanner() {
