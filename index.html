@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <!-- MERKEZ DÜZENLEME MODALI -->
+    <!-- MERKEZ DÜZENLEME MODALI (RAPOR) -->
     <div id="editReportModal" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 99998; display: none; align-items: center; justify-content: center; padding: 16px;">
         <div style="background: #fff; border-radius: 12px; padding: 16px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
             <h3 style="font-size: 13px; font-weight: bold; color: #78350f; margin: 0 0 10px 0; text-transform: uppercase;">Raporu Düzenle (Merkez)</h3>
@@ -113,6 +113,49 @@
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px;">
                     <button type="button" onclick="closeEditModal()" style="background: #e5e7eb; color: #374151; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">İptal</button>
+                    <button type="submit" style="background: #047857; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Güncellemeyi Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MERKEZ DÜZENLEME MODALI (STOK ÇIKIŞI) -->
+    <div id="editStockModal" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 99998; display: none; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #fff; border-radius: 12px; padding: 16px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <h3 style="font-size: 13px; font-weight: bold; color: #78350f; margin: 0 0 10px 0; text-transform: uppercase;">Stok Çıkışını Düzenle (Merkez)</h3>
+            <form id="editStockForm" style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="hidden" id="editStockId">
+                <div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Gidecek Şube</label>
+                    <select id="editTargetBranch" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                        <option value="Kurtkoy">Kurtköy Şubesi</option>
+                        <option value="Soganlik">Soğanlık Şubesi</option>
+                        <option value="Ortadag">Ortadağ Şubesi</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 6px;">
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Adı</label>
+                        <input type="text" id="editStockName" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Birimi</label>
+                        <select id="editStockUnit" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                            <option value="Kg">Kg</option>
+                            <option value="Adet">Adet</option>
+                            <option value="Paket">Paket</option>
+                            <option value="Koli">Koli</option>
+                            <option value="Litre">Litre</option>
+                            <option value="Gram">Gram</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Miktar</label>
+                    <input type="number" step="any" id="editStockAmount" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px;">
+                    <button type="button" onclick="closeEditStockModal()" style="background: #e5e7eb; color: #374151; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">İptal</button>
                     <button type="submit" style="background: #047857; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Güncellemeyi Kaydet</button>
                 </div>
             </form>
@@ -369,7 +412,7 @@
                             <th style="padding: 6px; text-align: left; font-weight: 600;">ONLİNE PLATFORM</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600; color: #047857;">NET CİRO</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600; color: #047857;">KALAN NAKİT</th>
                             <th id="thActionsHeader" style="padding: 6px; text-align: center; font-weight: 600; display: none;">İŞLEMLER</th>
                         </tr>
                     </thead>
@@ -405,6 +448,7 @@
                             <th style="padding: 6px; text-align: left; font-weight: 600;">STOK ADI</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">MİKTAR</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">BİRİM</th>
+                            <th id="thStockActionsHeader" style="padding: 6px; text-align: center; font-weight: 600; display: none;">İŞLEMLER</th>
                         </tr>
                     </thead>
                     <tbody id="stockOutTableBody"></tbody>
@@ -508,12 +552,14 @@
                 document.getElementById('stockSectionHeading').innerText = "Merkez Stok Çıkışları Geçmişi";
                 document.getElementById('filterStockBranch').style.display = 'inline-block';
                 document.getElementById('thActionsHeader').style.display = 'table-cell';
+                document.getElementById('thStockActionsHeader').style.display = 'table-cell';
             } else {
                 document.getElementById('formCardContainer').style.display = 'block';
                 document.getElementById('stockOutCardContainer').style.display = 'none';
                 document.getElementById('stockSectionHeading').innerText = "Merkeften Gelen Stok Listesi";
                 document.getElementById('filterStockBranch').style.display = 'none';
                 document.getElementById('thActionsHeader').style.display = 'none';
+                document.getElementById('thStockActionsHeader').style.display = 'none';
             }
             document.getElementById('stockOutTableContainer').style.display = 'block';
         }
@@ -672,7 +718,7 @@
                 filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
             }
 
-            let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalOnline = 0, totalRevenue = 0, totalExpense = 0, totalNetRevenue = 0;
+            let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalOnline = 0, totalRevenue = 0, totalExpense = 0, totalRemainingCash = 0;
             let sumPluxee = 0, sumEdenred = 0, sumMultiNet = 0, sumSetcard = 0, sumMetropol = 0, sumToken = 0;
             let sumTrendyol = 0, sumYemeksepeti = 0, sumGetir = 0, sumMigros = 0;
 
@@ -696,13 +742,12 @@
                     const rowPlatformTotal = pPluxee + pEdenred + pMultiNet + pSetcard + pMetropol + pToken;
                     const rowOnlineTotal = pTrendyol + pYemeksepeti + pGetir + pMigros;
                     
-                    // Güncellenen Hesaplama Formülleri:
-                    // Toplam Ciro = Nakit + Banka + Yemek Kartları + Online Platform
+                    // Toplam Ciro = Nakit + Banka + Yemek Kartı + Yemek Platform
                     const rawR = rawC + rawB + rowPlatformTotal + rowOnlineTotal;
                     const rawE = cleanVal(row.expense);
                     
-                    // Net Ciro = Nakit - Masraflar
-                    const rowNetRevenue = rawC - rawE;
+                    // Kalan Nakit = Nakit - Masraflar
+                    const rowRemainingCash = rawC - rawE;
                     const expDesc = row.expense_desc ? ` (${row.expense_desc})` : '';
 
                     totalCash += rawC; 
@@ -711,7 +756,7 @@
                     totalOnline += rowOnlineTotal;
                     totalRevenue += rawR; 
                     totalExpense += rawE;
-                    totalNetRevenue += rowNetRevenue;
+                    totalRemainingCash += rowRemainingCash;
 
                     sumPluxee += pPluxee;
                     sumEdenred += pEdenred;
@@ -747,7 +792,7 @@
                         <td style="padding: 6px; color: #7c3aed;">${formatMoney(rowOnlineTotal)}</td>
                         <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
                         <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
-                        <td style="padding: 6px; font-weight: bold; color: #047857;">${formatMoney(rowNetRevenue)}</td>
+                        <td style="padding: 6px; font-weight: bold; color: #047857;">${formatMoney(rowRemainingCash)}</td>
                         ${actionButtonsHtml}
                     `;
                     tbody.appendChild(tr);
@@ -791,7 +836,7 @@
             document.getElementById('sumMigros').innerText = formatMoney(sumMigros);
         }
 
-        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI ---
+        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (RAPOR) ---
         function openEditModal(row) {
             if (currentSelectedBranch !== 'Merkez') return;
             document.getElementById('editReportId').value = row.id;
@@ -867,6 +912,59 @@
             }
         }
 
+        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (STOK) ---
+        function openEditStockModal(item) {
+            if (currentSelectedBranch !== 'Merkez') return;
+            document.getElementById('editStockId').value = item.id;
+            document.getElementById('editTargetBranch').value = item.target_branch || 'Kurtkoy';
+            document.getElementById('editStockName').value = item.stock_name || '';
+            document.getElementById('editStockUnit').value = item.stock_unit || 'Kg';
+            document.getElementById('editStockAmount').value = item.stock_amount || '';
+
+            document.getElementById('editStockModal').style.display = 'flex';
+        }
+
+        function closeEditStockModal() {
+            document.getElementById('editStockModal').style.display = 'none';
+        }
+
+        document.getElementById('editStockForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (currentSelectedBranch !== 'Merkez') return;
+
+            const id = document.getElementById('editStockId').value;
+            const payload = {
+                target_branch: document.getElementById('editTargetBranch').value,
+                stock_name: document.getElementById('editStockName').value.trim(),
+                stock_unit: document.getElementById('editStockUnit').value,
+                stock_amount: parseFloat(document.getElementById('editStockAmount').value) || 0
+            };
+
+            try {
+                const { error } = await supabaseClient.from('archive').update(payload).eq('id', id);
+                if (error) throw error;
+                alert('Stok çıkışı başarıyla güncellendi.');
+                closeEditStockModal();
+                fetchAllStocks();
+            } catch (err) {
+                alert('Stok güncelleme başarısız: ' + err.message);
+            }
+        });
+
+        async function deleteStock(id) {
+            if (currentSelectedBranch !== 'Merkez') return;
+            if (!confirm('Bu stok çıkışını kalıcı olarak silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const { error } = await supabaseClient.from('archive').delete().eq('id', id);
+                if (error) throw error;
+                alert('Stok çıkışı başarıyla silindi.');
+                fetchAllStocks();
+            } catch (err) {
+                alert('Silme işlemi başarısız: ' + err.message);
+            }
+        }
+
         function renderStocks() {
             const stockTbody = document.getElementById('stockOutTableBody');
             if (!stockTbody) return;
@@ -893,17 +991,30 @@
                     let dateStr = item.created_at ? new Date(item.created_at).toLocaleDateString('tr-TR') : '-';
                     const tr = document.createElement('tr');
                     tr.style.borderBottom = '1px solid #f3f4f6';
+
+                    let stockActionHtml = '';
+                    if (currentSelectedBranch === 'Merkez') {
+                        stockActionHtml = `
+                            <td style="padding: 6px; text-align: center; white-space: nowrap;">
+                                <button type="button" onclick='openEditStockModal(${JSON.stringify(item)})' style="background: #2563eb; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
+                                <button type="button" onclick="deleteStock(${item.id})" style="background: #dc2626; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
+                            </td>
+                        `;
+                    }
+
                     tr.innerHTML = `
                         <td style="padding: 6px; color: #4b5563;">${dateStr}</td>
                         <td style="padding: 6px; font-weight: bold; color: #1d4ed8;">${item.target_branch || '-'}</td>
                         <td style="padding: 6px; font-weight: bold; color: #78350f;">${item.stock_name || '-'}</td>
                         <td style="padding: 6px; color: #1f2937;">${formatMoney(item.stock_amount)}</td>
                         <td style="padding: 6px; color: #047857; font-weight: bold;">${item.stock_unit || '-'}</td>
+                        ${stockActionHtml}
                     `;
                     stockTbody.appendChild(tr);
                 });
             } else {
-                stockTbody.innerHTML = `<tr><td colspan="5" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok kaydı bulunmuyor.</td></tr>`;
+                let colspanVal = currentSelectedBranch === 'Merkez' ? '6' : '5';
+                stockTbody.innerHTML = `<tr><td colspan="${colspanVal}" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok kaydı bulunmuyor.</td></tr>`;
             }
         }
 
@@ -930,7 +1041,7 @@
                     "Ciro": ciro,
                     "Masraf": expense,
                     "Masraf Açıklaması": row.expense_desc || '',
-                    "Net Ciro": cash - expense
+                    "Kalan Nakit": cash - expense
                 };
             });
 
@@ -959,7 +1070,7 @@
                 
                 const ciro = cash + bank + pTotal + oTotal;
                 const expense = cleanVal(row.expense);
-                const netCiro = cash - expense;
+                const remainingCash = cash - expense;
                 const expInfo = expense + (row.expense_desc ? ` (${row.expense_desc})` : '');
                 return [
                     row.branch || '',
@@ -970,12 +1081,12 @@
                     formatMoney(oTotal),
                     formatMoney(ciro),
                     expInfo,
-                    formatMoney(netCiro)
+                    formatMoney(remainingCash)
                 ];
             });
 
             doc.autoTable({
-                head: [['Şube', 'Tarih', 'Nakit', 'Banka', 'Yemek Kartı', 'Online Platform', 'Ciro', 'Masraf & Açıklama', 'Net Ciro']],
+                head: [['Şube', 'Tarih', 'Nakit', 'Banka', 'Yemek Kartı', 'Online Platform', 'Ciro', 'Masraf & Açıklama', 'Kalan Nakit']],
                 body: tableRows,
                 startY: 20,
                 styles: { fontSize: 8 }
