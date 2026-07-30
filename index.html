@@ -3,978 +3,1095 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sweet Waffle - Personel ve Yönetim Paneli</title>
+    <title>Sweet Waffle - Şube ve Merkez Raporlama Paneli</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#5c3a21">
+    <meta name="theme-color" content="#78350f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <link rel="apple-touch-icon" href="logo.webp">
-    <link rel="icon" href="logo.webp">
-
-    <!-- Supabase, QR Generator, Export Kütüphaneleri -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
-        :root {
-            --waffle-dark: #4a2e1b;
-            --waffle-main: #6f4e37;
-            --waffle-gold: #e6b85c;
-            --waffle-cream: #fff9f0;
-            --accent-orange: #e67e22;
-            --accent-green: #27ae60;
-            --accent-red: #e74c3c;
-            --accent-blue: #3498db;
-            --text-dark: #2c3e50;
-            --border-warm: #f0dec9;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #fdfbf7 0%, #faebd7 100%);
-            margin: 0;
-            padding: 8px;
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-sizing: border-box;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 480px;
-            background: #ffffff;
-            padding: 16px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(95, 61, 38, 0.15);
-            border: 3px solid var(--waffle-gold);
-            box-sizing: border-box;
-            margin: auto;
-        }
-
-        .container-admin {
-            width: 100% !important;
-            max-width: 1200px !important;
-            background: #ffffff;
-            padding: 16px;
-            border-radius: 18px;
-            box-shadow: 0 15px 40px rgba(95, 61, 38, 0.18);
-            border: 3px solid var(--waffle-gold);
-            box-sizing: border-box;
-            margin: auto;
-        }
-
-        .admin-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        @media (max-width: 850px) {
-            body { padding: 4px; }
-            .container-admin { padding: 10px; border-radius: 12px; }
-            .admin-grid { grid-template-columns: 1fr; }
-            .container { padding: 12px; border-radius: 14px; }
-        }
-        
-        .logo-container { text-align: center; margin-bottom: 8px; }
-        .logo-container img {
-            width: 70px; height: 70px; border-radius: 50%;
-            border: 3px solid var(--waffle-gold);
-            box-shadow: 0 4px 12px rgba(111,78,55,0.25);
-            object-fit: cover;
-        }
-        
-        h2 { color: var(--waffle-dark); text-align: center; margin: 0 0 5px 0; font-size: 20px; font-weight: 800; }
-        h3 { color: var(--waffle-main); text-align: center; font-size: 15px; margin-bottom: 12px; font-weight: 700; }
-
-        .btn {
-            display: block; width: 100%; padding: 12px 14px; margin: 6px 0;
-            background: linear-gradient(135deg, var(--waffle-main), var(--waffle-dark));
-            color: white; border: none; border-radius: 12px; font-size: 14px;
-            cursor: pointer; text-align: center; font-weight: 700;
-            box-shadow: 0 3px 10px rgba(111,78,55,0.3);
-            transition: all 0.2s ease; box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .btn:active { transform: scale(0.98); }
-        
-        .btn-branch {
-            background: linear-gradient(135deg, #ffffff, var(--waffle-cream));
-            color: var(--waffle-dark); border: 2px solid var(--waffle-gold);
-            box-shadow: 0 2px 8px rgba(230,184,92,0.2); font-weight: 700;
-        }
-
-        .btn-qr-scan { background: linear-gradient(135deg, #2ecc71, #27ae60); font-size: 15px; }
-        .btn-back { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
-        .btn-danger { background: linear-gradient(135deg, #ff6b6b, #ee5253); }
-        .btn-warning { background: linear-gradient(135deg, #feca57, #ff9f43); color: #fff; }
-        .btn-success { background: linear-gradient(135deg, #2ed573, #26af5f); color: #fff; }
-
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
-        .action-btn {
-            padding: 11px 6px; font-size: 12px; font-weight: 700; border: none;
-            border-radius: 10px; cursor: pointer; color: white; text-align: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: all 0.2s ease;
-            display: flex; align-items: center; justify-content: center; gap: 4px;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        .btn-work-in { background: linear-gradient(135deg, #2ecc71, #27ae60); }
-        .btn-work-out { background: linear-gradient(135deg, #ff6b6b, #ee5253); }
-        .btn-meal-in { background: linear-gradient(135deg, #54a0ff, #2e86de); }
-        .btn-meal-out { background: linear-gradient(135deg, #ff9f43, #e67e22); }
-        .btn-break-in { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
-        .btn-break-out { background: linear-gradient(135deg, #f39c12, #d35400); }
-
-        select, input, textarea {
-            width: 100%; padding: 10px 12px; margin: 4px 0 8px 0;
-            border: 2px solid var(--border-warm); border-radius: 10px;
-            box-sizing: border-box; background: var(--waffle-cream);
-            font-size: 14px; color: var(--text-dark);
-        }
-        select:focus, input:focus, textarea:focus { border-color: var(--waffle-main); outline: none; background: #fff; }
-        
-        .hidden { display: none !important; }
-        .card { background: #fffaf5; padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 2px solid var(--border-warm); box-sizing: border-box; }
-        .msg-box { background: linear-gradient(135deg, #fff3cd, #ffe8a1); color: #856404; padding: 10px; border-radius: 10px; margin-bottom: 10px; font-size: 12px; border: 1px solid #ffeeba; font-weight: 500; }
-        .stats { display: flex; gap: 8px; margin-bottom: 10px; }
-        .stat-box { background: linear-gradient(135deg, #fef6ec, #faebd7); padding: 8px; border-radius: 10px; flex: 1; text-align: center; font-size: 11px; color: var(--waffle-main); border: 2px solid var(--waffle-gold); font-weight: 600; }
-        .log-list { font-size: 11px; max-height: 90px; overflow-y: auto; padding-left: 10px; margin: 0; color: #555; }
-        .log-list li { margin-bottom: 4px; }
-        
-        table { width: 100%; font-size: 11px; border-collapse: collapse; margin-top: 4px; background: #fff; border-radius: 8px; overflow: hidden; }
-        table, th, td { border: 1px solid var(--border-warm); padding: 5px; text-align: center; }
-        th { background: #faebd7; color: var(--waffle-dark); font-weight: 700; }
-        #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+        * { box-sizing: border-box; -webkit-text-size-adjust: 100%; }
+        html, body { width: 100%; max-width: 100vw; overflow-x: hidden; margin: 0; padding: 0; background-color: #f9fafb; }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
     </style>
 </head>
-<body id="body-layout">
+<body class="font-sans pb-10">
 
-<div class="container" id="main-container-box">
-    <div class="logo-container">
-        <img src="logo.webp" alt="Sweet Waffle Logo">
-    </div>
-    <h2>Sweet Waffle</h2>
+    <!-- ANA GİRİŞTEKİ ZORUNLU ŞUBE SEÇİM EKRANI -->
+    <div id="welcomeScreenModal" style="position: fixed; inset: 0; background: rgba(78, 35, 15, 0.98); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <div style="width: 60px; height: 60px; background: #fffbeb; border: 2px solid #78350f; border-radius: 12px; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('welcomeLogoFallback').style.display='flex';">
+                <div id="welcomeLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 10px; display: none; align-items: center; justify-content: center;">SW</div>
+            </div>
+            <h2 style="font-size: 18px; font-weight: 900; color: #451a03; margin: 0 0 6px 0;">Sweet Waffle</h2>
+            <p style="font-size: 11px; color: #6b7280; margin: 0 0 20px 0;">Devam etmek için lütfen şube seçin</p>
+            
+            <div id="branchSelectionButtons" style="display: flex; flex-direction: column; gap: 8px;">
+                <button type="button" onclick="openPasswordModal('Merkez')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Merkez (Tüm Şubeler)</button>
+                <button type="button" onclick="openPasswordModal('Kurtkoy')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Kurtköy Şubesi</button>
+                <button type="button" onclick="openPasswordModal('Soganlik')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Soğanlık Şubesi</button>
+                <button type="button" onclick="openPasswordModal('Ortadag')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Ortadağ Şubesi</button>
+            </div>
 
-    <!-- 1. LOKASYON SEÇİMİ -->
-    <div id="main-selection-screen">
-        <h3>Şube Seçimi Yapınız</h3>
-        <button class="btn btn-branch" onclick="selectLocation('MerkezYonetim')">🏢 Merkez (Yönetim & Takip)</button>
-        <button class="btn btn-branch" onclick="selectLocation('Kurtköy')">📍 Kurtköy Şubesi</button>
-        <button class="btn btn-branch" onclick="selectLocation('Soğanlık')">📍 Soğanlık Şubesi</button>
-        <button class="btn btn-branch" onclick="selectLocation('Yeni')">📍 Yeni Şube</button>
-    </div>
-
-    <!-- 1.B. MERKEZ GİRİŞ ŞİFRE EKRANI -->
-    <div id="admin-login-screen" class="hidden">
-        <h3>🏢 Merkez Yönetim Girişi</h3>
-        <label><strong>Yönetici Şifresi:</strong></label>
-        <input type="password" id="admin-password" placeholder="Şifrenizi girin (Örn: 5678)">
-        <button class="btn" onclick="verifyAdminLogin()">Panele Giriş Yap</button>
-        <button class="btn btn-back" onclick="goBackToMain()">← Ana Menüye Dön</button>
-    </div>
-
-    <!-- 2. ŞUBE PERSONEL GİRİŞ EKRANI -->
-    <div id="login-screen" class="hidden">
-        <h3 id="login-title">Şube Girişi</h3>
-        <label><strong>Personel Seçin:</strong></label>
-        <select id="staff-select"><option value="">Personel Seçiniz...</option></select>
-        <label><strong>Şifre:</strong></label>
-        <input type="password" id="staff-password" placeholder="Şifreniz (Örn: 1234)">
-        <button class="btn" onclick="login()">Sisteme Giriş Yap</button>
-        <button class="btn btn-back" onclick="goBackToMain()">← Ana Menüye Dön</button>
+            <!-- ŞİFRE GİRİŞ ALANI -->
+            <div id="passwordInputContainer" style="display: none; margin-top: 10px; text-align: left;">
+                <label id="passwordLabel" style="font-size: 11px; font-weight: bold; color: #451a03; display: block; margin-bottom: 6px; text-align: center;"></label>
+                <input type="password" id="branchPasswordInput" placeholder="Şifrenizi giriniz..." style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; margin-bottom: 8px; text-align: center;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <button type="button" onclick="closePasswordModal()" style="background: #e5e7eb; color: #374151; border: none; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer;">Geri Dön</button>
+                    <button type="button" onclick="verifyEnteredPassword()" style="background: #78350f; color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer;">Giriş Yap</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- 3. PERSONEL PANELİ -->
-    <div id="panel-screen" class="hidden">
-        <h3 id="welcome-title" style="margin-bottom: 2px;">Hoş Geldiniz</h3>
-        <p id="user-branch-info" style="text-align: center; color: var(--waffle-main); font-size: 12px; margin-bottom: 8px; font-weight: 700;"></p>
+    <!-- MERKEZ DÜZENLEME MODALI (RAPOR) -->
+    <div id="editReportModal" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 99998; display: none; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #fff; border-radius: 12px; padding: 16px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <h3 style="font-size: 13px; font-weight: bold; color: #78350f; margin: 0 0 10px 0; text-transform: uppercase;">Raporu Düzenle (Merkez)</h3>
+            <form id="editReportForm" style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="hidden" id="editReportId">
+                <div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Şube</label>
+                    <input type="text" id="editBranch" disabled style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #f3f4f6;">
+                </div>
+                <div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Tarih</label>
+                    <input type="date" id="editDate" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Nakit (TL)</label>
+                        <input type="number" step="any" id="editCash" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Banka (TL)</label>
+                        <input type="number" step="any" id="editBank" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+                    </div>
+                </div>
 
-        <div id="dynamic-alert-container"></div>
-        <div id="center-msg-wrapper"></div>
+                <div style="background: #fffbeb; padding: 8px; border-radius: 8px; border: 1px solid #fde68a;">
+                    <label style="font-size: 10px; font-weight: bold; color: #78350f; display: block; margin-bottom: 4px;">Yemek Kartları</label>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
+                        <input type="number" step="any" id="editPluxee" placeholder="Pluxee" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editEdenred" placeholder="Edenred" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editMultiNet" placeholder="MultiNet" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editSetcard" placeholder="Setcard" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editMetropol" placeholder="Metropol" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editToken" placeholder="TokenFlex" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                    </div>
+                </div>
 
-        <!-- Arka planda kapalı olsa bile localStorage ile kalan süreyi hesaplayan akıllı sayaç kutusu -->
-        <div id="active-timer-box" class="hidden" style="background: linear-gradient(135deg, #d1ecf1, #bee5eb); color: #0c5460; padding: 8px; border-radius: 10px; margin-bottom: 10px; font-weight: 700; text-align: center; border: 2px solid #17a2b8; font-size: 11px;">
-            ⏳ Kalan Süre: <span id="countdown-display">00:00</span>
-            <div style="font-size: 9px; font-weight: normal; margin-top: 2px; color: #333;">(Uygulama kapalı/arka planda olsa bile süre işlemeye devam eder)</div>
+                <div style="background: #f5f3ff; padding: 8px; border-radius: 8px; border: 1px solid #ddd6fe;">
+                    <label style="font-size: 10px; font-weight: bold; color: #5b21b6; display: block; margin-bottom: 4px;">Online Yemek Platformları</label>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px;">
+                        <input type="number" step="any" id="editTrendyol" placeholder="Trendyol" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editYemeksepeti" placeholder="Yemeksepeti" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editGetir" placeholder="Getir" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editMigros" placeholder="Migros" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <div>
+                        <label style="font-size: 9px; font-weight: bold; color: #dc2626; display: block; margin-bottom: 2px;">Masraf (TL)</label>
+                        <input type="number" step="any" id="editExpense" placeholder="0" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px;">
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; font-weight: bold; color: #451a03; display: block; margin-bottom: 2px;">Açıklama</label>
+                        <input type="text" id="editExpenseDesc" placeholder="Açıklama" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px;">
+                    <button type="button" onclick="closeEditModal()" style="background: #e5e7eb; color: #374151; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">İptal</button>
+                    <button type="submit" style="background: #047857; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Güncellemeyi Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MERKEZ DÜZENLEME MODALI (STOK ÇIKIŞI) -->
+    <div id="editStockModal" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 99998; display: none; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #fff; border-radius: 12px; padding: 16px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <h3 style="font-size: 13px; font-weight: bold; color: #78350f; margin: 0 0 10px 0; text-transform: uppercase;">Stok Çıkışını Düzenle (Merkez)</h3>
+            <form id="editStockForm" style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="hidden" id="editStockId">
+                <div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Gidecek Şube</label>
+                    <select id="editTargetBranch" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                        <option value="Kurtkoy">Kurtköy Şubesi</option>
+                        <option value="Soganlik">Soğanlık Şubesi</option>
+                        <option value="Ortadag">Ortadağ Şubesi</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 6px;">
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Adı</label>
+                        <input type="text" id="editStockName" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Birimi</label>
+                        <select id="editStockUnit" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                            <option value="Kg">Kg</option>
+                            <option value="Adet">Adet</option>
+                            <option value="Paket">Paket</option>
+                            <option value="Koli">Koli</option>
+                            <option value="Litre">Litre</option>
+                            <option value="Gram">Gram</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Miktar</label>
+                    <input type="number" step="any" id="editStockAmount" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px;">
+                    <button type="button" onclick="closeEditStockModal()" style="background: #e5e7eb; color: #374151; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">İptal</button>
+                    <button type="submit" style="background: #047857; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Güncellemeyi Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ANA İÇERİK ALANI -->
+    <div style="width: 100%; max-width: 100%; margin: 0 auto; padding: 8px;">
+        
+        <!-- Üst Header -->
+        <header style="background: #fff; border: 1px solid #fcd34d; border-radius: 12px; padding: 10px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 36px; height: 36px; background: #fffbeb; border: 1px solid #78350f; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                        <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('branchLogoFallback').style.display='flex';">
+                        <div id="branchLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 8px; display: none; align-items: center; justify-content: center;">LOGO</div>
+                    </div>
+                    <div>
+                        <h1 id="panelTitle" style="font-size: 13px; font-weight: 900; color: #451a03; margin: 0;">Şube Paneli</h1>
+                        <p id="panelSubtitle" style="font-size: 9px; color: #6b7280; margin: 0;">Günlük Rapor ve Masraf Girişi</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <button type="button" onclick="forceLogout()" style="background: #451a03; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Şube Değiştir / Kilitle</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Çıktı Alma Butonları -->
+        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 8px; margin-bottom: 12px; display: flex; gap: 8px; justify-content: flex-end;">
+            <button type="button" onclick="exportToExcel()" style="background: #047857; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Excel Çıktısı Al</button>
+            <button type="button" onclick="exportToPDF()" style="background: #b91c1c; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">PDF Çıktısı Al</button>
         </div>
 
-        <div class="card" style="background: #fffdf9; border-color: var(--waffle-gold);">
-            <strong style="font-size: 11px; color: var(--waffle-dark); display: block; margin-bottom: 4px; text-transform: uppercase;">📅 Haftalık Çalışma & İzin Programım</strong>
-            <div style="max-height: 100px; overflow-y: auto;">
-                <table>
-                    <thead><tr><th>Gün</th><th>Çalışma Saatleri</th><th>Durum</th></tr></thead>
-                    <tbody id="user-shift-view-table"><tr><td colspan="3">Merkez henüz program tanımlamadı.</td></tr></tbody>
+        <!-- Özet Kartları -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM NAKİT</div>
+                <div id="statTotalCash" style="font-size: 14px; font-weight: 900; color: #047857;">0 ₺</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM BANKA</div>
+                <div id="statTotalBank" style="font-size: 14px; font-weight: 900; color: #1d4ed8;">0 ₺</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM YEMEK KARTLARI</div>
+                <div id="statTotalPlatforms" style="font-size: 14px; font-weight: 900; color: #047857;">0 ₺</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM ONLINE PLATFORM</div>
+                <div id="statTotalOnline" style="font-size: 14px; font-weight: 900; color: #7c3aed;">0 ₺</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center; grid-column: span 2;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM CİRO</div>
+                <div id="statTotalRevenue" style="font-size: 14px; font-weight: 900; color: #b45309;">0 ₺</div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center; grid-column: span 2;">
+                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM MASRAF</div>
+                <div id="statTotalExpense" style="font-size: 14px; font-weight: 900; color: #dc2626;">0 ₺</div>
+            </div>
+        </div>
+
+        <!-- MERKEZ STOK ÇIKIŞ FORMU -->
+        <div id="stockOutCardContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
+            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkez Stok Çıkışı Yap</h3>
+            <form id="stockOutForm" style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Gidecek Şube</label>
+                        <select id="targetBranch" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                            <option value="">Şube Seçin...</option>
+                            <option value="Kurtkoy">Kurtköy Şubesi</option>
+                            <option value="Soganlik">Soğanlık Şubesi</option>
+                            <option value="Ortadag">Ortadağ Şubesi</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Birimi</label>
+                        <select id="stockUnit" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                            <option value="Kg">Kg</option>
+                            <option value="Adet">Adet</option>
+                            <option value="Paket">Paket</option>
+                            <option value="Koli">Koli</option>
+                            <option value="Litre">Litre</option>
+                            <option value="Gram">Gram</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 6px;">
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Adı</label>
+                        <input type="text" id="stockName" list="stockNameList" placeholder="Seçin veya yeni yazın..." required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                        <datalist id="stockNameList">
+                            <option value="Un">
+                            <option value="Şeker">
+                            <option value="Waffle Kutusu">
+                            <option value="Çikolata Sosu">
+                            <option value="Bardak">
+                            <option value="Pçk. Çatal/Bıçak">
+                        </datalist>
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Miktar</label>
+                        <input type="number" step="any" id="stockAmount" placeholder="0" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" style="width: 100%; background: #047857; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Stok Çıkışını Kaydet</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- GÜNLÜK RAPOR GİRİŞ FORMU -->
+        <div id="formCardContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <h3 id="formSectionTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Günlük Rapor ve Masraf Girişi</h3>
+            <form id="branchReportForm" style="display: flex; flex-direction: column; gap: 8px;">
+                
+                <div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Tarih</label>
+                    <input type="date" id="reportDate" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Nakit Tutar (TL)</label>
+                        <input type="number" step="any" id="reportCash" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Banka / Kredi Kartı (TL)</label>
+                        <input type="number" step="any" id="reportBank" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                    </div>
+                </div>
+
+                <!-- Yemek Kartları -->
+                <div style="background: #fffbeb; padding: 8px; border-radius: 8px; border: 1px solid #fde68a;">
+                    <label style="font-size: 10px; font-weight: bold; color: #78350f; display: block; margin-bottom: 4px;">Yemek Kartı Platformları</label>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 8px;">
+                        <input type="number" step="any" id="reportPluxee" placeholder="Pluxee" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportEdenred" placeholder="Edenred" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportMultiNet" placeholder="MultiNet" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportSetcard" placeholder="Setcard" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportMetropol" placeholder="Metropol" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportToken" placeholder="TokenFlex" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                    </div>
+                </div>
+
+                <!-- Online Yemek Platformları -->
+                <div style="background: #f5f3ff; padding: 8px; border-radius: 8px; border: 1px solid #ddd6fe;">
+                    <label style="font-size: 10px; font-weight: bold; color: #5b21b6; display: block; margin-bottom: 4px;">Online Yemek Platformları</label>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-bottom: 8px;">
+                        <input type="number" step="any" id="reportTrendyol" placeholder="Trendyol Yemek" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportYemeksepeti" placeholder="Yemeksepeti" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportGetir" placeholder="Getir Yemek" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="reportMigros" placeholder="Migros Yemek" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                    </div>
+                </div>
+
+                <!-- Masraf Alanı -->
+                <div style="border-top: 1px dashed #fcd34d; padding-top: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <div>
+                        <label style="font-size: 9px; font-weight: bold; color: #dc2626; display: block; margin-bottom: 2px;">Masraf Tutarı (TL)</label>
+                        <input type="number" step="any" id="reportExpense" placeholder="0" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; font-weight: bold; color: #451a03; display: block; margin-bottom: 2px;">Masraf Açıklaması</label>
+                        <input type="text" id="reportExpenseDesc" placeholder="Ne için yapıldı?" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" style="width: 100%; background: #78350f; color: #fff; padding: 9px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Günlük Raporu Kaydet</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- PLATFORM DETAYLARI TOPLAMLARI -->
+        <div style="display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px;">
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Yemek Kartı Platformları Toplamları</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Pluxee</div>
+                        <div id="sumPluxee" style="font-size: 11px; font-weight: bold; color: #78350f;">0 ₺</div>
+                    </div>
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Edenred</div>
+                        <div id="sumEdenred" style="font-size: 11px; font-weight: bold; color: #78350f;">0 ₺</div>
+                    </div>
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">MultiNet</div>
+                        <div id="sumMultiNet" style="font-size: 11px; font-weight: bold; color: #78350f;">0 ₺</div>
+                    </div>
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Setcard</div>
+                        <div id="sumSetcard" style="font-size: 11px; font-weight: bold; color: #78350f;">0 ₺</div>
+                    </div>
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">MetropolCard</div>
+                        <div id="sumMetropol" style="font-size: 11px; font-weight: bold; color: #78350f;">0 ₺</div>
+                    </div>
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">TokenFlex</div>
+                        <div id="sumToken" style="font-size: 11px; font-weight: bold; color: #78350f;">0 ₺</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #fff; border: 1px solid #ddd6fe; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <h3 style="font-size: 11px; font-weight: bold; color: #5b21b6; margin: 0 0 8px 0; text-transform: uppercase;">Online Yemek Platformları Toplamları</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
+                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Trendyol Yemek</div>
+                        <div id="sumTrendyol" style="font-size: 11px; font-weight: bold; color: #5b21b6;">0 ₺</div>
+                    </div>
+                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Yemeksepeti</div>
+                        <div id="sumYemeksepeti" style="font-size: 11px; font-weight: bold; color: #5b21b6;">0 ₺</div>
+                    </div>
+                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Getir Yemek</div>
+                        <div id="sumGetir" style="font-size: 11px; font-weight: bold; color: #5b21b6;">0 ₺</div>
+                    </div>
+                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px; text-align: center;">
+                        <div style="font-size: 8px; color: #6b7280;">Migros Yemek</div>
+                        <div id="sumMigros" style="font-size: 11px; font-weight: bold; color: #5b21b6;">0 ₺</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Raporlar / Liste Tablosu -->
+        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                <h3 id="tableHeaderTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0; text-transform: uppercase;">Raporlar Listesi</h3>
+            </div>
+            
+            <!-- Biten Aylar Butonları Konteyneri -->
+            <div id="monthlyButtonsContainer" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #fde68a;">
+                <!-- Dinamik Ay Butonları Buraya Gelecek -->
+            </div>
+
+            <div style="width: 100%; overflow-x: auto;">
+                <table style="width: 100%; min-width: 950px; border-collapse: collapse; font-size: 10px;">
+                    <thead>
+                        <tr style="background: #fffbeb; color: #78350f;">
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">ONLİNE PLATFORM</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600; background-color: #fef2f2; border: 1px dashed #fca5a5; color: #b91c1c;">MASRAF & AÇIKLAMA</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600; background-color: #ecfdf5; border: 1px dashed #6ee7b7; color: #047857;">KALAN NAKİT</th>
+                            <th id="thActionsHeader" style="padding: 6px; text-align: center; font-weight: 600; display: none;">İŞLEMLER</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allReportsTableBody"></tbody>
+                    <tfoot id="allReportsTableFooter" style="background: #fffbeb; font-weight: bold; border-top: 1px solid #fde68a;"></tfoot>
                 </table>
             </div>
         </div>
 
-        <!-- QR Tarama Butonu -->
-        <button class="btn btn-qr-scan" onclick="openQrScannerDirectly()">📍📷 QR Kod Okut ve İşe Başla</button>
-
-        <div class="card" style="padding: 10px;">
-            <strong style="font-size: 11px; color: var(--waffle-dark); display: block; margin-bottom: 6px; text-transform: uppercase;">⏱️ Hızlı Çalışma İşlemleri</strong>
-            <div class="action-grid">
-                <button class="action-btn btn-work-in" onclick="triggerAction('İşe Giriş', 0)">🟢 İşe Giriş</button>
-                <button class="action-btn btn-work-out" onclick="triggerAction('İşten Çıkış', 0)">🔴 İşten Çıkış</button>
-                <button class="action-btn btn-meal-in" onclick="triggerAction('Yemek Molası Çıkış', 45)">🍽️ Yemek Çıkış</button>
-                <button class="action-btn btn-meal-out" onclick="triggerAction('Yemek Molası Dönüş', 0)">🔙 Yemek Dönüş</button>
-                <button class="action-btn btn-break-in" onclick="triggerAction('Normal Mola Çıkış', 15)">☕ Mola Çıkış</button>
-                <button class="action-btn btn-break-out" onclick="triggerAction('Normal Mola Dönüş', 0)">🔙 Mola Dönüş</button>
-            </div>
-        </div>
-
-        <div class="stats">
-            <div class="stat-box"><strong>Haftalık Çalışma</strong><br><span id="weekly-hours" style="font-size: 12px; font-weight: 800; color: var(--waffle-dark);">0s 0d</span></div>
-            <div class="stat-box"><strong>Aylık Çalışma</strong><br><span id="monthly-hours" style="font-size: 12px; font-weight: 800; color: var(--waffle-dark);">0s 0d</span></div>
-        </div>
-
-        <div class="card" style="margin-bottom: 10px;">
-            <strong style="font-size: 11px; color: var(--waffle-dark); text-transform: uppercase;">📋 Günlük Hareketlerim</strong>
-            <ul class="log-list" id="today-logs" style="margin-top: 4px;"><li>Kayıt bulunmuyor.</li></ul>
-        </div>
-
-        <button class="btn btn-back" onclick="logout()">Güvenli Çıkış Yap</button>
-    </div>
-
-    <!-- 3.B. QR KAMERA TARAYICI EKRANI -->
-    <div id="qr-scanner-screen" class="hidden">
-        <h3>📷 Şube QR Kod Tarayıcı</h3>
-        <p style="text-align: center; font-size: 11px; color: #666;">Lütfen şubenin QR kodunu kameraya okutun.</p>
-        <div id="reader"></div>
-        <button class="btn btn-back" onclick="closeQrScanner()">Kamerayı Kapat</button>
-    </div>
-
-    <!-- 4. MERKEZ YÖNETİM PANELİ -->
-    <div id="admin-screen" class="hidden">
-        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--waffle-gold); padding-bottom: 6px; margin-bottom: 12px; gap: 6px;">
-            <h3 style="margin: 0; color: var(--waffle-dark); font-size: 16px; text-align: left;">🏢 Sweet Waffle - Yönetim Masası</h3>
-            <div style="display: flex; gap: 4px;">
-                <button class="btn btn-success" style="display:inline-block; width:auto; padding: 5px 8px; margin: 0; font-size: 11px;" onclick="exportToExcel()">📊 Excel</button>
-                <button class="btn btn-danger" style="display:inline-block; width:auto; padding: 5px 8px; margin: 0; font-size: 11px;" onclick="exportToPDF()">📑 PDF</button>
-            </div>
-        </div>
-
-        <!-- ŞUBE QR KODLARI YÖNETİM ALANI (JPG İNDİR) -->
-        <div class="card" style="background: #fffdf9; border: 2px solid var(--waffle-gold);">
-            <strong style="font-size: 11px; color: var(--waffle-dark); display: block; margin-bottom: 4px;">🖼️ Şube Konum Bazlı QR Kodlar (Plus Code & Koordinatlı JPG İndir)</strong>
-            <p style="font-size: 10px; color: #666; margin-bottom:6px;">Şubelere ait QR kodları telefondan veya bilgisayardan anında JPG olarak indirebilirsiniz:</p>
-            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                <button class="btn btn-branch" style="width: auto; padding: 6px 10px; margin: 0; font-size: 11px;" onclick="downloadQrJpg('Kurtköy')">📍 Kurtköy QR (JPG)</button>
-                <button class="btn btn-branch" style="width: auto; padding: 6px 10px; margin: 0; font-size: 11px;" onclick="downloadQrJpg('Soğanlık')">📍 Soğanlık QR (JPG)</button>
-                <button class="btn btn-branch" style="width: auto; padding: 6px 10px; margin: 0; font-size: 11px;" onclick="downloadQrJpg('Yeni')">📍 Yeni Şube QR (JPG)</button>
-            </div>
-        </div>
-
-        <div class="admin-grid">
-            <div>
-                <div class="card" style="border: 2px solid var(--waffle-gold); background: #fffdf9;">
-                    <strong style="font-size: 11px; color: var(--waffle-dark); display: block; margin-bottom: 4px;">📁 Personel Dosyası & Detaylı Rapor</strong>
-                    <select id="admin-dossier-select" onchange="renderAdminStaffDossier()" style="margin-top: 2px; padding: 5px; font-size: 11px;">
-                        <option value="">Rapor için personel seçiniz...</option>
+        <!-- MERKEZ STOK ÇIKIŞLARI GEÇMİŞİ / ŞUBELER İÇİN GELEN STOK LİSTESİ -->
+        <div id="stockOutTableContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                <h3 id="stockSectionHeading" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0; text-transform: uppercase;">Merkez Stok Çıkışları Geçmişi</h3>
+                
+                <!-- Filtreler -->
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <select id="filterStockBranch" onchange="renderStocks()" style="padding: 4px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 10px; background: #fff;">
+                        <option value="">Tüm Şubeler (Filtre)</option>
+                        <option value="Kurtkoy">Kurtköy</option>
+                        <option value="Soganlik">Soğanlık</option>
+                        <option value="Ortadag">Ortadağ</option>
                     </select>
-                    <div id="dossier-result-area" class="hidden" style="margin-top: 4px; background: #fff; padding: 5px; border-radius: 8px; border: 1px solid var(--border-warm);">
-                        <div style="font-size: 10px; margin-bottom: 2px; font-weight: 700; color: var(--waffle-dark);" id="dossier-summary-text"></div>
-                        <div style="max-height: 75px; overflow-y: auto;">
-                            <table>
-                               <thead><tr><th>Şube</th><th>İşlem</th><th>Tarih/Saat</th></tr></thead>
-                               <tbody id="dossier-logs-table"><tr><td colspan="3">Veri yok</td></tr></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" style="background: #fffdf9;">
-                    <strong style="font-size: 11px; color: var(--waffle-dark); display: block; margin-bottom: 4px;">⏰ Haftalık Çalışma & İzin Planlayıcı</strong>
-                    <div style="display: flex; gap: 4px;">
-                        <div style="flex: 1;">
-                            <label style="font-size: 10px; font-weight: bold;">Şube:</label>
-                            <select id="shift-branch-select" onchange="populateShiftStaffSelect()" style="padding: 4px; font-size: 11px;">
-                                <option value="Kurtköy">Kurtköy</option>
-                                <option value="Soğanlık">Soğanlık</option>
-                                <option value="Yeni">Yeni Şube</option>
-                            </select>
-                        </div>
-                        <div style="flex: 1;">
-                            <label style="font-size: 10px; font-weight: bold;">Personel:</label>
-                            <select id="shift-staff-select" style="padding: 4px; font-size: 11px;"></select>
-                        </div>
-                    </div>
-                    <div style="max-height: 130px; overflow-y: auto; margin-top: 4px;">
-                        <table>
-                            <thead><tr><th>Gün</th><th>Giriş</th><th>Çıkış</th><th>İzin?</th></tr></thead>
-                            <tbody id="admin-weekly-shift-tbody"></tbody>
-                        </table>
-                    </div>
-                    <button class="btn" style="margin: 4px 0 0 0; padding: 8px; font-size: 11px;" onclick="saveStaffWeeklySchedule()">Haftalık Vardiya Planını Kaydet</button>
+                    <input type="text" id="filterStockName" oninput="renderStocks()" placeholder="Stok adı ara..." style="padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 10px; background: #fff;">
                 </div>
             </div>
 
-            <div>
-                <div class="card">
-                    <strong style="font-size: 11px; color: var(--waffle-dark);">📢 Personele Bildirim Gönder:</strong>
-                    <textarea id="admin-msg-input" rows="2" placeholder="Tüm personel telefonlarına anlık düşecek duyuruyu yazın..." style="font-size:11px;"></textarea>
-                    <button class="btn" style="margin: 0; padding: 7px; font-size: 11px;" onclick="sendBroadcastMessage()">Bildirimi Yayınla</button>
-                </div>
-
-                <div class="card">
-                    <strong style="font-size: 11px; color: var(--waffle-dark);">📋 Aktif Duyurular:</strong>
-                    <div id="admin-messages-list" style="max-height: 80px; overflow-y: auto; margin-top: 4px;">
-                        <p style="font-size: 11px; color: #777;">Aktif duyuru yok.</p>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-top: 6px;">
-                    <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; align-items: center; justify-content: space-between;">
-                        <strong style="font-size: 11px; color: var(--waffle-dark);">🔍 Şube ve Personel Denetimi</strong>
-                        <div style="display: flex; gap: 4px; width: 100%;">
-                            <select id="branch-filter" onchange="updateAdminTable()" style="margin: 0; padding: 3px; font-size: 10px; flex: 1;">
-                                <option value="Tümü">Tüm Şubeler</option>
-                                <option value="Kurtköy">Kurtköy</option>
-                                <option value="Soğanlık">Soğanlık</option>
-                                <option value="Yeni">Yeni Şube</option>
-                            </select>
-                            <select id="staff-filter" onchange="updateAdminTable()" style="margin: 0; padding: 3px; font-size: 10px; flex: 1;">
-                                <option value="Tümü">Tüm Personeller</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div style="max-height: 110px; overflow-y: auto;">
-                        <table>
-                            <thead><tr><th>Şube</th><th>Personel</th><th>İşlem</th><th>Saat</th><th>İşlem</th></tr></thead>
-                            <tbody id="admin-log-table"><tr><td colspan="5">Kayıt bulunmuyor.</td></tr></tbody>
-                        </table>
-                    </div>
-                </div>
+            <div style="width: 100%; overflow-x: auto;">
+                <table style="width: 100%; min-width: 450px; border-collapse: collapse; font-size: 10px;">
+                    <thead>
+                        <tr style="background: #fffbeb; color: #78350f;">
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">GİDECEK ŞUBE</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">STOK ADI</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">MİKTAR</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">BİRİM</th>
+                            <th id="thStockActionsHeader" style="padding: 6px; text-align: center; font-weight: 600; display: none;">İŞLEMLER</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockOutTableBody"></tbody>
+                </table>
             </div>
         </div>
-        <button class="btn btn-back" style="margin-top: 10px;" onclick="goBackToMain()">← Ana Menüye Dön</button>
+
     </div>
-</div>
 
-<script>
-    const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_';
+    <script>
+        const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const database = {
-        "Kurtköy": { 
-            staff: [{ name: "Nesrin POLAT", pass: "1234" }, { name: "Mehmet Demir", pass: "1234" }], 
-            lat: 40.916286, 
-            lng: 29.303978, 
-            plusCode: "W883+CH" 
-        },
-        "Soğanlık": { 
-            staff: [{ name: "Can Çelik", pass: "1234" }, { name: "Elif Demir", pass: "1234" }], 
-            lat: 40.914869, 
-            lng: 29.203213, 
-            plusCode: "W673+W7" 
-        },
-        "Yeni": { 
-            staff: [{ name: "Burak Şahin", pass: "1234" }, { name: "Zeynep Koç", pass: "1234" }], 
-            lat: 41.00820, 
-            lng: 28.97840, 
-            plusCode: "F4V3+3G" 
-        }
-    };
-
-    const ADMIN_PASS = "5678";
-    const DAYS_OF_WEEK = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
-
-    let currentUser = null;
-    let currentBranch = null;
-    let countdownInterval = null;
-    let html5QrCode = null;
-    window.globalLogsCache = [];
-    window.globalSchedulesCache = {};
-
-    window.addEventListener('DOMContentLoaded', () => {
-        registerServiceWorker();
-        setupRealtimeSubscriptions();
-        fetchAllData();
-        buildAdminShiftTableTemplate();
-        requestNotificationPermission();
-
-        // Sayfa tekrar ekrana geldiğinde (arka plandan dönüldüğünde) sayaç ve verileri anında senkronize et
-        document.addEventListener("visibilitychange", () => {
-            if (!document.hidden) {
-                fetchAllData();
-                checkAndRestoreTimer();
-            }
-        });
-
-        checkAndRestoreTimer();
-    });
-
-    // Tarayıcı PWA ve Arka Plan Desteği için Service Worker Kaydı
-    function registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
-                self.addEventListener('install', e => self.skipWaiting());
-                self.addEventListener('activate', e => self.clients.claim());
-                self.addEventListener('push', e => {
-                    let data = e.data ? e.data.text() : 'Sweet Waffle Yeni Bildirim';
-                    self.registration.showNotification('Sweet Waffle', { body: data, icon: 'logo.webp' });
-                });
-            `)).catch(err => console.log('SW hatası:', err));
-        }
-    }
-
-    function requestNotificationPermission() {
-        if ("Notification" in window && Notification.permission !== "granted") {
-            Notification.requestPermission();
-        }
-    }
-
-    async function fetchAllData() {
-        await fetchMessages();
-        await fetchLogs();
-        await fetchSchedules();
-    }
-
-    function setupRealtimeSubscriptions() {
-        supabaseClient
-            .channel('public-db-changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, payload => {
-                fetchMessages();
-                if (payload.eventType === 'INSERT') showBrowserNotification("Sweet Waffle - Yeni Duyuru", payload.new.text);
-            })
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'logs' }, () => fetchLogs())
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'schedules' }, () => fetchSchedules())
-            .subscribe();
-    }
-
-    function showBrowserNotification(title, body) {
-        if ("Notification" in window && Notification.permission === "granted") {
-            new Notification(title, { body: body, icon: "logo.webp" });
-        }
-    }
-
-    async function fetchMessages() {
-        const { data, error } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: false });
-        if (!error && data) { renderUserMessages(data); updateAdminMessagesList(data); }
-    }
-
-    async function fetchLogs() {
-        const { data, error } = await supabaseClient.from('logs').select('*').order('created_at', { ascending: false });
-        if (!error && data) {
-            window.globalLogsCache = data;
-            updateStaffFilterOptions();
-            updateAdminDossierOptions();
-            if(!document.getElementById("admin-screen").classList.contains("hidden")) {
-                updateAdminTable();
-                renderAdminStaffDossier();
-            }
-            if(currentUser) updateUserPanelUI();
-        }
-    }
-
-    async function fetchSchedules() {
-        const { data, error } = await supabaseClient.from('schedules').select('*');
-        if (!error && data) {
-            window.globalSchedulesCache = {};
-            data.forEach(item => { window.globalSchedulesCache[item.staff_name] = item.schedule_data; });
-            if(currentUser) { renderUserShiftView(); updateUserWeeklyHoursSummary(); }
-        }
-    }
-
-    function downloadQrJpg(branchKey) {
-        const branchInfo = database[branchKey];
-        if (!branchInfo) return;
-
-        const qrText = `SWEET_WAFFLE_BRANCH:${branchKey}_LAT:${branchInfo.lat}_LNG:${branchInfo.lng}_PLUSCODE:${branchInfo.plusCode}`;
-        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(qrText)}`;
-
-        const imageObj = new Image();
-        imageObj.crossOrigin = "anonymous";
-        
-        imageObj.onload = function() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 500;
-            canvas.height = 500;
-            const ctx = canvas.getContext('2d');
-            
-            ctx.fillStyle = "#FFFFFF";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(imageObj, 0, 0, 500, 500);
-            
-            let imageUri = canvas.toDataURL("image/jpeg", 1.0);
-            let filename = `SweetWaffle_${branchKey}_${branchInfo.plusCode}_QR.jpg`;
-
-            const isIOS = /ipad|iphone|ipod/i.test(navigator.userAgent.toLowerCase());
-
-            if (isIOS) {
-                const newWindow = window.open(imageUri, '_blank');
-                if (!newWindow) { window.location.href = imageUri; }
-                return;
-            }
-
-            let downloadLink = document.createElement("a");
-            downloadLink.href = imageUri;
-            downloadLink.download = filename;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
+        const branchPasswords = {
+            'Merkez': '1985',
+            'Kurtkoy': '2025',
+            'Soganlik': '2026',
+            'Ortadag': '2027'
         };
-        imageObj.src = qrApiUrl;
-    }
 
-    function buildAdminShiftTableTemplate() {
-        const tbody = document.getElementById("admin-weekly-shift-tbody");
-        if (!tbody) return;
-        tbody.innerHTML = "";
-        DAYS_OF_WEEK.forEach((day, index) => {
-            let tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td style="font-weight:700; font-size:10px;">${day}</td>
-                <td><input type="time" id="in-time-${index}" value="09:00" style="margin:0; padding:2px; font-size:10px;"></td>
-                <td><input type="time" id="out-time-${index}" value="18:00" style="margin:0; padding:2px; font-size:10px;"></td>
-                <td><input type="checkbox" id="off-day-${index}" style="width:16px; height:16px; margin:0 auto; cursor:pointer;"></td>
-            `;
-            tbody.appendChild(tr);
-        });
-        populateShiftStaffSelect();
-    }
+        let allDataCache = [];
+        let allStockCache = [];
+        let currentSelectedBranch = localStorage.getItem('sweet_waffle_active_branch') || '';
+        let pendingBranchTarget = '';
+        let selectedMonthFilter = ''; 
 
-    function populateShiftStaffSelect() {
-        const branchSelect = document.getElementById("shift-branch-select");
-        const staffSelect = document.getElementById("shift-staff-select");
-        if (!branchSelect || !staffSelect) return;
-        const selectedBranch = branchSelect.value;
-        staffSelect.innerHTML = "";
-        if (database[selectedBranch] && database[selectedBranch].staff) {
-            database[selectedBranch].staff.forEach(emp => {
-                let opt = document.createElement("option");
-                opt.value = emp.name; opt.innerText = emp.name;
-                staffSelect.appendChild(opt);
-            });
-        }
-        loadStaffExistingScheduleToAdminForm();
-        staffSelect.onchange = loadStaffExistingScheduleToAdminForm;
-    }
+        const monthNamesTr = {
+            "01": "Ocak", "02": "Şubat", "03": "Mart", "04": "Nisan", 
+            "05": "Mayıs", "06": "Haziran", "07": "Temmuz", "08": "Ağustos", 
+            "09": "Eylül", "10": "Ekim", "11": "Kasım", "12": "Aralık"
+        };
 
-    function loadStaffExistingScheduleToAdminForm() {
-        const staffSelect = document.getElementById("shift-staff-select");
-        if (!staffSelect || !staffSelect.value) return;
-        const staffName = staffSelect.value;
-        const staffSchedule = window.globalSchedulesCache[staffName];
+        document.getElementById('reportDate').valueAsDate = new Date();
 
-        DAYS_OF_WEEK.forEach((day, index) => {
-            let inInput = document.getElementById(`in-time-${index}`);
-            let outInput = document.getElementById(`out-time-${index}`);
-            let offCheck = document.getElementById(`off-day-${index}`);
-
-            if (staffSchedule && staffSchedule[day]) {
-                inInput.value = staffSchedule[day].in || "09:00";
-                outInput.value = staffSchedule[day].out || "18:00";
-                offCheck.checked = !!staffSchedule[day].isOff;
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!currentSelectedBranch || !branchPasswords[currentSelectedBranch]) {
+                forceLogout();
             } else {
-                inInput.value = "09:00"; outInput.value = "18:00"; offCheck.checked = false;
+                document.getElementById('welcomeScreenModal').style.display = 'none';
+                applyBranchUI(currentSelectedBranch);
+                fetchAllReports();
+                fetchAllStocks();
             }
         });
-    }
 
-    async function saveStaffWeeklySchedule() {
-        const staffSelect = document.getElementById("shift-staff-select");
-        if (!staffSelect || !staffSelect.value) { alert("Lütfen bir personel seçin."); return; }
-        const staffName = staffSelect.value;
-        let scheduleData = {};
-        DAYS_OF_WEEK.forEach((day, index) => {
-            scheduleData[day] = {
-                in: document.getElementById(`in-time-${index}`).value,
-                out: document.getElementById(`out-time-${index}`).value,
-                isOff: document.getElementById(`off-day-${index}`).checked
+        function forceLogout() {
+            localStorage.removeItem('sweet_waffle_active_branch');
+            currentSelectedBranch = '';
+            closePasswordModal();
+            document.getElementById('welcomeScreenModal').style.display = 'flex';
+        }
+
+        function openPasswordModal(branchName) {
+            pendingBranchTarget = branchName;
+            let displayName = branchName === 'Merkez' ? 'Merkez (Tüm Şubeler)' : (branchName === 'Kurtkoy' ? 'Kurtköy Şubesi' : (branchName === 'Soganlik' ? 'Soğanlık Şubesi' : 'Ortadağ Şubesi'));
+            
+            document.getElementById('passwordLabel').innerText = `${displayName} için şifreyi giriniz:`;
+            document.getElementById('branchSelectionButtons').style.display = 'none';
+            document.getElementById('passwordInputContainer').style.display = 'block';
+            
+            const passwordInput = document.getElementById('branchPasswordInput');
+            passwordInput.value = '';
+            setTimeout(() => passwordInput.focus(), 100);
+        }
+
+        function closePasswordModal() {
+            pendingBranchTarget = '';
+            document.getElementById('passwordInputContainer').style.display = 'none';
+            document.getElementById('branchSelectionButtons').style.display = 'flex';
+            document.getElementById('branchPasswordInput').value = '';
+        }
+
+        function verifyEnteredPassword() {
+            let passwordInput = document.getElementById('branchPasswordInput').value;
+
+            if (passwordInput === branchPasswords[pendingBranchTarget]) {
+                currentSelectedBranch = pendingBranchTarget;
+                localStorage.setItem('sweet_waffle_active_branch', pendingBranchTarget);
+                document.getElementById('welcomeScreenModal').style.display = 'none';
+                applyBranchUI(pendingBranchTarget);
+                fetchAllReports();
+                fetchAllStocks();
+            } else {
+                alert('Hatalı şifre! Lütfen tekrar deneyin.');
+                document.getElementById('branchPasswordInput').value = '';
+                document.getElementById('branchPasswordInput').focus();
+            }
+        }
+
+        function applyBranchUI(branchName) {
+            let displayName = branchName === 'Merkez' ? 'Merkez Yönetimi (Tüm Şubeler)' : (branchName === 'Kurtkoy' ? 'Kurtköy Şubesi' : (branchName === 'Soganlik' ? 'Soğanlık Şubesi' : 'Ortadağ Şubesi'));
+            document.getElementById('panelTitle').innerText = displayName;
+            document.getElementById('panelSubtitle').innerText = branchName === 'Merkez' ? 'Tüm Şube Verileri Toplu Görünüm ve Stok Yönetimi' : 'Günlük Rapor ve Masraf Girişi';
+            document.getElementById('formSectionTitle').innerText = displayName + " - Günlük Rapor ve Masraf Girişi";
+            document.getElementById('tableHeaderTitle').innerText = displayName + " Raporları Listesi";
+
+            if (branchName === 'Merkez') {
+                document.getElementById('formCardContainer').style.display = 'none';
+                document.getElementById('stockOutCardContainer').style.display = 'block';
+                document.getElementById('stockSectionHeading').innerText = "Merkez Stok Çıkışları Geçmişi";
+                document.getElementById('filterStockBranch').style.display = 'inline-block';
+                document.getElementById('thActionsHeader').style.display = 'table-cell';
+                document.getElementById('thStockActionsHeader').style.display = 'table-cell';
+            } else {
+                document.getElementById('formCardContainer').style.display = 'block';
+                document.getElementById('stockOutCardContainer').style.display = 'none';
+                document.getElementById('stockSectionHeading').innerText = "Merkeften Gelen Stok Listesi";
+                document.getElementById('filterStockBranch').style.display = 'none';
+                document.getElementById('thActionsHeader').style.display = 'none';
+                document.getElementById('thStockActionsHeader').style.display = 'none';
+            }
+            document.getElementById('stockOutTableContainer').style.display = 'block';
+        }
+
+        function formatMoney(val) {
+            if (val === null || val === undefined || val === '') return '0 ₺';
+            let num = Number(val);
+            if (isNaN(num)) return '0 ₺';
+            return num.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) + ' ₺';
+        }
+
+        function cleanVal(val) {
+            let num = Number(val);
+            return isNaN(num) ? 0 : num;
+        }
+
+        async function fetchAllReports() {
+            try {
+                const { data, error } = await supabaseClient.from('reports').select('*').order('date', { ascending: false });
+                if (error) throw error;
+                allDataCache = data || [];
+                renderMonthlyButtons();
+                renderReports();
+            } catch (err) { console.error('Hata:', err); }
+        }
+
+        async function fetchAllStocks() {
+            try {
+                const { data, error } = await supabaseClient.from('archive').select('*').order('id', { ascending: false });
+                if (error) throw error;
+                allStockCache = data || [];
+                renderStocks();
+            } catch (err) { console.error('Stok Çekme Hatası:', err); }
+        }
+
+        document.getElementById('stockOutForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (currentSelectedBranch !== 'Merkez') return;
+
+            const targetBranchVal = document.getElementById('targetBranch').value;
+            const stockNameVal = document.getElementById('stockName').value.trim();
+            const stockAmountVal = parseFloat(document.getElementById('stockAmount').value) || 0;
+            const stockUnitVal = document.getElementById('stockUnit').value;
+
+            const payload = {
+                target_branch: targetBranchVal,
+                stock_name: stockNameVal,
+                stock_amount: stockAmountVal,
+                stock_unit: stockUnitVal
             };
-        });
 
-        const { error } = await supabaseClient.from('schedules').upsert([{ staff_name: staffName, schedule_data: scheduleData }], { onConflict: 'staff_name' });
-        if (error) { alert("Vardiya kaydedilemedi: " + error.message); } 
-        else { alert(`${staffName} personelinin haftalık vardiya programı başarıyla kaydedildi!`); await fetchSchedules(); }
-    }
-
-    function renderUserShiftView() {
-        const tbody = document.getElementById("user-shift-view-table");
-        if (!tbody || !currentUser) return;
-        let staffSchedule = window.globalSchedulesCache[currentUser];
-        if (!staffSchedule) { tbody.innerHTML = '<tr><td colspan="3">Merkez henüz program tanımlamadı.</td></tr>'; return; }
-
-        tbody.innerHTML = "";
-        DAYS_OF_WEEK.forEach(day => {
-            let dayInfo = staffSchedule[day];
-            let tr = document.createElement("tr");
-            if (dayInfo && dayInfo.isOff) {
-                tr.innerHTML = `<td style="font-weight:700;">${day}</td><td colspan="2" style="color: #e74c3c; font-weight:700;">🏖️ İzinli Gün</td>`;
-            } else if (dayInfo) {
-                tr.innerHTML = `<td>${day}</td><td>${dayInfo.in} - ${dayInfo.out}</td><td style="color: #27ae60; font-weight:600;">Çalışma Günü</td>`;
-            } else {
-                tr.innerHTML = `<td>${day}</td><td colspan="2">Belirlenmedi</td>`;
+            try {
+                const { error } = await supabaseClient.from('archive').insert([payload]);
+                if (error) throw error;
+                alert('Stok çıkışı başarıyla kaydedildi.');
+                document.getElementById('stockOutForm').reset();
+                fetchAllStocks();
+            } catch (err) {
+                alert('Stok kaydedilemedi: ' + err.message);
             }
-            tbody.appendChild(tr);
-        });
-    }
-
-    function updateUserWeeklyHoursSummary() {
-        if (!currentUser) return;
-        let staffSchedule = window.globalSchedulesCache[currentUser];
-        let totalMinutes = 0;
-        if (staffSchedule) {
-            Object.values(staffSchedule).forEach(day => {
-                if (day && !day.isOff && day.in && day.out) {
-                    let [inH, inM] = day.in.split(':').map(Number);
-                    let [outH, outM] = day.out.split(':').map(Number);
-                    let diff = (outH * 60 + outM) - (inH * 60 + inM);
-                    if (diff > 0) totalMinutes += diff;
-                }
-            });
-        }
-        let hours = Math.floor(totalMinutes / 60);
-        let minutes = totalMinutes % 60;
-        document.getElementById("weekly-hours").innerText = `${hours}s ${minutes}d`;
-        document.getElementById("monthly-hours").innerText = `${hours * 4}s ${minutes}d`;
-    }
-
-    function updateStaffFilterOptions() {
-        const staffFilterSelect = document.getElementById("staff-filter");
-        if (!staffFilterSelect) return;
-        let currentValue = staffFilterSelect.value;
-        let staffSet = new Set();
-        (window.globalLogsCache || []).forEach(l => { if(l.user) staffSet.add(l.user); });
-
-        staffFilterSelect.innerHTML = '<option value="Tümü">Tüm Personeller</option>';
-        staffSet.forEach(staffName => {
-            let opt = document.createElement("option");
-            opt.value = staffName; opt.innerText = staffName;
-            staffFilterSelect.appendChild(opt);
-        });
-        if (currentValue) staffFilterSelect.value = currentValue;
-    }
-
-    function updateAdminDossierOptions() {
-        const dossierSelect = document.getElementById("admin-dossier-select");
-        if (!dossierSelect) return;
-        let currentValue = dossierSelect.value;
-        let staffSet = new Set();
-        Object.keys(database).forEach(b => database[b].staff.forEach(s => staffSet.add(s.name)));
-        (window.globalLogsCache || []).forEach(l => { if(l.user) staffSet.add(l.user); });
-
-        dossierSelect.innerHTML = '<option value="">Rapor için personel seçiniz...</option>';
-        staffSet.forEach(staffName => {
-            let opt = document.createElement("option");
-            opt.value = staffName; opt.innerText = staffName;
-            dossierSelect.appendChild(opt);
-        });
-        if (currentValue) dossierSelect.value = currentValue;
-    }
-
-    function renderAdminStaffDossier() {
-        const select = document.getElementById("admin-dossier-select");
-        const resultArea = document.getElementById("dossier-result-area");
-        const summaryText = document.getElementById("dossier-summary-text");
-        const tbody = document.getElementById("dossier-logs-table");
-
-        if (!select || !select.value) { if (resultArea) resultArea.classList.add("hidden"); return; }
-        const selectedStaff = select.value;
-        resultArea.classList.remove("hidden");
-        let logs = (window.globalLogsCache || []).filter(l => l.user === selectedStaff);
-        
-        let workDays = new Set();
-        let izinCount = 0;
-        logs.forEach(l => {
-            if(l.created_at) workDays.add(l.created_at.split('T')[0]);
-            if(l.action && l.action.toLowerCase().includes('izin')) izinCount++;
         });
 
-        let totalMinutes = logs.length * 240;
-        summaryText.innerHTML = `👤 <b>${selectedStaff}</b> | Gün: ${workDays.size} | İzin: ${izinCount} | Toplam: ${Math.floor(totalMinutes/60)}s ${totalMinutes%60}dk`;
-
-        if (logs.length === 0) { tbody.innerHTML = '<tr><td colspan="3">Kayıt yok</td></tr>'; return; }
-        tbody.innerHTML = "";
-        logs.forEach(log => {
-            let tr = document.createElement("tr");
-            tr.innerHTML = `<td>${log.branch || 'Merkez'}</td><td>${log.action}</td><td>${log.created_at ? log.created_at.replace('T', ' ').substring(0, 16) : log.time}</td>`;
-            tbody.appendChild(tr);
-        });
-    }
-
-    async function sendBroadcastMessage() {
-        const msgText = document.getElementById("admin-msg-input").value;
-        if (!msgText) { alert("Duyuru metni yazın."); return; }
-        const { error } = await supabaseClient.from('messages').insert([{ text: msgText }]);
-        if (!error) { document.getElementById("admin-msg-input").value = ""; alert("Bildirim yayınlandı!"); fetchAllData(); }
-    }
-
-    async function deleteMessage(id) { await supabaseClient.from('messages').delete().eq('id', id); fetchAllData(); }
-    async function deleteLog(id) { await supabaseClient.from('logs').delete().eq('id', id); fetchAllData(); }
-
-    async function editLog(id) {
-        let logItem = (window.globalLogsCache || []).find(l => String(l.id) === String(id));
-        let newAction = prompt("İşlemi düzenle:", logItem ? logItem.action : "");
-        if (newAction === null) return;
-        let newTime = prompt("Saati düzenle:", logItem ? logItem.time : "");
-        if (newTime === null) return;
-        await supabaseClient.from('logs').update({ action: newAction, time: newTime }).eq('id', id);
-        fetchAllData();
-    }
-
-    function exportToExcel() {
-        let logs = window.globalLogsCache || [];
-        if (logs.length === 0) { alert("Veri yok"); return; }
-        let dataToExport = logs.map(l => ({ "Şube": l.branch, "Personel": l.user, "İşlem": l.action, "Saat": l.time, "Tarih": l.created_at || "" }));
-        let worksheet = XLSX.utils.json_to_sheet(dataToExport);
-        let workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Raporlar");
-        XLSX.writeFile(workbook, "SweetWaffle_Rapor.xlsx");
-    }
-
-    function exportToPDF() {
-        const { jsPDF } = window.jspdf;
-        let doc = new jsPDF();
-        doc.setFont("helvetica", "bold"); doc.setFontSize(16);
-        doc.text("Sweet Waffle - Rapor", 14, 20);
-        doc.setFontSize(11); doc.setFont("helvetica", "normal");
-        let logs = window.globalLogsCache || [];
-        let y = 30;
-        logs.slice(0, 20).forEach((l, idx) => {
-            doc.text(`${idx+1}. Şube: ${l.branch} | Personel: ${l.user} | İşlem: ${l.action}`, 14, y);
-            y += 8;
-            if(y > 280) { doc.addPage(); y = 20; }
-        });
-        doc.save("SweetWaffle_Rapor.pdf");
-    }
-
-    function selectLocation(branchKey) {
-        const boxContainer = document.getElementById("main-container-box");
-        if (branchKey === 'MerkezYonetim') {
-            boxContainer.className = "container-admin";
-            document.getElementById("main-selection-screen").classList.add("hidden");
-            document.getElementById("admin-login-screen").classList.remove("hidden");
-            document.getElementById("admin-password").value = "";
-        } else {
-            boxContainer.className = "container";
-            currentBranch = branchKey;
-            document.getElementById("main-selection-screen").classList.add("hidden");
-            document.getElementById("login-screen").classList.remove("hidden");
-            document.getElementById("login-title").innerText = branchKey + " Şubesi Girişi";
-            loadStaff(branchKey);
-        }
-    }
-
-    function verifyAdminLogin() {
-        if (document.getElementById("admin-password").value === ADMIN_PASS) {
-            document.getElementById("admin-login-screen").classList.add("hidden");
-            document.getElementById("admin-screen").classList.remove("hidden");
-            fetchAllData();
-            buildAdminShiftTableTemplate();
-        } else { alert("Hatalı Şifre!"); }
-    }
-
-    function goBackToMain() {
-        const boxContainer = document.getElementById("main-container-box");
-        boxContainer.className = "container";
-        document.getElementById("login-screen").classList.add("hidden");
-        document.getElementById("admin-login-screen").classList.add("hidden");
-        document.getElementById("admin-screen").classList.add("hidden");
-        document.getElementById("panel-screen").classList.add("hidden");
-        document.getElementById("qr-scanner-screen").classList.add("hidden");
-        document.getElementById("main-selection-screen").classList.remove("hidden");
-        document.getElementById("staff-password").value = "";
-        document.getElementById("admin-password").value = "";
-    }
-
-    function loadStaff(branch) {
-        const staffSelect = document.getElementById("staff-select");
-        staffSelect.innerHTML = '<option value="">Personel Seçiniz...</option>';
-        if (database[branch] && database[branch].staff) {
-            database[branch].staff.forEach(emp => {
-                let opt = document.createElement("option");
-                opt.value = emp.name; opt.innerText = emp.name;
-                staffSelect.appendChild(opt);
-            });
-        }
-    }
-
-    function login() {
-        const staff = document.getElementById("staff-select").value;
-        const pass = document.getElementById("staff-password").value;
-        if (!staff || !pass) { alert("Personel ve şifre girin."); return; }
-
-        let emp = database[currentBranch].staff.find(e => e.name === staff && e.pass === pass);
-        if (emp) {
-            currentUser = emp.name;
-            document.getElementById("login-screen").classList.add("hidden");
-            document.getElementById("panel-screen").classList.remove("hidden");
-            document.getElementById("welcome-title").innerText = "Sayın " + currentUser;
-            document.getElementById("user-branch-info").innerText = "Şube: " + currentBranch;
-            fetchAllData();
-            renderUserShiftView();
-            updateUserWeeklyHoursSummary();
-            updateUserPanelUI();
-            checkAndRestoreTimer();
-        } else { alert("Hatalı şifre!"); }
-    }
-
-    function logout() {
-        currentUser = null; currentBranch = null;
-        document.getElementById("staff-password").value = "";
-        localStorage.removeItem("sweet_waffle_timer_target");
-        if (countdownInterval) clearInterval(countdownInterval);
-        document.getElementById("panel-screen").classList.add("hidden");
-        document.getElementById("main-selection-screen").classList.remove("hidden");
-    }
-
-    function renderUserMessages(messages) {
-        const container = document.getElementById("center-msg-wrapper");
-        if (!messages || messages.length === 0) { container.innerHTML = ""; return; }
-        container.innerHTML = "";
-        messages.forEach(msgObj => {
-            let box = document.createElement("div");
-            box.className = "msg-box";
-            box.innerHTML = `📢 <strong>Merkezden Bildirim:</strong><p style="margin:4px 0 0 0;">${msgObj.text}</p>`;
-            container.appendChild(box);
-        });
-    }
-
-    function updateUserPanelUI() {
-        if (!currentUser || !window.globalLogsCache) return;
-        let userLogs = window.globalLogsCache.filter(l => l.user === currentUser);
-        const list = document.getElementById("today-logs");
-        if (userLogs.length === 0) {
-            list.innerHTML = "<li>Kayıt bulunmuyor.</li>";
-        } else {
-            list.innerHTML = "";
-            userLogs.forEach(log => {
-                let li = document.createElement("li");
-                li.innerText = `${log.action} - ${log.time} (${log.branch})`;
-                list.appendChild(li);
-            });
-        }
-    }
-
-    function openQrScannerDirectly() {
-        document.getElementById("panel-screen").classList.add("hidden");
-        document.getElementById("qr-scanner-screen").classList.remove("hidden");
-        
-        html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.start(
-            { facingMode: "environment" }, 
-            { fps: 10, qrbox: { width: 250, height: 250 } }, 
-            decodedText => {
-                if (decodedText.includes(currentBranch) || decodedText.includes("SWEET_WAFFLE_BRANCH")) {
-                    closeQrScanner();
-                    triggerAction('QR Kod Onaylı İşe Giriş', 0);
-                } else {
-                    alert("Hatalı veya farklı bir şubenin QR kodu okutuldu!");
-                }
-            }, 
-            () => {}
-        ).catch(err => {
-            console.error(err);
-            alert("Kamera başlatılamadı. Lütfen tarayıcı kamera izinlerini kontrol edin.");
-            closeQrScanner();
-        });
-    }
-
-    function closeQrScanner() {
-        if (html5QrCode) {
-            html5QrCode.stop().then(() => {
-                document.getElementById("qr-scanner-screen").classList.add("hidden");
-                document.getElementById("panel-screen").classList.remove("hidden");
-            }).catch(() => {
-                document.getElementById("qr-scanner-screen").classList.add("hidden");
-                document.getElementById("panel-screen").classList.remove("hidden");
-            });
-        }
-    }
-
-    async function triggerAction(actionName, durationMins) {
-        let timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        const { error } = await supabaseClient.from('logs').insert([{ branch: currentBranch, user: currentUser, action: actionName, time: timeStr }]);
-        if (error) { alert("Hata: " + error.message); return; }
-
-        if (durationMins > 0) {
-            let targetTime = Date.now() + durationMins * 60 * 1000;
-            localStorage.setItem("sweet_waffle_timer_target", targetTime);
-            startCountdown(targetTime);
-        } else {
-            localStorage.removeItem("sweet_waffle_timer_target");
-            if (countdownInterval) clearInterval(countdownInterval);
-            document.getElementById("active-timer-box").classList.add("hidden");
-        }
-        await fetchAllData();
-    }
-
-    // Uygulama kapalıyken veya yenilendiğinde süreyi hafızadan geri yükleyen ve geriye dönük işleten mekanizma
-    function checkAndRestoreTimer() {
-        let savedTarget = localStorage.getItem("sweet_waffle_timer_target");
-        if (savedTarget && currentUser) {
-            let targetTime = parseInt(savedTarget, 10);
-            if (targetTime > Date.now()) {
-                startCountdown(targetTime);
-            } else {
-                localStorage.removeItem("sweet_waffle_timer_target");
-                document.getElementById("active-timer-box").classList.add("hidden");
-            }
-        }
-    }
-
-    function startCountdown(targetTime) {
-        if (countdownInterval) clearInterval(countdownInterval);
-        let timerBox = document.getElementById("active-timer-box");
-        let display = document.getElementById("countdown-display");
-        timerBox.classList.remove("hidden");
-
-        countdownInterval = setInterval(() => {
-            let remaining = targetTime - Date.now();
-            if (remaining <= 0) {
-                clearInterval(countdownInterval);
-                localStorage.removeItem("sweet_waffle_timer_target");
-                display.innerText = "Süre Sona Erdi!";
-                showBrowserNotification("Sweet Waffle", "Molalarınız / Süreniz dolmuştur.");
-                timerBox.classList.add("hidden");
+        document.getElementById('branchReportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!currentSelectedBranch || currentSelectedBranch === 'Merkez') {
+                alert('Merkez hesabından doğrudan rapor eklenemez!');
                 return;
             }
-            let mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-            let secs = Math.floor((remaining % (1000 * 60)) / 1000);
-            display.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        }, 1000);
-    }
 
-    function updateAdminMessagesList(messages) {
-        const container = document.getElementById("admin-messages-list");
-        if (!messages || messages.length === 0) { container.innerHTML = '<p style="font-size:11px; color:#777;">Aktif duyuru yok.</p>'; return; }
-        container.innerHTML = "";
-        messages.forEach(msgObj => {
-            let div = document.createElement("div");
-            div.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 4px 6px; margin-bottom: 3px; border-radius: 5px; border: 1px solid var(--border-warm); font-size: 10px;";
-            div.innerHTML = `<span style="flex-grow:1; margin-right:6px;">${msgObj.text}</span><button class="btn btn-danger" style="width:auto; padding:2px 4px; margin:0; font-size:9px;" onclick="deleteMessage('${msgObj.id}')">Sil</button>`;
-            container.appendChild(div);
+            const payload = {
+                branch: currentSelectedBranch,
+                date: document.getElementById('reportDate').value,
+                cash: parseFloat(document.getElementById('reportCash').value) || 0,
+                bank: parseFloat(document.getElementById('reportBank').value) || 0,
+                platform_pluxee: parseFloat(document.getElementById('reportPluxee').value) || 0,
+                platform_edenred: parseFloat(document.getElementById('reportEdenred').value) || 0,
+                platform_multinet: parseFloat(document.getElementById('reportMultiNet').value) || 0,
+                platform_setcard: parseFloat(document.getElementById('reportSetcard').value) || 0,
+                platform_metropol: parseFloat(document.getElementById('reportMetropol').value) || 0,
+                platform_token: parseFloat(document.getElementById('reportToken').value) || 0,
+                platform_trendyol: parseFloat(document.getElementById('reportTrendyol').value) || 0,
+                platform_yemeksepeti: parseFloat(document.getElementById('reportYemeksepeti').value) || 0,
+                platform_getir: parseFloat(document.getElementById('reportGetir').value) || 0,
+                platform_migros: parseFloat(document.getElementById('reportMigros').value) || 0,
+                expense: parseFloat(document.getElementById('reportExpense').value) || 0,
+                expense_desc: document.getElementById('reportExpenseDesc').value || ''
+            };
+
+            try {
+                const { error } = await supabaseClient.from('reports').insert([payload]);
+                if (error) throw error;
+                alert('Günlük rapor ve masraf başarıyla kaydedildi.');
+                document.getElementById('branchReportForm').reset();
+                document.getElementById('reportDate').valueAsDate = new Date();
+                fetchAllReports();
+            } catch (err) {
+                alert('Kayıt başarısız: ' + err.message);
+            }
         });
-    }
 
-    function updateAdminTable() {
-        const tbody = document.getElementById("admin-log-table");
-        let logs = window.globalLogsCache || [];
-        const branchFilter = document.getElementById("branch-filter").value;
-        const staffFilter = document.getElementById("staff-filter").value;
-        
-        if (branchFilter !== "Tümü") logs = logs.filter(l => l.branch === branchFilter);
-        if (staffFilter !== "Tümü") logs = logs.filter(l => l.user === staffFilter);
+        function renderMonthlyButtons() {
+            const container = document.getElementById('monthlyButtonsContainer');
+            if (!container) return;
+            container.innerHTML = '';
 
-        if (logs.length === 0) { tbody.innerHTML = '<tr><td colspan="5">Kayıt yok.</td></tr>'; return; }
-        tbody.innerHTML = "";
-        logs.forEach(log => {
-            let tr = document.createElement("tr");
-            tr.innerHTML = `<td>${log.branch}</td><td>${log.user}</td><td>${log.action}</td><td>${log.time}</td><td><button class="btn btn-warning" style="width:auto; padding:2px 4px; margin:1px; font-size:9px; display:inline-block;" onclick="editLog('${log.id}')">Düzenle</i></button><button class="btn btn-danger" style="width:auto; padding:2px 4px; margin:1px; font-size:9px; display:inline-block;" onclick="deleteLog('${log.id}')">Sil</button></td>`;
-            tbody.appendChild(tr);
+            let branchData = currentSelectedBranch === 'Merkez' ? allDataCache : allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            
+            let monthsSet = new Set();
+            branchData.forEach(row => {
+                if (row.date && row.date.length >= 7) {
+                    monthsSet.add(row.date.substring(0, 7)); 
+                }
+            });
+
+            let sortedMonths = Array.from(monthsSet).sort().reverse();
+
+            let allBtn = document.createElement('button');
+            allBtn.type = 'button';
+            allBtn.innerText = "Tüm Veriler";
+            allBtn.style.cssText = `padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; border: 1px solid #78350f; background: ${selectedMonthFilter === '' ? '#78350f' : '#fff'}; color: ${selectedMonthFilter === '' ? '#fff' : '#78350f'};`;
+            allBtn.onclick = () => { selectedMonthFilter = ''; renderMonthlyButtons(); renderReports(); };
+            container.appendChild(allBtn);
+
+            sortedMonths.forEach(ym => {
+                let parts = ym.split('-');
+                let year = parts[0];
+                let monthNum = parts[1];
+                let monthName = monthNamesTr[monthNum] || monthNum;
+                let label = `${monthName} ${year}`;
+
+                let btn = document.createElement('button');
+                btn.type = 'button';
+                btn.innerText = label;
+                let isActive = selectedMonthFilter === ym;
+                btn.style.cssText = `padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; border: 1px solid #78350f; background: ${isActive ? '#78350f' : '#fff'}; color: ${isActive ? '#fff' : '#78350f'};`;
+                btn.onclick = () => { selectedMonthFilter = ym; renderMonthlyButtons(); renderReports(); };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderReports() {
+            const tbody = document.getElementById('allReportsTableBody');
+            const tfoot = document.getElementById('allReportsTableFooter');
+            
+            tbody.innerHTML = '';
+            tfoot.innerHTML = '';
+
+            let filteredData = [];
+            if (currentSelectedBranch === 'Merkez') {
+                filteredData = allDataCache;
+            } else {
+                filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            }
+
+            if (selectedMonthFilter) {
+                filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
+            }
+
+            let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalOnline = 0, totalRevenue = 0, totalExpense = 0, totalRemainingCash = 0;
+            let sumPluxee = 0, sumEdenred = 0, sumMultiNet = 0, sumSetcard = 0, sumMetropol = 0, sumToken = 0;
+            let sumTrendyol = 0, sumYemeksepeti = 0, sumGetir = 0, sumMigros = 0;
+
+            if (filteredData.length > 0) {
+                filteredData.forEach(row => {
+                    const rawC = cleanVal(row.cash);
+                    const rawB = cleanVal(row.bank);
+                    
+                    const pPluxee = cleanVal(row.platform_pluxee);
+                    const pEdenred = cleanVal(row.platform_edenred);
+                    const pMultiNet = cleanVal(row.platform_multinet);
+                    const pSetcard = cleanVal(row.platform_setcard);
+                    const pMetropol = cleanVal(row.platform_metropol);
+                    const pToken = cleanVal(row.platform_token);
+                    
+                    const pTrendyol = cleanVal(row.platform_trendyol);
+                    const pYemeksepeti = cleanVal(row.platform_yemeksepeti);
+                    const pGetir = cleanVal(row.platform_getir);
+                    const pMigros = cleanVal(row.platform_migros);
+
+                    const rowPlatformTotal = pPluxee + pEdenred + pMultiNet + pSetcard + pMetropol + pToken;
+                    const rowOnlineTotal = pTrendyol + pYemeksepeti + pGetir + pMigros;
+                    
+                    const rawR = rawC + rawB + rowPlatformTotal + rowOnlineTotal;
+                    const rawE = cleanVal(row.expense);
+                    
+                    const rowRemainingCash = rawC - rawE;
+                    const expDesc = row.expense_desc ? ` (${row.expense_desc})` : '';
+
+                    totalCash += rawC; 
+                    totalBank += rawB; 
+                    totalPlatforms += rowPlatformTotal;
+                    totalOnline += rowOnlineTotal;
+                    totalRevenue += rawR; 
+                    totalExpense += rawE;
+                    totalRemainingCash += rowRemainingCash;
+
+                    sumPluxee += pPluxee;
+                    sumEdenred += pEdenred;
+                    sumMultiNet += pMultiNet;
+                    sumSetcard += pSetcard;
+                    sumMetropol += pMetropol;
+                    sumToken += pToken;
+
+                    sumTrendyol += pTrendyol;
+                    sumYemeksepeti += pYemeksepeti;
+                    sumGetir += pGetir;
+                    sumMigros += pMigros;
+
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = '1px solid #f3f4f6';
+                    
+                    let actionButtonsHtml = '';
+                    if (currentSelectedBranch === 'Merkez') {
+                        actionButtonsHtml = `
+                            <td style="padding: 6px; text-align: center; white-space: nowrap;">
+                                <button type="button" onclick='openEditModal(${JSON.stringify(row)})' style="background: #2563eb; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
+                                <button type="button" onclick="deleteReport(${row.id})" style="background: #dc2626; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
+                            </td>
+                        `;
+                    }
+
+                    tr.innerHTML = `
+                        <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
+                        <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(rawC)}</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
+                        <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
+                        <td style="padding: 6px; color: #7c3aed;">${formatMoney(rowOnlineTotal)}</td>
+                        <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
+                        <td style="padding: 6px; color: #dc2626; background-color: #fef2f2; border-left: 1px dashed #fca5a5; border-right: 1px dashed #fca5a5;">${formatMoney(rawE)}${expDesc}</td>
+                        <td style="padding: 6px; font-weight: bold; color: #047857; background-color: #ecfdf5; border-left: 1px dashed #6ee7b7; border-right: 1px dashed #6ee7b7;">${formatMoney(rowRemainingCash)}</td>
+                        ${actionButtonsHtml}
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                tfoot.innerHTML = `
+                    <tr>
+                        <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
+                        <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
+                        <td style="padding: 6px; color: #7c3aed;">${formatMoney(totalOnline)}</td>
+                        <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
+                        <td style="padding: 6px; color: #dc2626; background-color: #fef2f2;">${formatMoney(totalExpense)}</td>
+                        <td style="padding: 6px; color: #047857; background-color: #ecfdf5;">${formatMoney(totalCash - totalExpense)}</td>
+                        ${currentSelectedBranch === 'Merkez' ? '<td></td>' : ''}
+                    </tr>
+                `;
+            } else {
+                let colspanVal = currentSelectedBranch === 'Merkez' ? '10' : '9';
+                tbody.innerHTML = `<tr><td colspan="${colspanVal}" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
+            }
+
+            document.getElementById('statTotalCash').innerText = formatMoney(totalCash);
+            document.getElementById('statTotalBank').innerText = formatMoney(totalBank);
+            document.getElementById('statTotalPlatforms').innerText = formatMoney(totalPlatforms);
+            document.getElementById('statTotalOnline').innerText = formatMoney(totalOnline);
+            document.getElementById('statTotalRevenue').innerText = formatMoney(totalRevenue);
+            document.getElementById('statTotalExpense').innerText = formatMoney(totalExpense);
+
+            document.getElementById('sumPluxee').innerText = formatMoney(sumPluxee);
+            document.getElementById('sumEdenred').innerText = formatMoney(sumEdenred);
+            document.getElementById('sumMultiNet').innerText = formatMoney(sumMultiNet);
+            document.getElementById('sumSetcard').innerText = formatMoney(sumSetcard);
+            document.getElementById('sumMetropol').innerText = formatMoney(sumMetropol);
+            document.getElementById('sumToken').innerText = formatMoney(sumToken);
+
+            document.getElementById('sumTrendyol').innerText = formatMoney(sumTrendyol);
+            document.getElementById('sumYemeksepeti').innerText = formatMoney(sumYemeksepeti);
+            document.getElementById('sumGetir').innerText = formatMoney(sumGetir);
+            document.getElementById('sumMigros').innerText = formatMoney(sumMigros);
+        }
+
+        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (RAPOR) ---
+        function openEditModal(row) {
+            if (currentSelectedBranch !== 'Merkez') return;
+            document.getElementById('editReportId').value = row.id;
+            document.getElementById('editBranch').value = row.branch || '';
+            document.getElementById('editDate').value = row.date || '';
+            document.getElementById('editCash').value = row.cash || '';
+            document.getElementById('editBank').value = row.bank || '';
+            document.getElementById('editPluxee').value = row.platform_pluxee || '';
+            document.getElementById('editEdenred').value = row.platform_edenred || '';
+            document.getElementById('editMultiNet').value = row.platform_multinet || '';
+            document.getElementById('editSetcard').value = row.platform_setcard || '';
+            document.getElementById('editMetropol').value = row.platform_metropol || '';
+            document.getElementById('editToken').value = row.platform_token || '';
+            document.getElementById('editTrendyol').value = row.platform_trendyol || '';
+            document.getElementById('editYemeksepeti').value = row.platform_yemeksepeti || '';
+            document.getElementById('editGetir').value = row.platform_getir || '';
+            document.getElementById('editMigros').value = row.platform_migros || '';
+            document.getElementById('editExpense').value = row.expense || '';
+            document.getElementById('editExpenseDesc').value = row.expense_desc || '';
+
+            document.getElementById('editReportModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editReportModal').style.display = 'none';
+        }
+
+        document.getElementById('editReportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (currentSelectedBranch !== 'Merkez') return;
+
+            const id = document.getElementById('editReportId').value;
+            const payload = {
+                date: document.getElementById('editDate').value,
+                cash: parseFloat(document.getElementById('editCash').value) || 0,
+                bank: parseFloat(document.getElementById('editBank').value) || 0,
+                platform_pluxee: parseFloat(document.getElementById('editPluxee').value) || 0,
+                platform_edenred: parseFloat(document.getElementById('editEdenred').value) || 0,
+                platform_multinet: parseFloat(document.getElementById('editMultiNet').value) || 0,
+                platform_setcard: parseFloat(document.getElementById('editSetcard').value) || 0,
+                platform_metropol: parseFloat(document.getElementById('editMetropol').value) || 0,
+                platform_token: parseFloat(document.getElementById('editToken').value) || 0,
+                platform_trendyol: parseFloat(document.getElementById('editTrendyol').value) || 0,
+                platform_yemeksepeti: parseFloat(document.getElementById('editYemeksepeti').value) || 0,
+                platform_getir: parseFloat(document.getElementById('editGetir').value) || 0,
+                platform_migros: parseFloat(document.getElementById('editMigros').value) || 0,
+                expense: parseFloat(document.getElementById('editExpense').value) || 0,
+                expense_desc: document.getElementById('editExpenseDesc').value || ''
+            };
+
+            try {
+                const { error } = await supabaseClient.from('reports').update(payload).eq('id', id);
+                if (error) throw error;
+                alert('Rapor başarıyla güncellendi.');
+                closeEditModal();
+                fetchAllReports();
+            } catch (err) {
+                alert('Güncelleme başarısız: ' + err.message);
+            }
         });
-    }
-</script>
 
+        async function deleteReport(id) {
+            if (currentSelectedBranch !== 'Merkez') return;
+            if (!confirm('Bu raporu kalıcı olarak silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const { error } = await supabaseClient.from('reports').delete().eq('id', id);
+                if (error) throw error;
+                alert('Rapor başarıyla silindi.');
+                fetchAllReports();
+            } catch (err) {
+                alert('Silme işlemi başarısız: ' + err.message);
+            }
+        }
+
+        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (STOK) ---
+        function openEditStockModal(item) {
+            if (currentSelectedBranch !== 'Merkez') return;
+            document.getElementById('editStockId').value = item.id;
+            document.getElementById('editTargetBranch').value = item.target_branch || 'Kurtkoy';
+            document.getElementById('editStockName').value = item.stock_name || '';
+            document.getElementById('editStockUnit').value = item.stock_unit || 'Kg';
+            document.getElementById('editStockAmount').value = item.stock_amount || '';
+
+            document.getElementById('editStockModal').style.display = 'flex';
+        }
+
+        function closeEditStockModal() {
+            document.getElementById('editStockModal').style.display = 'none';
+        }
+
+        document.getElementById('editStockForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (currentSelectedBranch !== 'Merkez') return;
+
+            const id = document.getElementById('editStockId').value;
+            const payload = {
+                target_branch: document.getElementById('editTargetBranch').value,
+                stock_name: document.getElementById('editStockName').value.trim(),
+                stock_unit: document.getElementById('editStockUnit').value,
+                stock_amount: parseFloat(document.getElementById('editStockAmount').value) || 0
+            };
+
+            try {
+                const { error } = await supabaseClient.from('archive').update(payload).eq('id', id);
+                if (error) throw error;
+                alert('Stok çıkışı başarıyla güncellendi.');
+                closeEditStockModal();
+                fetchAllStocks();
+            } catch (err) {
+                alert('Stok güncelleme başarısız: ' + err.message);
+            }
+        });
+
+        async function deleteStock(id) {
+            if (currentSelectedBranch !== 'Merkez') return;
+            if (!confirm('Bu stok çıkışını kalıcı olarak silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const { error } = await supabaseClient.from('archive').delete().eq('id', id);
+                if (error) throw error;
+                alert('Stok çıkışı başarıyla silindi.');
+                fetchAllStocks();
+            } catch (err) {
+                alert('Silme işlemi başarısız: ' + err.message);
+            }
+        }
+
+        function renderStocks() {
+            const stockTbody = document.getElementById('stockOutTableBody');
+            if (!stockTbody) return;
+            stockTbody.innerHTML = '';
+
+            let filteredStocks = allStockCache;
+
+            if (currentSelectedBranch === 'Merkez') {
+                const branchFilterVal = document.getElementById('filterStockBranch').value;
+                if (branchFilterVal) {
+                    filteredStocks = filteredStocks.filter(item => item.target_branch && item.target_branch.toLowerCase() === branchFilterVal.toLowerCase());
+                }
+            } else {
+                filteredStocks = filteredStocks.filter(item => item.target_branch && item.target_branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            }
+
+            const nameSearchVal = document.getElementById('filterStockName').value.trim().toLowerCase();
+            if (nameSearchVal) {
+                filteredStocks = filteredStocks.filter(item => item.stock_name && item.stock_name.toLowerCase().includes(nameSearchVal));
+            }
+
+            if (filteredStocks.length > 0) {
+                filteredStocks.forEach(item => {
+                    let dateStr = item.created_at ? new Date(item.created_at).toLocaleDateString('tr-TR') : '-';
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = '1px solid #f3f4f6';
+
+                    let stockActionHtml = '';
+                    if (currentSelectedBranch === 'Merkez') {
+                        stockActionHtml = `
+                            <td style="padding: 6px; text-align: center; white-space: nowrap;">
+                                <button type="button" onclick='openEditStockModal(${JSON.stringify(item)})' style="background: #2563eb; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
+                                <button type="button" onclick="deleteStock(${item.id})" style="background: #dc2626; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
+                            </td>
+                        `;
+                    }
+
+                    tr.innerHTML = `
+                        <td style="padding: 6px; color: #4b5563;">${dateStr}</td>
+                        <td style="padding: 6px; font-weight: bold; color: #1d4ed8;">${item.target_branch || '-'}</td>
+                        <td style="padding: 6px; font-weight: bold; color: #78350f;">${item.stock_name || '-'}</td>
+                        <td style="padding: 6px; color: #1f2937; font-weight: bold;">${item.stock_amount || 0} ₺</td>
+                        <td style="padding: 6px; color: #047857; font-weight: bold;">${item.stock_unit || '-'}</td>
+                        ${stockActionHtml}
+                    `;
+                    stockTbody.appendChild(tr);
+                });
+            } else {
+                let colspanVal = currentSelectedBranch === 'Merkez' ? '6' : '5';
+                stockTbody.innerHTML = `<tr><td colspan="${colspanVal}" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok kaydı bulunmuyor.</td></tr>`;
+            }
+        }
+
+        function exportToExcel() {
+            let filteredData = currentSelectedBranch === 'Merkez' ? allDataCache : allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            if (selectedMonthFilter) {
+                filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
+            }
+            let dataToExport = filteredData.map(row => {
+                const cash = cleanVal(row.cash);
+                const bank = cleanVal(row.bank);
+                const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
+                const oTotal = cleanVal(row.platform_trendyol) + cleanVal(row.platform_yemeksepeti) + cleanVal(row.platform_getir) + cleanVal(row.platform_migros);
+                
+                const ciro = cash + bank + pTotal + oTotal;
+                const expense = cleanVal(row.expense);
+                return {
+                    "Şube": row.branch || '',
+                    "Tarih": row.date || '',
+                    "Nakit": cash,
+                    "Banka": bank,
+                    "Yemek Kartları": pTotal,
+                    "Online Platform": oTotal,
+                    "Ciro": ciro,
+                    "Masraf": expense,
+                    "Masraf Açıklaması": row.expense_desc || '',
+                    "Kalan Nakit": cash - expense
+                };
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Raporlar");
+            XLSX.writeFile(workbook, `SweetWaffle_${currentSelectedBranch}_Raporlar.xlsx`);
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+
+            doc.setFontSize(14);
+            doc.text(`Sweet Waffle - ${currentSelectedBranch === 'Merkez' ? 'Merkez (Tüm Şubeler)' : currentSelectedBranch} Raporları`, 14, 15);
+
+            let filteredData = currentSelectedBranch === 'Merkez' ? allDataCache : allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
+            if (selectedMonthFilter) {
+                filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
+            }
+            let tableRows = filteredData.map(row => {
+                const cash = cleanVal(row.cash);
+                const bank = cleanVal(row.bank);
+                const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
+                const oTotal = cleanVal(row.platform_trendyol) + cleanVal(row.platform_yemeksepeti) + cleanVal(row.platform_getir) + cleanVal(row.platform_migros);
+                
+                const ciro = cash + bank + pTotal + oTotal;
+                const expense = cleanVal(row.expense);
+                const remainingCash = cash - expense;
+                const expInfo = expense + (row.expense_desc ? ` (${row.expense_desc})` : '');
+                return [
+                    row.branch || '',
+                    row.date || '',
+                    formatMoney(cash),
+                    formatMoney(bank),
+                    formatMoney(pTotal),
+                    formatMoney(oTotal),
+                    formatMoney(ciro),
+                    expInfo,
+                    formatMoney(remainingCash)
+                ];
+            });
+
+            doc.autoTable({
+                head: [['Şube', 'Tarih', 'Nakit', 'Banka', 'Yemek Kartı', 'Online Platform', 'Ciro', 'Masraf & Açıklama', 'Kalan Nakit']],
+                body: tableRows,
+                startY: 20,
+                styles: { fontSize: 8 }
+            });
+
+            doc.save(`SweetWaffle_${currentSelectedBranch}_Raporlar.pdf`);
+        }
+    </script>
 </body>
 </html>
