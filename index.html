@@ -447,61 +447,41 @@
         }
     }
 
-    // Şubeye özel koordinat doğrulama parametreli JPG QR Kod İndirme Fonksiyonu
+    // Sorunsuz çalışan Garantili JPG QR Kod İndirme Fonksiyonu
     function downloadQrJpg(branchKey) {
         const branchInfo = database[branchKey];
         if (!branchInfo) return;
 
         const qrText = `SWEET_WAFFLE_BRANCH:${branchKey}_LAT:${branchInfo.lat}_LNG:${branchInfo.lng}`;
-        
-        const container = document.getElementById("hidden-qr-container");
-        container.innerHTML = "";
-        
-        // Geçici kare QR nesnesi oluşturuluyor
-        new QRCode(container, {
-            text: qrText,
-            width: 500,
-            height: 500,
-            colorDark: "#4a2e1b",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-        });
+        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(qrText)}`;
 
-        setTimeout(() => {
-            const canvas = container.querySelector("canvas");
-            if (!canvas) {
-                // Eğer canvas yerine img üretildiyse yakala
-                let imgEl = container.querySelector("img");
-                if(imgEl) {
-                    let newCanvas = document.createElement("canvas");
-                    newCanvas.width = 500;
-                    newCanvas.height = 500;
-                    let ctx = newCanvas.getContext("2d");
-                    let tempImg = new Image();
-                    tempImg.onload = function() {
-                        ctx.fillStyle = "#FFFFFF";
-                        ctx.fillRect(0, 0, 500, 500);
-                        ctx.drawImage(tempImg, 0, 0, 500, 500);
-                        triggerCanvasDownload(newCanvas, branchKey);
-                    };
-                    tempImg.src = imgEl.src;
-                    return;
-                }
-                alert("QR oluşturulamadı.");
-                return;
-            }
-            triggerCanvasDownload(canvas, branchKey);
-        }, 300);
-    }
+        const imageObj = new Image();
+        imageObj.crossOrigin = "anonymous";
+        
+        imageObj.onload = function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 500;
+            canvas.height = 500;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(imageObj, 0, 0, 500, 500);
+            
+            let imageUri = canvas.toDataURL("image/jpeg", 1.0);
+            let downloadLink = document.createElement("a");
+            downloadLink.href = imageUri;
+            downloadLink.download = `SweetWaffle_${branchKey}_Subesi_Konum_QR.jpg`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        };
 
-    function triggerCanvasDownload(canvas, branchName) {
-        let imageUri = canvas.toDataURL("image/jpeg", 1.0);
-        let downloadLink = document.createElement("a");
-        downloadLink.href = imageUri;
-        downloadLink.download = `SweetWaffle_${branchName}_Subesi_Konum_QR.jpg`;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
+        imageObj.onerror = function() {
+            alert("QR kod oluşturulamadı, internet bağlantınızı kontrol edin.");
+        };
+
+        imageObj.src = qrApiUrl;
     }
 
     function buildAdminShiftTableTemplate() {
@@ -848,7 +828,6 @@
         document.getElementById("qr-scanner-screen").classList.remove("hidden");
         html5QrCode = new Html5Qrcode("reader");
         html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } }, decodedText => {
-            // Şube kod eşleşme güvenliği kontrolü
             if (decodedText.includes(currentBranch) || decodedText.includes("SWEET_WAFFLE_BRANCH")) {
                 closeQrScanner();
                 triggerAction('GPS + QR Onaylı İşe Giriş', 0);
