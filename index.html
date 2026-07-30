@@ -198,8 +198,10 @@
         <div id="dynamic-alert-container"></div>
         <div id="center-msg-wrapper"></div>
 
+        <!-- Arka planda kapalı olsa bile localStorage'dan hesaplanıp geri kalan süreyi gösteren akıllı sayaç kutusu -->
         <div id="active-timer-box" class="hidden" style="background: linear-gradient(135deg, #d1ecf1, #bee5eb); color: #0c5460; padding: 8px; border-radius: 10px; margin-bottom: 10px; font-weight: 700; text-align: center; border: 2px solid #17a2b8; font-size: 11px;">
             ⏳ Kalan Süre: <span id="countdown-display">00:00</span>
+            <div style="font-size: 9px; font-weight: normal; margin-top: 2px; color: #333;">(Uygulama kapalı/arka planda olsa bile süre işlemeye devam eder)</div>
         </div>
 
         <div class="card" style="background: #fffdf9; border-color: var(--waffle-gold);">
@@ -212,7 +214,7 @@
             </div>
         </div>
 
-        <!-- QR Tarama Butonu (Hata uyarısı kaldırıldı, direkt kamera açılır) -->
+        <!-- QR Tarama Butonu -->
         <button class="btn btn-qr-scan" onclick="openQrScannerDirectly()">📍📷 QR Kod Okut ve İşe Başla</button>
 
         <div class="card" style="padding: 10px;">
@@ -361,7 +363,6 @@
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Güncel şube GPS koordinatları ve Plus Code verileri işlendi
     const database = {
         "Kurtköy": { 
             staff: [{ name: "Nesrin POLAT", pass: "1234" }, { name: "Mehmet Demir", pass: "1234" }], 
@@ -394,15 +395,36 @@
     window.globalSchedulesCache = {};
 
     window.addEventListener('DOMContentLoaded', () => {
+        registerServiceWorker();
         setupRealtimeSubscriptions();
         fetchAllData();
         buildAdminShiftTableTemplate();
         requestNotificationPermission();
 
+        // Sayfa tekrar ekrana geldiğinde (arka plandan dönüldüğünde) sayaç ve verileri anında senkronize et
         document.addEventListener("visibilitychange", () => {
-            if (!document.hidden) fetchAllData();
+            if (!document.hidden) {
+                fetchAllData();
+                checkAndRestoreTimer();
+            }
         });
+
+        checkAndRestoreTimer();
     });
+
+    // Tarayıcı PWA ve Arka Plan Desteği için Service Worker Kaydı
+    function registerServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
+                self.addEventListener('install', e => self.skipWaiting());
+                self.addEventListener('activate', e => self.clients.claim());
+                self.addEventListener('push', e => {
+                    let data = e.data ? e.data.text() : 'Sweet Waffle Yeni Bildirim';
+                    self.registration.showNotification('Sweet Waffle', { body: data, icon: 'logo.webp' });
+                });
+            `)).catch(err => console.log('SW hatası:', err));
+        }
+    }
 
     function requestNotificationPermission() {
         if ("Notification" in window && Notification.permission !== "granted") {
@@ -462,7 +484,6 @@
         }
     }
 
-    // PLUS CODE VE KOORDİNAT DESTEKLİ GARANTİLİ JPG QR KOD İNDİRME
     function downloadQrJpg(branchKey) {
         const branchInfo = database[branchKey];
         if (!branchInfo) return;
@@ -501,11 +522,6 @@
             downloadLink.click();
             document.body.removeChild(downloadLink);
         };
-
-        imageObj.onerror = function() {
-            alert("QR kod oluşturulamadı, internet bağlantınızı kontrol edin.");
-        };
-
         imageObj.src = qrApiUrl;
     }
 
@@ -799,12 +815,14 @@
             renderUserShiftView();
             updateUserWeeklyHoursSummary();
             updateUserPanelUI();
+            checkAndRestoreTimer();
         } else { alert("Hatalı şifre!"); }
     }
 
     function logout() {
         currentUser = null; currentBranch = null;
         document.getElementById("staff-password").value = "";
+        localStorage.removeItem("sweet_waffle_timer_target");
         if (countdownInterval) clearInterval(countdownInterval);
         document.getElementById("panel-screen").classList.add("hidden");
         document.getElementById("main-selection-screen").classList.remove("hidden");
@@ -838,7 +856,6 @@
         }
     }
 
-    // Mesafe uyarısını tamamen kaldıran doğrudan tarayıcı açma fonksiyonu
     function openQrScannerDirectly() {
         document.getElementById("panel-screen").classList.add("hidden");
         document.getElementById("qr-scanner-screen").classList.remove("hidden");
@@ -881,27 +898,45 @@
         if (error) { alert("Hata: " + error.message); return; }
 
         if (durationMins > 0) {
-            startCountdown(durationMins);
+            let targetTime = Date.now() + durationMins * 60 * 1000;
+            localStorage.setItem("sweet_waffle_timer_target", targetTime);
+            startCountdown(targetTime);
         } else {
+            localStorage.removeItem("sweet_waffle_timer_target");
             if (countdownInterval) clearInterval(countdownInterval);
             document.getElementById("active-timer-box").classList.add("hidden");
         }
         await fetchAllData();
     }
 
-    function startCountdown(durationMinutes) {
+    // Uygulama kapalıyken veya yenilendiğinde süreyi hafızadan geri yükleyen ve geriye dönük işleten mekanizma
+    function checkAndRestoreTimer() {
+        let savedTarget = localStorage.getItem("sweet_waffle_timer_target");
+        if (savedTarget && currentUser) {
+            let targetTime = parseInt(savedTarget, 10);
+            if (targetTime > Date.now()) {
+                startCountdown(targetTime);
+            } else {
+                localStorage.removeItem("sweet_waffle_timer_target");
+                document.getElementById("active-timer-box").classList.add("hidden");
+            }
+        }
+    }
+
+    function startCountdown(targetTime) {
         if (countdownInterval) clearInterval(countdownInterval);
         let timerBox = document.getElementById("active-timer-box");
         let display = document.getElementById("countdown-display");
         timerBox.classList.remove("hidden");
-        let targetTime = Date.now() + durationMinutes * 60 * 1000;
 
         countdownInterval = setInterval(() => {
             let remaining = targetTime - Date.now();
             if (remaining <= 0) {
                 clearInterval(countdownInterval);
+                localStorage.removeItem("sweet_waffle_timer_target");
                 display.innerText = "Süre Sona Erdi!";
                 showBrowserNotification("Sweet Waffle", "Molalarınız / Süreniz dolmuştur.");
+                timerBox.classList.add("hidden");
                 return;
             }
             let mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
@@ -935,7 +970,7 @@
         tbody.innerHTML = "";
         logs.forEach(log => {
             let tr = document.createElement("tr");
-            tr.innerHTML = `<td>${log.branch}</td><td>${log.user}</td><td>${log.action}</td><td>${log.time}</td><td><button class="btn btn-warning" style="width:auto; padding:2px 4px; margin:1px; font-size:9px; display:inline-block;" onclick="editLog('${log.id}')">Düzenle</button><button class="btn btn-danger" style="width:auto; padding:2px 4px; margin:1px; font-size:9px; display:inline-block;" onclick="deleteLog('${log.id}')">Sil</button></td>`;
+            tr.innerHTML = `<td>${log.branch}</td><td>${log.user}</td><td>${log.action}</td><td>${log.time}</td><td><button class="btn btn-warning" style="width:auto; padding:2px 4px; margin:1px; font-size:9px; display:inline-block;" onclick="editLog('${log.id}')">Düzenle</i></button><button class="btn btn-danger" style="width:auto; padding:2px 4px; margin:1px; font-size:9px; display:inline-block;" onclick="deleteLog('${log.id}')">Sil</button></td>`;
             tbody.appendChild(tr);
         });
     }
