@@ -53,6 +53,72 @@
         </div>
     </div>
 
+    <!-- MERKEZ DÜZENLEME MODALI -->
+    <div id="editReportModal" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 99998; display: none; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #fff; border-radius: 12px; padding: 16px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <h3 style="font-size: 13px; font-weight: bold; color: #78350f; margin: 0 0 10px 0; text-transform: uppercase;">Raporu Düzenle (Merkez)</h3>
+            <form id="editReportForm" style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="hidden" id="editReportId">
+                <div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Şube</label>
+                    <input type="text" id="editBranch" disabled style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #f3f4f6;">
+                </div>
+                <div>
+                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Tarih</label>
+                    <input type="date" id="editDate" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Nakit (TL)</label>
+                        <input type="number" step="any" id="editCash" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Banka (TL)</label>
+                        <input type="number" step="any" id="editBank" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
+                    </div>
+                </div>
+
+                <div style="background: #fffbeb; padding: 8px; border-radius: 8px; border: 1px solid #fde68a;">
+                    <label style="font-size: 10px; font-weight: bold; color: #78350f; display: block; margin-bottom: 4px;">Yemek Kartları</label>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
+                        <input type="number" step="any" id="editPluxee" placeholder="Pluxee" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editEdenred" placeholder="Edenred" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editMultiNet" placeholder="MultiNet" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editSetcard" placeholder="Setcard" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editMetropol" placeholder="Metropol" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editToken" placeholder="TokenFlex" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                    </div>
+                </div>
+
+                <div style="background: #f5f3ff; padding: 8px; border-radius: 8px; border: 1px solid #ddd6fe;">
+                    <label style="font-size: 10px; font-weight: bold; color: #5b21b6; display: block; margin-bottom: 4px;">Online Yemek Platformları</label>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px;">
+                        <input type="number" step="any" id="editTrendyol" placeholder="Trendyol" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editYemeksepeti" placeholder="Yemeksepeti" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editGetir" placeholder="Getir" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                        <input type="number" step="any" id="editMigros" placeholder="Migros" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <div>
+                        <label style="font-size: 9px; font-weight: bold; color: #dc2626; display: block; margin-bottom: 2px;">Masraf (TL)</label>
+                        <input type="number" step="any" id="editExpense" placeholder="0" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px;">
+                    </div>
+                    <div>
+                        <label style="font-size: 9px; font-weight: bold; color: #451a03; display: block; margin-bottom: 2px;">Açıklama</label>
+                        <input type="text" id="editExpenseDesc" placeholder="Açıklama" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px;">
+                    <button type="button" onclick="closeEditModal()" style="background: #e5e7eb; color: #374151; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">İptal</button>
+                    <button type="submit" style="background: #047857; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Güncellemeyi Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- ANA İÇERİK ALANI -->
     <div style="width: 100%; max-width: 100%; margin: 0 auto; padding: 8px;">
         
@@ -110,7 +176,7 @@
             </div>
         </div>
 
-        <!-- MERKEZ STOK ÇIKIŞ FORMU (SADECE MERKEZDE GÖRÜNÜR) -->
+        <!-- MERKEZ STOK ÇIKIŞ FORMU -->
         <div id="stockOutCardContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
             <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkez Stok Çıkışı Yap</h3>
             <form id="stockOutForm" style="display: flex; flex-direction: column; gap: 8px;">
@@ -292,7 +358,7 @@
             </div>
 
             <div style="width: 100%; overflow-x: auto;">
-                <table style="width: 100%; min-width: 900px; border-collapse: collapse; font-size: 10px;">
+                <table style="width: 100%; min-width: 950px; border-collapse: collapse; font-size: 10px;">
                     <thead>
                         <tr style="background: #fffbeb; color: #78350f;">
                             <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
@@ -304,6 +370,7 @@
                             <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600; color: #047857;">NET CİRO</th>
+                            <th id="thActionsHeader" style="padding: 6px; text-align: center; font-weight: 600; display: none;">İŞLEMLER</th>
                         </tr>
                     </thead>
                     <tbody id="allReportsTableBody"></tbody>
@@ -363,7 +430,7 @@
         let allStockCache = [];
         let currentSelectedBranch = localStorage.getItem('sweet_waffle_active_branch') || '';
         let pendingBranchTarget = '';
-        let selectedMonthFilter = ''; // Seçilen YYYY-MM filtresi
+        let selectedMonthFilter = ''; 
 
         const monthNamesTr = {
             "01": "Ocak", "02": "Şubat", "03": "Mart", "04": "Nisan", 
@@ -440,11 +507,13 @@
                 document.getElementById('stockOutCardContainer').style.display = 'block';
                 document.getElementById('stockSectionHeading').innerText = "Merkez Stok Çıkışları Geçmişi";
                 document.getElementById('filterStockBranch').style.display = 'inline-block';
+                document.getElementById('thActionsHeader').style.display = 'table-cell';
             } else {
                 document.getElementById('formCardContainer').style.display = 'block';
                 document.getElementById('stockOutCardContainer').style.display = 'none';
                 document.getElementById('stockSectionHeading').innerText = "Merkeften Gelen Stok Listesi";
                 document.getElementById('filterStockBranch').style.display = 'none';
+                document.getElementById('thActionsHeader').style.display = 'none';
             }
             document.getElementById('stockOutTableContainer').style.display = 'block';
         }
@@ -555,7 +624,7 @@
             let monthsSet = new Set();
             branchData.forEach(row => {
                 if (row.date && row.date.length >= 7) {
-                    monthsSet.add(row.date.substring(0, 7)); // YYYY-MM
+                    monthsSet.add(row.date.substring(0, 7)); 
                 }
             });
 
@@ -653,6 +722,17 @@
 
                     const tr = document.createElement('tr');
                     tr.style.borderBottom = '1px solid #f3f4f6';
+                    
+                    let actionButtonsHtml = '';
+                    if (currentSelectedBranch === 'Merkez') {
+                        actionButtonsHtml = `
+                            <td style="padding: 6px; text-align: center; white-space: nowrap;">
+                                <button type="button" onclick='openEditModal(${JSON.stringify(row)})' style="background: #2563eb; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
+                                <button type="button" onclick="deleteReport(${row.id})" style="background: #dc2626; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
+                            </td>
+                        `;
+                    }
+
                     tr.innerHTML = `
                         <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
                         <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
@@ -663,10 +743,12 @@
                         <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
                         <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
                         <td style="padding: 6px; font-weight: bold; color: #047857;">${formatMoney(rowNetRevenue)}</td>
+                        ${actionButtonsHtml}
                     `;
                     tbody.appendChild(tr);
                 });
 
+                let colspanVal = currentSelectedBranch === 'Merkez' ? '10' : '9';
                 tfoot.innerHTML = `
                     <tr>
                         <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
@@ -677,10 +759,12 @@
                         <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
                         <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
                         <td style="padding: 6px; color: #047857;">${formatMoney(totalNetRevenue)}</td>
+                        ${currentSelectedBranch === 'Merkez' ? '<td></td>' : ''}
                     </tr>
                 `;
             } else {
-                tbody.innerHTML = `<tr><td colspan="9" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
+                let colspanVal = currentSelectedBranch === 'Merkez' ? '10' : '9';
+                tbody.innerHTML = `<tr><td colspan="${colspanVal}" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
             }
 
             document.getElementById('statTotalCash').innerText = formatMoney(totalCash);
@@ -701,6 +785,82 @@
             document.getElementById('sumYemeksepeti').innerText = formatMoney(sumYemeksepeti);
             document.getElementById('sumGetir').innerText = formatMoney(sumGetir);
             document.getElementById('sumMigros').innerText = formatMoney(sumMigros);
+        }
+
+        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI ---
+        function openEditModal(row) {
+            if (currentSelectedBranch !== 'Merkez') return;
+            document.getElementById('editReportId').value = row.id;
+            document.getElementById('editBranch').value = row.branch || '';
+            document.getElementById('editDate').value = row.date || '';
+            document.getElementById('editCash').value = row.cash || '';
+            document.getElementById('editBank').value = row.bank || '';
+            document.getElementById('editPluxee').value = row.platform_pluxee || '';
+            document.getElementById('editEdenred').value = row.platform_edenred || '';
+            document.getElementById('editMultiNet').value = row.platform_multinet || '';
+            document.getElementById('editSetcard').value = row.platform_setcard || '';
+            document.getElementById('editMetropol').value = row.platform_metropol || '';
+            document.getElementById('editToken').value = row.platform_token || '';
+            document.getElementById('editTrendyol').value = row.platform_trendyol || '';
+            document.getElementById('editYemeksepeti').value = row.platform_yemeksepeti || '';
+            document.getElementById('editGetir').value = row.platform_getir || '';
+            document.getElementById('editMigros').value = row.platform_migros || '';
+            document.getElementById('editExpense').value = row.expense || '';
+            document.getElementById('editExpenseDesc').value = row.expense_desc || '';
+
+            document.getElementById('editReportModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editReportModal').style.display = 'none';
+        }
+
+        document.getElementById('editReportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (currentSelectedBranch !== 'Merkez') return;
+
+            const id = document.getElementById('editReportId').value;
+            const payload = {
+                date: document.getElementById('editDate').value,
+                cash: parseFloat(document.getElementById('editCash').value) || 0,
+                bank: parseFloat(document.getElementById('editBank').value) || 0,
+                platform_pluxee: parseFloat(document.getElementById('editPluxee').value) || 0,
+                platform_edenred: parseFloat(document.getElementById('editEdenred').value) || 0,
+                platform_multinet: parseFloat(document.getElementById('editMultiNet').value) || 0,
+                platform_setcard: parseFloat(document.getElementById('editSetcard').value) || 0,
+                platform_metropol: parseFloat(document.getElementById('editMetropol').value) || 0,
+                platform_token: parseFloat(document.getElementById('editToken').value) || 0,
+                platform_trendyol: parseFloat(document.getElementById('editTrendyol').value) || 0,
+                platform_yemeksepeti: parseFloat(document.getElementById('editYemeksepeti').value) || 0,
+                platform_getir: parseFloat(document.getElementById('editGetir').value) || 0,
+                platform_migros: parseFloat(document.getElementById('editMigros').value) || 0,
+                expense: parseFloat(document.getElementById('editExpense').value) || 0,
+                expense_desc: document.getElementById('editExpenseDesc').value || ''
+            };
+
+            try {
+                const { error } = await supabaseClient.from('reports').update(payload).eq('id', id);
+                if (error) throw error;
+                alert('Rapor başarıyla güncellendi.');
+                closeEditModal();
+                fetchAllReports();
+            } catch (err) {
+                alert('Güncelleme başarısız: ' + err.message);
+            }
+        });
+
+        async function deleteReport(id) {
+            if (currentSelectedBranch !== 'Merkez') return;
+            if (!confirm('Bu raporu kalıcı olarak silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const { error } = await supabaseClient.from('reports').delete().eq('id', id);
+                if (error) throw error;
+                alert('Rapor başarıyla silindi.');
+                fetchAllReports();
+            } catch (err) {
+                alert('Silme işlemi başarısız: ' + err.message);
+            }
         }
 
         function renderStocks() {
