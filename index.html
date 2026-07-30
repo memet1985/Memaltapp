@@ -256,10 +256,10 @@
             </div>
         </div>
 
-        <!-- ŞUBE QR KODLARI YÖNETİM ALANI -->
+        <!-- ŞUBE QR KODLARI YÖNETİM ALANI (MOBİL & TABLET UYUMLU) -->
         <div class="card" style="background: #fffdf9; border: 2px solid var(--waffle-gold);">
-            <strong style="font-size: 12px; color: var(--waffle-dark); display: block; margin-bottom: 5px;">🖼️ Şube Konum Bazlı QR Kodlar (JPG İndir)</strong>
-            <p style="font-size: 11px; color: #666; margin-bottom:8px;">Şubelere asılacak resmi konum ve şube doğrulama QR kodlarını doğrudan JPG olarak indirebilirsiniz:</p>
+            <strong style="font-size: 12px; color: var(--waffle-dark); display: block; margin-bottom: 5px;">🖼️ Şube Konum Bazlı QR Kodlar (Mobil Uyumlu JPG İndir)</strong>
+            <p style="font-size: 11px; color: #666; margin-bottom:8px;">Şubelere asılacak resmi QR kodları ister telefondan ister bilgisayardan doğrudan indirebilirsiniz:</p>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                 <button class="btn btn-branch" style="width: auto; padding: 8px 12px; margin: 0; font-size: 11px;" onclick="downloadQrJpg('Kurtköy')">📍 Kurtköy QR (JPG)</button>
                 <button class="btn btn-branch" style="width: auto; padding: 8px 12px; margin: 0; font-size: 11px;" onclick="downloadQrJpg('Soğanlık')">📍 Soğanlık QR (JPG)</button>
@@ -447,7 +447,7 @@
         }
     }
 
-    // Sorunsuz çalışan Garantili JPG QR Kod İndirme Fonksiyonu
+    // MOBİL VE TABLET UYUMLU GARANTİLİ JPG QR KOD İNDİRME FONKSİYONU
     function downloadQrJpg(branchKey) {
         const branchInfo = database[branchKey];
         if (!branchInfo) return;
@@ -469,9 +469,24 @@
             ctx.drawImage(imageObj, 0, 0, 500, 500);
             
             let imageUri = canvas.toDataURL("image/jpeg", 1.0);
+            let filename = `SweetWaffle_${branchKey}_Subesi_Konum_QR.jpg`;
+
+            // iOS (iPhone, iPad) cihaz tespiti
+            const isIOS = /ipad|iphone|ipod/i.test(navigator.userAgent.toLowerCase());
+
+            if (isIOS) {
+                // Mobilde blob/link indirmeleri kısıtlı olduğundan yeni sekmede açılır (Üzerine basılı tutup "Fotoğraflara Kaydet" denilebilir)
+                const newWindow = window.open(imageUri, '_blank');
+                if (!newWindow) {
+                    window.location.href = imageUri;
+                }
+                return;
+            }
+
+            // Android ve Masaüstü Tarayıcılar İçin İndirme Tetikleme
             let downloadLink = document.createElement("a");
             downloadLink.href = imageUri;
-            downloadLink.download = `SweetWaffle_${branchKey}_Subesi_Konum_QR.jpg`;
+            downloadLink.download = filename;
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
