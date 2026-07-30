@@ -361,9 +361,10 @@
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // Güncel şube GPS koordinatları sisteme işlendi
     const database = {
-        "Kurtköy": { staff: [{ name: "Nesrin POLAT", pass: "1234" }, { name: "Mehmet Demir", pass: "1234" }], lat: 40.91417, lng: 29.29917 },
-        "Soğanlık": { staff: [{ name: "Can Çelik", pass: "1234" }, { name: "Elif Demir", pass: "1234" }], lat: 40.91270, lng: 29.19200 },
+        "Kurtköy": { staff: [{ name: "Nesrin POLAT", pass: "1234" }, { name: "Mehmet Demir", pass: "1234" }], lat: 40.916286, lng: 29.303978 },
+        "Soğanlık": { staff: [{ name: "Can Çelik", pass: "1234" }, { name: "Elif Demir", pass: "1234" }], lat: 40.914869, lng: 29.203213 },
         "Yeni": { staff: [{ name: "Burak Şahin", pass: "1234" }, { name: "Zeynep Koç", pass: "1234" }], lat: 41.00820, lng: 28.97840 }
     };
 
@@ -824,7 +825,6 @@
         }
     }
 
-    // GÜNCELLENMİŞ MOBİL UYUMLU VE ESNEK GPS KONUM DOĞRULAMA
     function openQrScannerWithGpsCheck() {
         if (!navigator.geolocation) { 
             alert("Tarayıcınız veya cihazınız konum servislerini desteklemiyor."); 
@@ -841,7 +841,7 @@
             
             let dist = calculateDistance(userLat, userLng, targetLat, targetLng);
             
-            // Mobilde GPS sapmaları göz önüne alınarak tolerans mesafesi 750 metreye çıkarıldı
+            // Tolerans mesafesi 750 metre
             if (dist > 750) { 
                 alert(`Şube konumundan uzaktasınız! Ölçülen uzaklık: ${Math.round(dist)}m. (İzin verilen maksimum mesafe: 750m)`); 
                 return; 
