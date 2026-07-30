@@ -411,8 +411,8 @@
                             <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">ONLİNE PLATFORM</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">MASRAF & AÇIKLAMA</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600; color: #047857;">KALAN NAKİT</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600; background-color: #fef2f2; border: 1px dashed #fca5a5; color: #b91c1c;">MASRAF & AÇIKLAMA</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600; background-color: #ecfdf5; border: 1px dashed #6ee7b7; color: #047857;">KALAN NAKİT</th>
                             <th id="thActionsHeader" style="padding: 6px; text-align: center; font-weight: 600; display: none;">İŞLEMLER</th>
                         </tr>
                     </thead>
@@ -789,8 +789,8 @@
                         <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
                         <td style="padding: 6px; color: #7c3aed;">${formatMoney(rowOnlineTotal)}</td>
                         <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
-                        <td style="padding: 6px; color: #dc2626;">${formatMoney(rawE)}${expDesc}</td>
-                        <td style="padding: 6px; font-weight: bold; color: #047857;">${formatMoney(rowRemainingCash)}</td>
+                        <td style="padding: 6px; color: #dc2626; background-color: #fef2f2; border-left: 1px dashed #fca5a5; border-right: 1px dashed #fca5a5;">${formatMoney(rawE)}${expDesc}</td>
+                        <td style="padding: 6px; font-weight: bold; color: #047857; background-color: #ecfdf5; border-left: 1px dashed #6ee7b7; border-right: 1px dashed #6ee7b7;">${formatMoney(rowRemainingCash)}</td>
                         ${actionButtonsHtml}
                     `;
                     tbody.appendChild(tr);
@@ -804,8 +804,8 @@
                         <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
                         <td style="padding: 6px; color: #7c3aed;">${formatMoney(totalOnline)}</td>
                         <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
-                        <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
-                        <td style="padding: 6px; color: #047857;">${formatMoney(totalCash - totalExpense)}</td>
+                        <td style="padding: 6px; color: #dc2626; background-color: #fef2f2;">${formatMoney(totalExpense)}</td>
+                        <td style="padding: 6px; color: #047857; background-color: #ecfdf5;">${formatMoney(totalCash - totalExpense)}</td>
                         ${currentSelectedBranch === 'Merkez' ? '<td></td>' : ''}
                     </tr>
                 `;
@@ -1004,7 +1004,7 @@
                         <td style="padding: 6px; color: #4b5563;">${dateStr}</td>
                         <td style="padding: 6px; font-weight: bold; color: #1d4ed8;">${item.target_branch || '-'}</td>
                         <td style="padding: 6px; font-weight: bold; color: #78350f;">${item.stock_name || '-'}</td>
-                        <td style="padding: 6px; color: #1f2937;">${item.stock_amount || 0}</td>
+                        <td style="padding: 6px; color: #1f2937; font-weight: bold;">${item.stock_amount || 0} ₺</td>
                         <td style="padding: 6px; color: #047857; font-weight: bold;">${item.stock_unit || '-'}</td>
                         ${stockActionHtml}
                     `;
