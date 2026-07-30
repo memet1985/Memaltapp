@@ -695,9 +695,14 @@
 
                     const rowPlatformTotal = pPluxee + pEdenred + pMultiNet + pSetcard + pMetropol + pToken;
                     const rowOnlineTotal = pTrendyol + pYemeksepeti + pGetir + pMigros;
-                    const rawR = rawC + rawB;
+                    
+                    // Güncellenen Hesaplama Formülleri:
+                    // Toplam Ciro = Nakit + Banka + Yemek Kartları + Online Platform
+                    const rawR = rawC + rawB + rowPlatformTotal + rowOnlineTotal;
                     const rawE = cleanVal(row.expense);
-                    const rowNetRevenue = rawR - rawE;
+                    
+                    // Net Ciro = Nakit - Masraflar
+                    const rowNetRevenue = rawC - rawE;
                     const expDesc = row.expense_desc ? ` (${row.expense_desc})` : '';
 
                     totalCash += rawC; 
@@ -748,7 +753,6 @@
                     tbody.appendChild(tr);
                 });
 
-                let colspanVal = currentSelectedBranch === 'Merkez' ? '10' : '9';
                 tfoot.innerHTML = `
                     <tr>
                         <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
@@ -758,7 +762,7 @@
                         <td style="padding: 6px; color: #7c3aed;">${formatMoney(totalOnline)}</td>
                         <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
                         <td style="padding: 6px; color: #dc2626;">${formatMoney(totalExpense)}</td>
-                        <td style="padding: 6px; color: #047857;">${formatMoney(totalNetRevenue)}</td>
+                        <td style="padding: 6px; color: #047857;">${formatMoney(totalCash - totalExpense)}</td>
                         ${currentSelectedBranch === 'Merkez' ? '<td></td>' : ''}
                     </tr>
                 `;
@@ -909,21 +913,24 @@
                 filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
             }
             let dataToExport = filteredData.map(row => {
+                const cash = cleanVal(row.cash);
+                const bank = cleanVal(row.bank);
                 const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
                 const oTotal = cleanVal(row.platform_trendyol) + cleanVal(row.platform_yemeksepeti) + cleanVal(row.platform_getir) + cleanVal(row.platform_migros);
-                const ciro = cleanVal(row.cash) + cleanVal(row.bank);
+                
+                const ciro = cash + bank + pTotal + oTotal;
                 const expense = cleanVal(row.expense);
                 return {
                     "Şube": row.branch || '',
                     "Tarih": row.date || '',
-                    "Nakit": cleanVal(row.cash),
-                    "Banka": cleanVal(row.bank),
+                    "Nakit": cash,
+                    "Banka": bank,
                     "Yemek Kartları": pTotal,
                     "Online Platform": oTotal,
                     "Ciro": ciro,
                     "Masraf": expense,
                     "Masraf Açıklaması": row.expense_desc || '',
-                    "Net Ciro": ciro - expense
+                    "Net Ciro": cash - expense
                 };
             });
 
@@ -945,17 +952,20 @@
                 filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
             }
             let tableRows = filteredData.map(row => {
+                const cash = cleanVal(row.cash);
+                const bank = cleanVal(row.bank);
                 const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
                 const oTotal = cleanVal(row.platform_trendyol) + cleanVal(row.platform_yemeksepeti) + cleanVal(row.platform_getir) + cleanVal(row.platform_migros);
-                const ciro = cleanVal(row.cash) + cleanVal(row.bank);
+                
+                const ciro = cash + bank + pTotal + oTotal;
                 const expense = cleanVal(row.expense);
-                const netCiro = ciro - expense;
+                const netCiro = cash - expense;
                 const expInfo = expense + (row.expense_desc ? ` (${row.expense_desc})` : '');
                 return [
                     row.branch || '',
                     row.date || '',
-                    formatMoney(row.cash),
-                    formatMoney(row.bank),
+                    formatMoney(cash),
+                    formatMoney(bank),
                     formatMoney(pTotal),
                     formatMoney(oTotal),
                     formatMoney(ciro),
