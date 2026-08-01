@@ -923,16 +923,13 @@
 
       async function deleteReport(id) {
     if (currentSelectedBranch !== 'Merkez') return;
-    
-    // Tarayıcının varsayılan confirm penceresi yerine şık bir akış veya doğrudan işlem
     if (!confirm('Bu raporu kalıcı olarak silmek istediğinize emin misiniz?')) return;
 
     try {
         const { error } = await supabaseClient.from('reports').delete().eq('id', id);
         if (error) throw error;
         
-        // Standart alert yerine arayüzde şık bir başarı mesajı gösterip listeyi yenileyebilirsiniz
-        showNotification('Rapor başarıyla silindi.', 'success');
+        // Başarılı olduğunda hiçbir uyarı penceresi açmadan doğrudan listeyi yeniler
         fetchAllReports();
     } catch (err) {
         alert('Silme işlemi başarısız: ' + err.message);
