@@ -923,18 +923,16 @@
 
     async function deleteReport(id) {
         if (currentSelectedBranch !== 'Merkez') return;
-        // if (!confirm('Bu raporu kalıcı olarak silmek istediğinize emin misiniz?')) return; // Bu satırı devre dışı bıraktık
 
         try {
             const { error } = await supabaseClient.from('reports').delete().eq('id', id);
             if (error) throw error;
-            
-            // alert satırı da zaten kapalı, direkt listeyi günceller
             fetchAllReports();
         } catch (err) {
             alert('Silme işlemi başarısız: ' + err.message);
         }
     }
+
         // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (STOK) ---
         function openEditStockModal(item) {
             if (currentSelectedBranch !== 'Merkez') return;
@@ -984,7 +982,6 @@
                 alert('Stok çıkışı başarıyla silindi.');
                 fetchAllStocks();
             } catch (err) {
-              //  alert('Silme işlemi başarısız: ' + err.message);
             }
         }
 
