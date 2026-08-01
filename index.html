@@ -20,6 +20,8 @@
         html, body { width: 100%; max-width: 100vw; overflow-x: hidden; margin: 0; padding: 0; background-color: #f9fafb; }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
+        .filter-input { width: 100%; padding: 3px 4px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 9px; background: #fff; font-weight: normal; color: #1f2937; margin-top: 4px; }
+        .filter-input:focus { outline: none; border-color: #78350f; }
     </style>
 </head>
 <body class="font-sans pb-10">
@@ -403,14 +405,35 @@
             <div style="width: 100%; overflow-x: auto;">
                 <table style="width: 100%; min-width: 950px; border-collapse: collapse; font-size: 10px;">
                     <thead>
-                        <tr style="background: #fffbeb; color: #78350f;">
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">ONLİNE PLATFORM</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
+                        <tr style="background: #fffbeb; color: #78350f; vertical-align: top;">
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">
+                                ŞUBE
+                                <input type="text" id="filterColBranch" oninput="renderReports()" placeholder="Şube ara..." class="filter-input">
+                            </th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">
+                                TARİH
+                                <input type="text" id="filterColDate" oninput="renderReports()" placeholder="Tarih ara..." class="filter-input">
+                            </th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">
+                                NAKİT
+                                <input type="text" id="filterColCash" oninput="renderReports()" placeholder="Nakit ara..." class="filter-input">
+                            </th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">
+                                BANKA
+                                <input type="text" id="filterColBank" oninput="renderReports()" placeholder="Banka ara..." class="filter-input">
+                            </th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">
+                                YEMEK KARTLARI
+                                <input type="text" id="filterColPlatforms" oninput="renderReports()" placeholder="Yemek k. ara..." class="filter-input">
+                            </th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">
+                                ONLİNE PLATFORM
+                                <input type="text" id="filterColOnline" oninput="renderReports()" placeholder="Online ara..." class="filter-input">
+                            </th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">
+                                CİRO
+                                <input type="text" id="filterColRevenue" oninput="renderReports()" placeholder="Ciro ara..." class="filter-input">
+                            </th>
                             <th style="padding: 6px; text-align: left; font-weight: 600; background-color: #fef2f2; border: 1px dashed #fca5a5; color: #b91c1c;">MASRAF & AÇIKLAMA</th>
                             <th style="padding: 6px; text-align: left; font-weight: 600; background-color: #ecfdf5; border: 1px dashed #6ee7b7; color: #047857;">KALAN NAKİT</th>
                             <th id="thActionsHeader" style="padding: 6px; text-align: center; font-weight: 600; display: none;">İŞLEMLER</th>
@@ -722,6 +745,36 @@
 
             if (selectedMonthFilter) {
                 filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
+            }
+
+            // Sütun filtreleme değerlerini al
+            const fBranch = document.getElementById('filterColBranch') ? document.getElementById('filterColBranch').value.trim().toLowerCase() : '';
+            const fDate = document.getElementById('filterColDate') ? document.getElementById('filterColDate').value.trim().toLowerCase() : '';
+            const fCash = document.getElementById('filterColCash') ? document.getElementById('filterColCash').value.trim().toLowerCase() : '';
+            const fBank = document.getElementById('filterColBank') ? document.getElementById('filterColBank').value.trim().toLowerCase() : '';
+            const fPlatforms = document.getElementById('filterColPlatforms') ? document.getElementById('filterColPlatforms').value.trim().toLowerCase() : '';
+            const fOnline = document.getElementById('filterColOnline') ? document.getElementById('filterColOnline').value.trim().toLowerCase() : '';
+            const fRevenue = document.getElementById('filterColRevenue') ? document.getElementById('filterColRevenue').value.trim().toLowerCase() : '';
+
+            // Sütun filtrelerini uygula
+            if (fBranch || fDate || fCash || fBank || fPlatforms || fOnline || fRevenue) {
+                filteredData = filteredData.filter(row => {
+                    const rawC = cleanVal(row.cash);
+                    const rawB = cleanVal(row.bank);
+                    const rowPlatformTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
+                    const rowOnlineTotal = cleanVal(row.platform_trendyol) + cleanVal(row.platform_yemeksepeti) + cleanVal(row.platform_getir) + cleanVal(row.platform_migros);
+                    const rawR = rawC + rawB + rowPlatformTotal + rowOnlineTotal;
+
+                    const matchBranch = !fBranch || (row.branch && row.branch.toLowerCase().includes(fBranch));
+                    const matchDate = !fDate || (row.date && row.date.toLowerCase().includes(fDate));
+                    const matchCash = !fCash || rawC.toString().includes(fCash) || formatMoney(rawC).toLowerCase().includes(fCash);
+                    const matchBank = !fBank || rawB.toString().includes(fBank) || formatMoney(rawB).toLowerCase().includes(fBank);
+                    const matchPlatforms = !fPlatforms || rowPlatformTotal.toString().includes(fPlatforms) || formatMoney(rowPlatformTotal).toLowerCase().includes(fPlatforms);
+                    const matchOnline = !fOnline || rowOnlineTotal.toString().includes(fOnline) || formatMoney(rowOnlineTotal).toLowerCase().includes(fOnline);
+                    const matchRevenue = !fRevenue || rawR.toString().includes(fRevenue) || formatMoney(rawR).toLowerCase().includes(fRevenue);
+
+                    return matchBranch && matchDate && matchCash && matchBank && matchPlatforms && matchOnline && matchRevenue;
+                });
             }
 
             let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalOnline = 0, totalRevenue = 0, totalExpense = 0, totalRemainingCash = 0;
@@ -1094,7 +1147,7 @@
             let tableRows = filteredData.map(row => {
                 const cash = cleanVal(row.cash);
                 const bank = cleanVal(row.bank);
-                const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
+                const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenref) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
                 const oTotal = cleanVal(row.platform_trendyol) + cleanVal(row.platform_yemeksepeti) + cleanVal(row.platform_getir) + cleanVal(row.platform_migros);
                 
                 const ciro = cash + bank + pTotal + oTotal;
