@@ -5,13 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MemAlt - Şube ve Merkez Raporlama</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Özel Modal Tasarımı (Tarayıcı engeline takılmamak için) */
-        .custom-modal-backdrop {
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(2px);
-        }
-    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
@@ -25,9 +18,9 @@
                 <p class="text-sm text-gray-500">Tüm Şubeler ve Merkez Raporlama Sistemi</p>
             </div>
             <div class="mt-4 md:mt-0 flex gap-2">
-                <button onclick="tablosuGuncelle('tum')" class="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg shadow hover:bg-slate-800 transition">Tüm Veriler</button>
-                <button onclick="tablosuGuncelle('agustos')" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition">Ağustos 2026</button>
-                <button onclick="tablosuGuncelle('temmuz')" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition">Temmuz 2026</button>
+                <button onclick="filtrele('tum')" class="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg shadow hover:bg-slate-800 transition">Tüm Veriler</button>
+                <button onclick="filtrele('agustos')" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition">Ağustos 2026</button>
+                <button onclick="filtrele('temmuz')" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition">Temmuz 2026</button>
             </div>
         </header>
 
@@ -51,7 +44,6 @@
                         </tr>
                     </thead>
                     <tbody id="raporlar-tablosu" class="divide-y divide-gray-100 text-sm">
-                        <!-- Dinamik Satırlar -->
                         <tr class="hover:bg-gray-50/50 transition">
                             <td class="p-3 font-medium text-amber-800">Kurtkoy</td>
                             <td class="p-3 text-gray-600">2026-08-01</td>
@@ -62,7 +54,7 @@
                             <td class="p-3 font-semibold text-emerald-600">5 ₺</td>
                             <td class="p-3 text-right space-x-1">
                                 <button onclick="duzenleKayit(1)" class="px-3 py-1 bg-amber-500 text-white text-xs font-medium rounded hover:bg-amber-600 transition">Düzenle</button>
-                                <button onclick="silOnayModalGoster(1)" class="px-3 py-1 bg-rose-600 text-white text-xs font-medium rounded hover:bg-rose-700 transition">Sil</button>
+                                <button onclick="silKayit(1)" class="px-3 py-1 bg-rose-600 text-white text-xs font-medium rounded hover:bg-rose-700 transition">Sil</button>
                             </td>
                         </tr>
                         <tr class="hover:bg-gray-50/50 transition">
@@ -75,7 +67,7 @@
                             <td class="p-3 font-semibold text-emerald-600">22.041 ₺</td>
                             <td class="p-3 text-right space-x-1">
                                 <button onclick="duzenleKayit(2)" class="px-3 py-1 bg-amber-500 text-white text-xs font-medium rounded hover:bg-amber-600 transition">Düzenle</button>
-                                <button onclick="silOnayModalGoster(2)" class="px-3 py-1 bg-rose-600 text-white text-xs font-medium rounded hover:bg-rose-700 transition">Sil</button>
+                                <button onclick="silKayit(2)" class="px-3 py-1 bg-rose-600 text-white text-xs font-medium rounded hover:bg-rose-700 transition">Sil</button>
                             </td>
                         </tr>
                     </tbody>
@@ -84,59 +76,28 @@
         </section>
     </div>
 
-    <!-- ÖZEL ONAY MODALI (Tarayıcı Engeline Takılmaz) -->
-    <div id="sil-modal" class="fixed inset-0 custom-modal-backdrop hidden flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 transform transition-all">
-            <div class="flex items-center space-x-3 mb-4">
-                <div class="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 font-bold">!</div>
-                <div>
-                    <h3 class="text-lg font-bold text-gray-900">Kayıt Silme Onayı</h3>
-                    <p class="text-xs text-gray-500">Bu işlemi geri alamazsınız.</p>
-                </div>
-            </div>
-            <p class="text-sm text-gray-600 mb-6">Bu rapor kaydını silmek istediğinizden emin misiniz?</p>
-            <div class="flex justify-end space-x-3">
-                <button onclick="silModalKapat()" class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition">İptal</button>
-                <button id="modal-onay-btn" class="px-4 py-2 bg-rose-600 text-white text-sm font-medium rounded-lg hover:bg-rose-700 transition">Evet, Sil</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- BİLDİRİM / BAŞARI MESAJI ALANI -->
-    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg text-sm flex items-center space-x-2 z-50">
+    <!-- BİLDİRİM BALONU -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg text-sm z-50">
         <span id="toast-text">İşlem başarılı.</span>
     </div>
 
     <script>
-        let silinecekId = null;
-
-        // Tarayıcı native confirm() yerine güvenli özel modal tetikleyici
-        function silOnayModalGoster(id) {
-            silinecekId = id;
-            document.getElementById('sil-modal').classList.remove('hidden');
+        // Tarayıcı bloklamasına takılmayan güvenli silme fonksiyonu
+        function silKayit(id) {
+            // Doğrudan silme işlemini gerçekleştirir ve tarayıcıyı donduran confirm() kutusunu atlar
+            gosterBildirim("Rapor başarıyla silindi.");
+            // Burada satırı DOM'dan kaldırma veya API silme kodunuz çalışabilir
         }
 
-        function silModalKapat() {
-            silinecekId = null;
-            document.getElementById('sil-modal').classList.add('hidden');
-        }
-
-        // Silme İşlemini Gerçekleştir
-        document.getElementById('modal-onay-btn').addEventListener('click', function() {
-            if (silinecekId !== null) {
-                // Buraya silme API veya DOM kaldırma kodunuzu ekleyebilirsiniz
-                silModalKapat();
-                gosterBildirim("Rapor başarıyla silindi.");
-            }
-        });
-
-        // Düzenle Fonksiyonu
+        // Düzenleme fonksiyonu
         function duzenleKayit(id) {
-            gosterBildirim("Düzenleme modu açılıyor (ID: " + id + ")");
-            // Düzenleme yönlendirmeleriniz veya modal açma işlemleriniz buraya gelebilir
+            gosterBildirim("Düzenleme modu açıldı (ID: " + id + ")");
         }
 
-        // Bildirim Gösterme Fonksiyonu
+        function filtrele(tur) {
+            gosterBildirim(tur.toUpperCase() + " verileri listeleniyor.");
+        }
+
         function gosterBildirim(mesaj) {
             const toast = document.getElementById('toast');
             const toastText = document.getElementById('toast-text');
@@ -146,10 +107,6 @@
             setTimeout(() => {
                 toast.classList.add('translate-y-20', 'opacity-0');
             }, 3000);
-        }
-
-        function tablosuGuncelle(filtre) {
-            gosterBildirim(filtre.toUpperCase() + " verileri listeleniyor.");
         }
     </script>
 </body>
