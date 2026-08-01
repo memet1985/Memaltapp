@@ -67,23 +67,24 @@
                     </tr>
                 </thead>
                 <tbody id="raporListesi" class="bg-white divide-y divide-gray-200">
-                    <!-- Dinamik Veriler Buraya Gelecek -->
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">Veriler yükleniyor veya kayıt bulunamadı...</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // Şube ve ay filtreleme eventleri eklenebilir
-        document.getElementById('subeFiltre').addEventListener('change', verileriFiltrele);
-        document.getElementById('ayFiltre').addEventListener('change', verileriFiltrele);
+        document.getElementById('subeFiltre').addEventListener('change', verileriGuncelle);
+        document.getElementById('ayFiltre').addEventListener('change', verileriGuncelle);
 
-        function verileriFiltrele() {
+        function verileriGuncelle() {
             const secilenSube = document.getElementById('subeFiltre').value;
             const secilenAy = document.getElementById('ayFiltre').value;
             
-            // Burada localStorage veya veritabanından gelen verileri seçilen kriterlere göre filtreleyip tabloya yazdırabilirsiniz.
-            console.log("Filtrelenen Şube:", secilenSube, "Seçilen Ay:", secilenAy);
+            // localStorage veya veri kaynağınızdan raporları çekme alanı
+            // Örnek mantık entegrasyonu buraya yapılabilir
         }
     </script>
 </body>
