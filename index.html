@@ -334,6 +334,28 @@
             </form>
         </div>
 
+        <!-- ŞUBELER İÇİN ALT KISIMDAKİ ANLIK (GÜNLÜK) İŞLEMLER LİSTESİ -->
+        <div id="branchDailyLiveContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
+            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Bugünkü Yapılan İşlemler (Ertesi Gün Saat 04:00'e Kadar Aktif)</h3>
+            <div style="width: 100%; overflow-x: auto;">
+                <table style="width: 100%; min-width: 800px; border-collapse: collapse; font-size: 10px;">
+                    <thead>
+                        <tr style="background: #fffbeb; color: #78350f;">
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH / SAAT</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">ONLİNE PLATFORM</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
+                            <th style="padding: 6px; text-align: left; font-weight: 600; background-color: #fef2f2; border: 1px dashed #fca5a5; color: #b91c1c;">MASRAF & AÇIKLAMA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="branchDailyLiveBody"></tbody>
+                    <tfoot id="branchDailyLiveFooter" style="background: #fffbeb; font-weight: bold; border-top: 1px solid #fde68a;"></tfoot>
+                </table>
+            </div>
+        </div>
+
         <!-- PLATFORM DETAYLARI TOPLAMLARI -->
         <div id="platformTotalsContainer" style="display: none; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px;">
             <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
@@ -394,7 +416,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
                 <h3 id="tableHeaderTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0; text-transform: uppercase;">Raporlar Listesi</h3>
                 
-                <!-- YENİ EKLENEN MERKEZ ŞUBE FİLTRELERİ -->
+                <!-- MERKEZ ŞUBE FİLTRELERİ -->
                 <div id="centerBranchFilters" style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
                     <select id="filterReportBranch" onchange="renderReports()" style="padding: 4px 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 10px; background: #fff;">
                         <option value="">Tüm Şubeler</option>
@@ -560,18 +582,20 @@
 
             if (branchName === 'Merkez') {
                 document.getElementById('formCardContainer').style.display = 'none';
+                document.getElementById('branchDailyLiveContainer').style.display = 'none';
                 document.getElementById('stockOutCardContainer').style.display = 'block';
                 document.getElementById('exportButtonsContainer').style.display = 'flex';
                 document.getElementById('statsCardsContainer').style.display = 'grid';
                 document.getElementById('platformTotalsContainer').style.display = 'grid';
                 document.getElementById('reportsTableContainer').style.display = 'block';
-                document.getElementById('centerBranchFilters').style.display = 'flex'; // Merkezde filtreleri göster
+                document.getElementById('centerBranchFilters').style.display = 'flex';
                 document.getElementById('stockSectionHeading').innerText = "Merkez Stok Çıkışları Geçmişi";
                 document.getElementById('filterStockBranch').style.display = 'inline-block';
                 document.getElementById('thActionsHeader').style.display = 'table-cell';
                 document.getElementById('thStockActionsHeader').style.display = 'table-cell';
             } else {
                 document.getElementById('formCardContainer').style.display = 'block';
+                document.getElementById('branchDailyLiveContainer').style.display = 'block';
                 document.getElementById('stockOutCardContainer').style.display = 'none';
                 document.getElementById('exportButtonsContainer').style.display = 'none';
                 document.getElementById('statsCardsContainer').style.display = 'none';
@@ -599,11 +623,14 @@
 
         async function fetchAllReports() {
             try {
-                const { data, error } = await supabaseClient.from('reports').select('*').order('date', { ascending: false });
+                const { data, error } = await supabaseClient.from('reports').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
                 allDataCache = data || [];
                 renderMonthlyButtons();
                 renderReports();
+                if (currentSelectedBranch && currentSelectedBranch !== 'Merkez') {
+                    renderBranchDailyLive();
+                }
             } catch (err) { console.error('Hata:', err); }
         }
 
@@ -677,8 +704,104 @@
                 document.getElementById('reportDate').valueAsDate = new Date();
                 fetchAllReports();
             } catch (err) {
+                alert('Kayıt başarısız: ' + err.message);
             }
         });
+
+        // Şubeler için 04:00 kuralına göre verileri filtreleyen fonksiyon
+        function renderBranchDailyLive() {
+            const tbody = document.getElementById('branchDailyLiveBody');
+            const tfoot = document.getElementById('branchDailyLiveFooter');
+            if (!tbody || !tfoot) return;
+            tbody.innerHTML = '';
+            tfoot.innerHTML = '';
+
+            if (!currentSelectedBranch || currentSelectedBranch === 'Merkez') return;
+
+            let now = new Date();
+            
+            // Eğer saat 04:00'ten küçükse, "içinde olduğumuz iş günü" bir önceki takvim gününün sabahı 04:00'te başlamıştır.
+            let businessDayStart = new Date(now);
+            if (now.getHours() < 4) {
+                businessDayStart.setDate(businessDayStart.getDate() - 1);
+            }
+            businessDayStart.setHours(4, 0, 0, 0);
+
+            let businessDayEnd = new Date(businessDayStart);
+            businessDayEnd.setDate(businessDayEnd.getDate() + 1); // Ertesi gün saat 04:00
+
+            // İlgili şubeye ait ve aktif zaman aralığındaki kayıtları filtrele
+            let branchRows = allDataCache.filter(row => {
+                if (!row.branch || row.branch.toLowerCase() !== currentSelectedBranch.toLowerCase()) return false;
+                if (!row.created_at) return false;
+                let rowTime = new Date(row.created_at);
+                return rowTime >= businessDayStart && rowTime < businessDayEnd;
+            });
+
+            let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalOnline = 0, totalRevenue = 0, totalExpense = 0;
+
+            if (branchRows.length > 0) {
+                branchRows.forEach(row => {
+                    const rawC = cleanVal(row.cash);
+                    const rawB = cleanVal(row.bank);
+                    
+                    const pPluxee = cleanVal(row.platform_pluxee);
+                    const pEdenred = cleanVal(row.platform_edenred);
+                    const pMultiNet = cleanVal(row.platform_multinet);
+                    const pSetcard = cleanVal(row.platform_setcard);
+                    const pMetropol = cleanVal(row.platform_metropol);
+                    const pToken = cleanVal(row.platform_token);
+                    
+                    const pTrendyol = cleanVal(row.platform_trendyol);
+                    const pYemeksepeti = cleanVal(row.platform_yemeksepeti);
+                    const pGetir = cleanVal(row.platform_getir);
+                    const pMigros = cleanVal(row.platform_migros);
+
+                    const rowPlatformTotal = pPluxee + pEdenred + pMultiNet + pSetcard + pMetropol + pToken;
+                    const rowOnlineTotal = pTrendyol + pYemeksepeti + pGetir + pMigros;
+                    const rawR = rawC + rawB + rowPlatformTotal + rowOnlineTotal;
+                    const rawE = cleanVal(row.expense);
+                    const expDesc = row.expense_desc ? ` (${row.expense_desc})` : '';
+
+                    totalCash += rawC; 
+                    totalBank += rawB; 
+                    totalPlatforms += rowPlatformTotal;
+                    totalOnline += rowOnlineTotal;
+                    totalRevenue += rawR; 
+                    totalExpense += rawE;
+
+                    let timeStr = new Date(row.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                    let fullDateStr = `${row.date || '-'} (${timeStr})`;
+
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = '1px solid #f3f4f6';
+                    tr.innerHTML = `
+                        <td style="padding: 6px; font-weight: bold; color: #4b5563;">${fullDateStr}</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(rawC)}</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
+                        <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
+                        <td style="padding: 6px; color: #7c3aed;">${formatMoney(rowOnlineTotal)}</td>
+                        <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
+                        <td style="padding: 6px; color: #dc2626; background-color: #fef2f2; border-left: 1px dashed #fca5a5; border-right: 1px dashed #fca5a5;">${formatMoney(rawE)}${expDesc}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                tfoot.innerHTML = `
+                    <tr>
+                        <td style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
+                        <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
+                        <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
+                        <td style="padding: 6px; color: #7c3aed;">${formatMoney(totalOnline)}</td>
+                        <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
+                        <td style="padding: 6px; color: #dc2626; background-color: #fef2f2;">${formatMoney(totalExpense)}</td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = `<tr><td colspan="7" style="padding: 12px; text-align: center; color: #9ca3a0;">Bugün henüz veri girilmedi veya önceki günün verileri saat 04:00 itibarıyla sıfırlandı.</td></tr>`;
+            }
+        }
 
         function renderMonthlyButtons() {
             const container = document.getElementById('monthlyButtonsContainer');
@@ -742,13 +865,11 @@
             if (currentSelectedBranch === 'Merkez') {
                 filteredData = allDataCache;
                 
-                // Şube dropdown filtresi uygula
                 const branchFilterVal = document.getElementById('filterReportBranch').value;
                 if (branchFilterVal) {
                     filteredData = filteredData.filter(row => row.branch && row.branch.toLowerCase() === branchFilterVal.toLowerCase());
                 }
 
-                // Tarih input filtresi uygula
                 const dateFilterVal = document.getElementById('filterReportDate').value;
                 if (dateFilterVal) {
                     filteredData = filteredData.filter(row => row.date === dateFilterVal);
@@ -762,8 +883,6 @@
             }
 
             let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalOnline = 0, totalRevenue = 0, totalExpense = 0, totalRemainingCash = 0;
-            let sumPluxee = 0, sumEdenred = 0, sumMultiNet = 0, sumSetcard = 0, sumMetropol = 0, sumToken = 0;
-            let sumTrendyol = 0, sumYemeksepeti = 0, sumGetir = 0, sumMigros = 0;
 
             if (filteredData.length > 0) {
                 filteredData.forEach(row => {
@@ -798,18 +917,6 @@
                     totalRevenue += rawR; 
                     totalExpense += rawE;
                     totalRemainingCash += rowRemainingCash;
-
-                    sumPluxee += pPluxee;
-                    sumEdenred += pEdenred;
-                    sumMultiNet += pMultiNet;
-                    sumSetcard += pSetcard;
-                    sumMetropol += pMetropol;
-                    sumToken += pToken;
-
-                    sumTrendyol += pTrendyol;
-                    sumYemeksepeti += pYemeksepeti;
-                    sumGetir += pGetir;
-                    sumMigros += pMigros;
 
                     const tr = document.createElement('tr');
                     tr.style.borderBottom = '1px solid #f3f4f6';
@@ -858,7 +965,6 @@
             }
         }
 
-        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (RAPOR) ---
         function openEditModal(row) {
             if (currentSelectedBranch !== 'Merkez') return;
             document.getElementById('editReportId').value = row.id;
@@ -932,7 +1038,6 @@
             }
         }
 
-        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (STOK) ---
         function openEditStockModal(item) {
             if (currentSelectedBranch !== 'Merkez') return;
             document.getElementById('editStockId').value = item.id;
@@ -981,6 +1086,7 @@
                 alert('Stok çıkışı başarıyla silindi.');
                 fetchAllStocks();
             } catch (err) {
+                alert('Silme başarısız: ' + err.message);
             }
         }
 
@@ -1033,7 +1139,7 @@
                 });
             } else {
                 let colspanVal = currentSelectedBranch === 'Merkez' ? '6' : '5';
-                stockTbody.innerHTML = `<tr><td colspan="${colspanVal}" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok kaydı bulunguyor.</td></tr>`;
+                stockTbody.innerHTML = `<tr><td colspan="${colspanVal}" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok kaydı bulunmuyor.</td></tr>`;
             }
         }
 
