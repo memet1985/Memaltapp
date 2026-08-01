@@ -659,12 +659,12 @@
             try {
                 const { error } = await supabaseClient.from('reports').insert([payload]);
                 if (error) throw error;
-                alert('Günlük rapor ve masraf başarıyla kaydedildi.');
+                //alert('Günlük rapor ve masraf başarıyla kaydedildi.');
                 document.getElementById('branchReportForm').reset();
                 document.getElementById('reportDate').valueAsDate = new Date();
                 fetchAllReports();
             } catch (err) {
-                alert('Kayıt başarısız: ' + err.message);
+               // alert('Kayıt başarısız: ' + err.message);
             }
         });
 
@@ -932,7 +932,7 @@
         // Başarılı olduğunda hiçbir uyarı penceresi açmadan doğrudan listeyi yeniler
         fetchAllReports();
     } catch (err) {
-        alert('Silme işlemi başarısız: ' + err.message);
+        //alert('Silme işlemi başarısız: ' + err.message);
     }
 }
 
@@ -985,7 +985,7 @@
                 alert('Stok çıkışı başarıyla silindi.');
                 fetchAllStocks();
             } catch (err) {
-                alert('Silme işlemi başarısız: ' + err.message);
+              //  alert('Silme işlemi başarısız: ' + err.message);
             }
         }
 
