@@ -29,7 +29,6 @@
         }
         .btn-primary { background-color: #007bff; }
         .btn-danger { background-color: #dc3545; }
-        .btn-secondary { background-color: #6c757d; }
 
         /* Özel Onay Modalı Stilleri */
         .custom-modal {
@@ -65,11 +64,8 @@
 
     <div class="container">
         <h2>MemAlt Raporlama ve Yönetim</h2>
-        <p>Silme veya düzenleme işlemlerini test etmek için aşağıdaki butonları kullanabilirsiniz:</p>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button class="btn-danger" onclick="kaydiSil(1)">Örnek Kaydı Sil</button>
-            <button class="btn-secondary" onclick="tercihleriSifirla()">"Bir daha sorma" Tercihini Sıfırla</button>
-        </div>
+        <p>Silme veya düzenleme işlemlerini test etmek için aşağıdaki butona tıklayabilirsiniz:</p>
+        <button class="btn-danger" onclick="kaydiSil(1)">Örnek Kaydı Sil</button>
     </div>
 
     <!-- Özel Onay Modalı HTML Yapısı -->
@@ -83,58 +79,51 @@
             </div>
             <div class="custom-modal-buttons">
                 <button id="confirmYesBtn" class="btn-primary" style="padding: 8px 20px;">Tamam</button>
-                <button id="confirmNoBtn" class="btn-secondary" style="padding: 8px 20px;">Vazgeç</button>
+                <button id="confirmNoBtn" class="btn-danger" style="padding: 8px 20px; background-color: #6c757d;">Vazgeç</button>
             </div>
         </div>
     </div>
 
     <!-- JavaScript Kodları -->
     <script>
-        // Sayfa yüklendiğinde butonlara bir kere olay dinleyicisi atanır
-        document.addEventListener('DOMContentLoaded', () => {
+        function showCustomConfirm(message, callback) {
+            // Eğer kullanıcı daha önceden "bir daha sorma" seçeneğini işaretlediyse direkt onay ver
+            if (localStorage.getItem('skipDeleteConfirm') === 'true') {
+                callback(true);
+                return;
+            }
+
             const modal = document.getElementById('customConfirmModal');
+            const msgEl = document.getElementById('confirmMessage');
             const yesBtn = document.getElementById('confirmYesBtn');
             const noBtn = document.getElementById('confirmNoBtn');
             const checkbox = document.getElementById('dontAskAgainCheckbox');
 
-            let currentCallback = null;
+            msgEl.textContent = message;
+            modal.style.display = 'flex';
+            checkbox.checked = false;
 
-            // Evet butonuna tıklama olayı
-            yesBtn.addEventListener('click', () => {
+            // Eski olay dinleyicilerini temizlemek için butonları yenileriyle değiştiriyoruz
+            const newYesBtn = yesBtn.cloneNode(true);
+            const newNoBtn = noBtn.cloneNode(true);
+            yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+            noBtn.parentNode.replaceChild(newNoBtn, noBtn);
+
+            document.getElementById('confirmYesBtn').addEventListener('click', () => {
                 if (checkbox.checked) {
                     localStorage.setItem('skipDeleteConfirm', 'true');
                 }
                 modal.style.display = 'none';
-                if (typeof currentCallback === 'function') {
-                    currentCallback(true);
-                }
+                callback(true);
             });
 
-            // Hayır / Vazgeç butonuna tıklama olayı
-            noBtn.addEventListener('click', () => {
+            document.getElementById('confirmNoBtn').addEventListener('click', () => {
                 modal.style.display = 'none';
-                if (typeof currentCallback === 'function') {
-                    currentCallback(false);
-                }
+                callback(false);
             });
+        }
 
-            // Global fonksiyon olarak dışarıya açıyoruz
-            window.showCustomConfirm = function(message, callback) {
-                // Eğer kullanıcı daha önceden "bir daha sorma" seçeneğini işaretlediyse direkt onay ver
-                if (localStorage.getItem('skipDeleteConfirm') === 'true') {
-                    callback(true);
-                    return;
-                }
-
-                const msgEl = document.getElementById('confirmMessage');
-                msgEl.textContent = message;
-                checkbox.checked = false;
-                currentCallback = callback;
-                modal.style.display = 'flex';
-            };
-        });
-
-        // Silme veya Düzenleme butonunuzun tetikleyeceği fonksiyon
+        // Silme veya Düzenleme butonlarınızın tetikleyeceği fonksiyon
         function kaydiSil(id) {
             showCustomConfirm("Bu raporu kalıcı olarak silmek istediğinize emin misiniz?", (isConfirmed) => {
                 if (isConfirmed) {
@@ -145,12 +134,6 @@
                     console.log("İşlem iptal edildi.");
                 }
             });
-        }
-
-        // Test amaçlı localStorage tercihini sıfırlama fonksiyonu
-        function tercihleriSifirla() {
-            localStorage.removeItem('skipDeleteConfirm');
-            alert("Onay tercihiniz sıfırlandı. Artık modal tekrar görünecek.");
         }
     </script>
 </body>
