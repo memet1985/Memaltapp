@@ -659,7 +659,7 @@
             try {
                 const { error } = await supabaseClient.from('reports').insert([payload]);
                 if (error) throw error;
-                //alert('Günlük rapor ve masraf başarıyla kaydedildi.');
+                alert('Günlük rapor ve masraf başarıyla kaydedildi.');
                 document.getElementById('branchReportForm').reset();
                 document.getElementById('reportDate').valueAsDate = new Date();
                 fetchAllReports();
