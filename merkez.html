@@ -19,9 +19,9 @@
                     <label class="block text-sm font-medium text-gray-700">Şube Seçin</label>
                     <select id="subeFiltre" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
                         <option value="Tumu">Tüm Şubeler</option>
-                        <option value="Soganlik">Soğanlık Şubesi</option>
-                        <option value="Kurtkoy">Kurtköy Şubesi</option>
-                        <option value="Ortadag">Ortadağ Şubesi</option>
+                        <option value="Soğanlık Şubesi">Soğanlık Şubesi</option>
+                        <option value="Kurtköy Şubesi">Kurtköy Şubesi</option>
+                        <option value="Ortadağ Şubesi">Ortadağ Şubesi</option>
                     </select>
                 </div>
 
@@ -67,25 +67,76 @@
                     </tr>
                 </thead>
                 <tbody id="raporListesi" class="bg-white divide-y divide-gray-200">
-                    <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">Veriler yükleniyor veya kayıt bulunamadı...</td>
-                    </tr>
+                    <!-- Dinamik Veriler Buraya Gelecek -->
                 </tbody>
             </table>
         </div>
     </div>
 
     <script>
-        document.getElementById('subeFiltre').addEventListener('change', verileriGuncelle);
-        document.getElementById('ayFiltre').addEventListener('change', verileriGuncelle);
+        // Şubelerin kaydettiği ortak anahtar (Şube sayfalarında veriler bu anahtarla kaydediliyor olmalı)
+        // Örnek: localStorage.setItem('memaltRaporlar', JSON.stringify(tumRaporlar));
 
-        function verileriGuncelle() {
+        function verileriYukleVeFiltrele() {
             const secilenSube = document.getElementById('subeFiltre').value;
             const secilenAy = document.getElementById('ayFiltre').value;
             
-            // localStorage veya veri kaynağınızdan raporları çekme alanı
-            // Örnek mantık entegrasyonu buraya yapılabilir
+            // localStorage'dan verileri al (Eğer anahtar farklıysa şube sayfalarındaki kayıt anahtarı ile burası eşleştirilebilir)
+            const kayitliVeriler = JSON.parse(localStorage.getItem('memaltRaporlar')) || [];
+
+            const tabloGovdesi = document.getElementById('raporListesi');
+            tabloGovdesi.innerHTML = '';
+
+            let tNakit = 0, tKredi = 0, tYemek = 0, tMasraf = 0;
+
+            const filtrelenmisVeriler = kayitliVeriler.filter(item => {
+                let subeUyumlu = (secilenSube === 'Tumu' || item.subeAdi === secilenSube);
+                let ayUyumlu = true;
+
+                if (secilenAy && item.tarih) {
+                    // item.tarih "YYYY-MM-DD" formatında beklenir
+                    let raporAy = item.tarih.substring(0, 7);
+                    ayUyumlu = (raporAy === secilenAy);
+                }
+
+                return subeUyumlu && ayUyumlu;
+            });
+
+            if (filtrelenmisVeriler.length === 0) {
+                tabloGovdesi.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Seçilen kriterlere uygun rapor bulunamadı.</td></tr>`;
+            } else {
+                filtrelenmisVeriler.forEach(item => {
+                    tNakit += Number(item.nakit || 0);
+                    tKredi += Number(item.krediKarti || 0);
+                    tYemek += Number(item.yemekKarti || 0);
+                    tMasraf += Number(item.masrafTutar || 0);
+
+                    const satir = `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${item.tarih || ''}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.subeAdi || ''}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${Number(item.nakit || 0).toLocaleString('tr-TR')} TL</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${Number(item.krediKarti || 0).toLocaleString('tr-TR')} TL</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${Number(item.yemekKarti || 0).toLocaleString('tr-TR')} TL</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">${Number(item.masrafTutar || 0).toLocaleString('tr-TR')} TL</td>
+                        </tr>
+                    `;
+                    tabloGovdesi.innerHTML += satir;
+                });
+            }
+
+            // Özet kartlarını güncelle
+            document.getElementById('toplamNakit').innerText = tNakit.toLocaleString('tr-TR') + ' TL';
+            document.getElementById('toplamKrediKarti').innerText = tKredi.toLocaleString('tr-TR') + ' TL';
+            document.getElementById('toplamYemekKarti').innerText = tYemek.toLocaleString('tr-TR') + ' TL';
+            document.getElementById('toplamMasraf').innerText = tMasraf.toLocaleString('tr-TR') + ' TL';
         }
+
+        document.getElementById('subeFiltre').addEventListener('change', verileriYukleVeFiltrele);
+        document.getElementById('ayFiltre').addEventListener('change', verileriYukleVeFiltrele);
+
+        // Sayfa ilk açıldığında verileri yükle
+        window.onload = verileriYukleVeFiltrele;
     </script>
 </body>
 </html>
