@@ -565,7 +565,7 @@
                 document.getElementById('statsCardsContainer').style.display = 'grid';
                 document.getElementById('platformTotalsContainer').style.display = 'grid';
                 document.getElementById('reportsTableContainer').style.display = 'block';
-                document.getElementById('centerBranchFilters').style.display = 'flex'; // Merkezde filtreleri göster
+                document.getElementById('centerBranchFilters').style.display = 'flex'; 
                 document.getElementById('stockSectionHeading').innerText = "Merkez Stok Çıkışları Geçmişi";
                 document.getElementById('filterStockBranch').style.display = 'inline-block';
                 document.getElementById('thActionsHeader').style.display = 'table-cell';
@@ -742,13 +742,11 @@
             if (currentSelectedBranch === 'Merkez') {
                 filteredData = allDataCache;
                 
-                // Şube dropdown filtresi uygula
                 const branchFilterVal = document.getElementById('filterReportBranch').value;
                 if (branchFilterVal) {
                     filteredData = filteredData.filter(row => row.branch && row.branch.toLowerCase() === branchFilterVal.toLowerCase());
                 }
 
-                // Tarih input filtresi uygula
                 const dateFilterVal = document.getElementById('filterReportDate').value;
                 if (dateFilterVal) {
                     filteredData = filteredData.filter(row => row.date === dateFilterVal);
@@ -856,9 +854,32 @@
                 let colspanVal = currentSelectedBranch === 'Merkez' ? '10' : '9';
                 tbody.innerHTML = `<tr><td colspan="${colspanVal}" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
             }
+
+            // MERKEZ ÖZET KARTLARINI GÜNCELLEME BLOĞU (EKLENEN KISIM)
+            if (currentSelectedBranch === 'Merkez') {
+                document.getElementById('statTotalCash').innerText = formatMoney(totalCash);
+                document.getElementById('statTotalBank').innerText = formatMoney(totalBank);
+                document.getElementById('statTotalPlatforms').innerText = formatMoney(totalPlatforms);
+                document.getElementById('statTotalOnline').innerText = formatMoney(totalOnline);
+                document.getElementById('statTotalRevenue').innerText = formatMoney(totalRevenue);
+                document.getElementById('statTotalExpense').innerText = formatMoney(totalExpense);
+
+                // Yemek Kartı Alt Toplamları
+                document.getElementById('sumPluxee').innerText = formatMoney(sumPluxee);
+                document.getElementById('sumEdenred').innerText = formatMoney(sumEdenred);
+                document.getElementById('sumMultiNet').innerText = formatMoney(sumMultiNet);
+                document.getElementById('sumSetcard').innerText = formatMoney(sumSetcard);
+                document.getElementById('sumMetropol').innerText = formatMoney(sumMetropol);
+                document.getElementById('sumToken').innerText = formatMoney(sumToken);
+
+                // Online Platform Alt Toplamları
+                document.getElementById('sumTrendyol').innerText = formatMoney(sumTrendyol);
+                document.getElementById('sumYemeksepeti').innerText = formatMoney(sumYemeksepeti);
+                document.getElementById('sumGetir').innerText = formatMoney(sumGetir);
+                document.getElementById('sumMigros').innerText = formatMoney(sumMigros);
+            }
         }
 
-        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (RAPOR) ---
         function openEditModal(row) {
             if (currentSelectedBranch !== 'Merkez') return;
             document.getElementById('editReportId').value = row.id;
@@ -932,7 +953,6 @@
             }
         }
 
-        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (STOK) ---
         function openEditStockModal(item) {
             if (currentSelectedBranch !== 'Merkez') return;
             document.getElementById('editStockId').value = item.id;
@@ -1033,7 +1053,7 @@
                 });
             } else {
                 let colspanVal = currentSelectedBranch === 'Merkez' ? '6' : '5';
-                stockTbody.innerHTML = `<tr><td colspan="${colspanVal}" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok kaydı bulunguyor.</td></tr>`;
+                stockTbody.innerHTML = `<tr><td colspan="${colspanVal}" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok kaydı bulunuyor.</td></tr>`;
             }
         }
 
