@@ -2,1121 +2,138 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sweet Waffle - Şube ve Merkez Raporlama Paneli</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#78350f">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemAlt - Merkez Yönetim ve Şube Raporları</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    
-    <style>
-        * { box-sizing: border-box; -webkit-text-size-adjust: 100%; }
-        html, body { width: 100%; max-width: 100vw; overflow-x: hidden; margin: 0; padding: 0; background-color: #f9fafb; }
-        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
-    </style>
 </head>
-<body class="font-sans pb-10">
+<body class="bg-gray-100 min-h-screen p-6">
 
-    <!-- ANA GİRİŞTEKİ ZORUNLU ŞUBE SEÇİM EKRANI -->
-    <div id="welcomeScreenModal" style="position: fixed; inset: 0; background: rgba(78, 35, 15, 0.98); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 16px;">
-        <div style="background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-            <div style="width: 60px; height: 60px; background: #fffbeb; border: 2px solid #78350f; border-radius: 12px; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('welcomeLogoFallback').style.display='flex';">
-                <div id="welcomeLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 10px; display: none; align-items: center; justify-content: center;">SW</div>
-            </div>
-            <h2 style="font-size: 18px; font-weight: 900; color: #451a03; margin: 0 0 6px 0;">Sweet Waffle</h2>
-            <p style="font-size: 11px; color: #6b7280; margin: 0 0 20px 0;">Devam etmek için lütfen şube seçin</p>
+    <div class="max-w-7xl mx-auto">
+        <!-- Başlık ve Ay Butonları -->
+        <div class="bg-white p-4 rounded-xl shadow mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-xl font-bold text-gray-800">MERKEZ YÖNETİMİ (TÜM ŞUBELER) RAPORLARI LİSTESİ</h1>
             
-            <div id="branchSelectionButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                <button type="button" onclick="openPasswordModal('Merkez')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Merkez (Tüm Şubeler)</button>
-                <button type="button" onclick="openPasswordModal('Kurtkoy')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Kurtköy Şubesi</button>
-                <button type="button" onclick="openPasswordModal('Soganlik')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Soğanlık Şubesi</button>
-                <button type="button" onclick="openPasswordModal('Ortadag')" style="background: #fffbeb; color: #78350f; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Ortadağ Şubesi</button>
-            </div>
-
-            <!-- ŞİFRE GİRİŞ ALANI -->
-            <div id="passwordInputContainer" style="display: none; margin-top: 10px; text-align: left;">
-                <label id="passwordLabel" style="font-size: 11px; font-weight: bold; color: #451a03; display: block; margin-bottom: 6px; text-align: center;"></label>
-                <input type="password" id="branchPasswordInput" placeholder="Şifrenizi giriniz..." style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; margin-bottom: 8px; text-align: center;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                    <button type="button" onclick="closePasswordModal()" style="background: #e5e7eb; color: #374151; border: none; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer;">Geri Dön</button>
-                    <button type="button" onclick="verifyEnteredPassword()" style="background: #78350f; color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer;">Giriş Yap</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MERKEZ DÜZENLEME MODALI (RAPOR) -->
-    <div id="editReportModal" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 99998; display: none; align-items: center; justify-content: center; padding: 16px;">
-        <div style="background: #fff; border-radius: 12px; padding: 16px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-            <h3 style="font-size: 13px; font-weight: bold; color: #78350f; margin: 0 0 10px 0; text-transform: uppercase;">Raporu Düzenle (Merkez)</h3>
-            <form id="editReportForm" style="display: flex; flex-direction: column; gap: 8px;">
-                <input type="hidden" id="editReportId">
-                <div>
-                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Şube</label>
-                    <input type="text" id="editBranch" disabled style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #f3f4f6;">
-                </div>
-                <div>
-                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Tarih</label>
-                    <input type="date" id="editDate" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Nakit (TL)</label>
-                        <input type="number" step="any" id="editCash" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
-                    </div>
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Banka (TL)</label>
-                        <input type="number" step="any" id="editBank" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px;">
-                    </div>
-                </div>
-
-                <div style="background: #fffbeb; padding: 8px; border-radius: 8px; border: 1px solid #fde68a;">
-                    <label style="font-size: 10px; font-weight: bold; color: #78350f; display: block; margin-bottom: 4px;">Yemek Kartları</label>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
-                        <input type="number" step="any" id="editPluxee" placeholder="Pluxee" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="editEdenred" placeholder="Edenred" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="editMultiNet" placeholder="MultiNet" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="editSetcard" placeholder="Setcard" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="editMetropol" placeholder="Metropol" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="editToken" placeholder="TokenFlex" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                    </div>
-                </div>
-
-                <div style="background: #f5f3ff; padding: 8px; border-radius: 8px; border: 1px solid #ddd6fe;">
-                    <label style="font-size: 10px; font-weight: bold; color: #5b21b6; display: block; margin-bottom: 4px;">Online Yemek Platformları</label>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px;">
-                        <input type="number" step="any" id="editTrendyol" placeholder="Trendyol" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="editYemeksepeti" placeholder="Yemeksepeti" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="editGetir" placeholder="Getir" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="editMigros" placeholder="Migros" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                    <div>
-                        <label style="font-size: 9px; font-weight: bold; color: #dc2626; display: block; margin-bottom: 2px;">Masraf (TL)</label>
-                        <input type="number" step="any" id="editExpense" placeholder="0" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px;">
-                    </div>
-                    <div>
-                        <label style="font-size: 9px; font-weight: bold; color: #451a03; display: block; margin-bottom: 2px;">Açıklama</label>
-                        <input type="text" id="editExpenseDesc" placeholder="Açıklama" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px;">
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px;">
-                    <button type="button" onclick="closeEditModal()" style="background: #e5e7eb; color: #374151; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">İptal</button>
-                    <button type="submit" style="background: #047857; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Güncellemeyi Kaydet</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MERKEZ DÜZENLEME MODALI (STOK ÇIKIŞI) -->
-    <div id="editStockModal" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 99998; display: none; align-items: center; justify-content: center; padding: 16px;">
-        <div style="background: #fff; border-radius: 12px; padding: 16px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-            <h3 style="font-size: 13px; font-weight: bold; color: #78350f; margin: 0 0 10px 0; text-transform: uppercase;">Stok Çıkışını Düzenle (Merkez)</h3>
-            <form id="editStockForm" style="display: flex; flex-direction: column; gap: 8px;">
-                <input type="hidden" id="editStockId">
-                <div>
-                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Gidecek Şube</label>
-                    <select id="editTargetBranch" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                        <option value="Kurtkoy">Kurtköy Şubesi</option>
-                        <option value="Soganlik">Soğanlık Şubesi</option>
-                        <option value="Ortadag">Ortadağ Şubesi</option>
-                    </select>
-                </div>
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 6px;">
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Adı</label>
-                        <input type="text" id="editStockName" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                    </div>
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Birimi</label>
-                        <select id="editStockUnit" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                            <option value="Kg">Kg</option>
-                            <option value="Adet">Adet</option>
-                            <option value="Paket">Paket</option>
-                            <option value="Koli">Koli</option>
-                            <option value="Litre">Litre</option>
-                            <option value="Gram">Gram</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Miktar</label>
-                    <input type="number" step="any" id="editStockAmount" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px;">
-                    <button type="button" onclick="closeEditStockModal()" style="background: #e5e7eb; color: #374151; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">İptal</button>
-                    <button type="submit" style="background: #047857; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Güncellemeyi Kaydet</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ANA İÇERİK ALANI -->
-    <div style="width: 100%; max-width: 100%; margin: 0 auto; padding: 8px;">
-        
-        <!-- Üst Header -->
-        <header style="background: #fff; border: 1px solid #fcd34d; border-radius: 12px; padding: 10px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 36px; height: 36px; background: #fffbeb; border: 1px solid #78350f; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
-                        <img src="logo.webp" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('branchLogoFallback').style.display='flex';">
-                        <div id="branchLogoFallback" style="width: 100%; height: 100%; background: #78350f; color: #fff; font-weight: bold; font-size: 8px; display: none; align-items: center; justify-content: center;">LOGO</div>
-                    </div>
-                    <div>
-                        <h1 id="panelTitle" style="font-size: 13px; font-weight: 900; color: #451a03; margin: 0;">Şube Paneli</h1>
-                        <p id="panelSubtitle" style="font-size: 9px; color: #6b7280; margin: 0;">Günlük Rapor ve Masraf Girişi</p>
-                    </div>
-                </div>
-                
-                <div>
-                    <button type="button" onclick="forceLogout()" style="background: #451a03; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Şube Değiştir / Kilitle</button>
-                </div>
-            </div>
-        </header>
-
-        <!-- Çıktı Alma Butonları (Sadece Merkezde Görünecek Şekilde Ayarlandı) -->
-        <div id="exportButtonsContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 8px; margin-bottom: 12px; display: none; gap: 8px; justify-content: flex-end;">
-            <button type="button" onclick="exportToExcel()" style="background: #047857; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Excel Çıktısı Al</button>
-            <button type="button" onclick="exportToPDF()" style="background: #b91c1c; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">PDF Çıktısı Al</button>
-        </div>
-
-        <!-- Özet Kartları (Sadece Merkezde Görünecek Şekilde Ayarlandı) -->
-        <div id="statsCardsContainer" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
-            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
-                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM NAKİT</div>
-                <div id="statTotalCash" style="font-size: 14px; font-weight: 900; color: #047857;">0 ₺</div>
-            </div>
-            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
-                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM BANKA</div>
-                <div id="statTotalBank" style="font-size: 14px; font-weight: 900; color: #1d4ed8;">0 ₺</div>
-            </div>
-            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
-                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM YEMEK KARTLARI</div>
-                <div id="statTotalPlatforms" style="font-size: 14px; font-weight: 900; color: #047857;">0 ₺</div>
-            </div>
-            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
-                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM ONLINE PLATFORM</div>
-                <div id="statTotalOnline" style="font-size: 14px; font-weight: 900; color: #7c3aed;">0 ₺</div>
-            </div>
-            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center; grid-column: span 2;">
-                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM CİRO</div>
-                <div id="statTotalRevenue" style="font-size: 14px; font-weight: 900; color: #b45309;">0 ₺</div>
-            </div>
-            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center; grid-column: span 2;">
-                <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM MASRAF</div>
-                <div id="statTotalExpense" style="font-size: 14px; font-weight: 900; color: #dc2626;">0 ₺</div>
+            <!-- Ay Seçim Butonları -->
+            <div class="flex flex-wrap gap-2">
+                <button onclick="ayFiltrele('Tumu')" id="btnTumu" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium shadow transition">Tüm Veriler</button>
+                <button onclick="ayFiltrele('2026-08')" id="btn2026-08" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition">Ağustos 2026</button>
+                <button onclick="ayFiltrele('2026-07')" id="btn2026-07" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition">Temmuz 2026</button>
             </div>
         </div>
 
-        <!-- MERKEZ STOK ÇIKIŞ FORMU -->
-        <div id="stockOutCardContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
-            <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Merkez Stok Çıkışı Yap</h3>
-            <form id="stockOutForm" style="display: flex; flex-direction: column; gap: 8px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Gidecek Şube</label>
-                        <select id="targetBranch" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                            <option value="">Şube Seçin...</option>
-                            <option value="Kurtkoy">Kurtköy Şubesi</option>
-                            <option value="Soganlik">Soğanlık Şubesi</option>
-                            <option value="Ortadag">Ortadağ Şubesi</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Birimi</label>
-                        <select id="stockUnit" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                            <option value="Kg">Kg</option>
-                            <option value="Adet">Adet</option>
-                            <option value="Paket">Paket</option>
-                            <option value="Koli">Koli</option>
-                            <option value="Litre">Litre</option>
-                            <option value="Gram">Gram</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 6px;">
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Stok Adı</label>
-                        <input type="text" id="stockName" list="stockNameList" placeholder="Seçin veya yeni yazın..." required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                        <datalist id="stockNameList">
-                            <option value="Un">
-                            <option value="Şeker">
-                            <option value="Waffle Kutusu">
-                            <option value="Çikolata Sosu">
-                            <option value="Bardak">
-                            <option value="Pçk. Çatal/Bıçak">
-                        </datalist>
-                    </div>
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Miktar</label>
-                        <input type="number" step="any" id="stockAmount" placeholder="0" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                    </div>
-                </div>
-
-                <div>
-                    <button type="submit" style="width: 100%; background: #047857; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Stok Çıkışını Kaydet</button>
-                </div>
-            </form>
-        </div>
-
-        <!-- GÜNLÜK RAPOR GİRİŞ FORMU -->
-        <div id="formCardContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <h3 id="formSectionTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Günlük Rapor ve Masraf Girişi</h3>
-            <form id="branchReportForm" style="display: flex; flex-direction: column; gap: 8px;">
-                
-                <div>
-                    <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Tarih</label>
-                    <input type="date" id="reportDate" required style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Nakit Tutar (TL)</label>
-                        <input type="number" step="any" id="reportCash" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                    </div>
-                    <div>
-                        <label style="font-size: 9px; color: #6b7280; font-weight: bold; display: block; margin-bottom: 2px;">Banka / Kredi Kartı (TL)</label>
-                        <input type="number" step="any" id="reportBank" placeholder="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; background: #fff;">
-                    </div>
-                </div>
-
-                <!-- Yemek Kartları -->
-                <div style="background: #fffbeb; padding: 8px; border-radius: 8px; border: 1px solid #fde68a;">
-                    <label style="font-size: 10px; font-weight: bold; color: #78350f; display: block; margin-bottom: 4px;">Yemek Kartı Platformları</label>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 8px;">
-                        <input type="number" step="any" id="reportPluxee" placeholder="Pluxee" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportEdenred" placeholder="Edenred" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportMultiNet" placeholder="MultiNet" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportSetcard" placeholder="Setcard" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportMetropol" placeholder="Metropol" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportToken" placeholder="TokenFlex" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                    </div>
-                </div>
-
-                <!-- Online Yemek Platformları -->
-                <div style="background: #f5f3ff; padding: 8px; border-radius: 8px; border: 1px solid #ddd6fe;">
-                    <label style="font-size: 10px; font-weight: bold; color: #5b21b6; display: block; margin-bottom: 4px;">Online Yemek Platformları</label>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-bottom: 8px;">
-                        <input type="number" step="any" id="reportTrendyol" placeholder="Trendyol Yemek" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportYemeksepeti" placeholder="Yemeksepeti" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportGetir" placeholder="Getir Yemek" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                        <input type="number" step="any" id="reportMigros" placeholder="Migros Yemek" style="border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                    </div>
-                </div>
-
-                <!-- Masraf Alanı -->
-                <div style="border-top: 1px dashed #fcd34d; padding-top: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                    <div>
-                        <label style="font-size: 9px; font-weight: bold; color: #dc2626; display: block; margin-bottom: 2px;">Masraf Tutarı (TL)</label>
-                        <input type="number" step="any" id="reportExpense" placeholder="0" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                    </div>
-                    <div>
-                        <label style="font-size: 9px; font-weight: bold; color: #451a03; display: block; margin-bottom: 2px;">Masraf Açıklaması</label>
-                        <input type="text" id="reportExpenseDesc" placeholder="Ne için yapıldı?" style="width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px; font-size: 10px; background: #fff;">
-                    </div>
-                </div>
-
-                <div>
-                    <button type="submit" style="width: 100%; background: #78350f; color: #fff; padding: 9px; border-radius: 6px; font-weight: bold; border: none; font-size: 11px; cursor: pointer;">Günlük Raporu Kaydet</button>
-                </div>
-            </form>
-        </div>
-
-        <!-- PLATFORM DETAYLARI TOPLAMLARI (Sadece Merkezde Görünecek Şekilde Ayarlandı) -->
-        <div id="platformTotalsContainer" style="display: none; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px;">
-            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Yemek Kartı Platformları Toplamları</h3>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                        <div style="font-size: 8px; color: #6b7280;">Pluxee</div>
-                        <div id="sumPluxee" style="font-size: 11px; font-weight: bold; color: #78350f;">0 ₺</div>
-                    </div>
-                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                        <div style="font-size: 8px; color: #6b7280;">Edenred</div>
-                        <div id="sumEdenred" style="font-size: 11px; font-weight: bold; color: #78350f;">0 ₺</div>
-                    </div>
-                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                        <div style="font-size: 8px; color: #6b7280;">MultiNet</div>
-                        <div id="sumMultiNet" style="font-size: 11px; font-weight: bold; color: #78350f;">0 ₺</div>
-                    </div>
-                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                        <div style="font-size: 8px; color: #6b7280;">Setcard</div>
-                        <div id="sumSetcard" style="font-size: 11px; font-weight: bold; color: #78350f;">0 ₺</div>
-                    </div>
-                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                        <div style="font-size: 8px; color: #6b7280;">MetropolCard</div>
-                        <div id="sumMetropol" style="font-size: 11px; font-weight: bold; color: #78350f;">0 ₺</div>
-                    </div>
-                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px; text-align: center;">
-                        <div style="font-size: 8px; color: #6b7280;">TokenFlex</div>
-                        <div id="sumToken" style="font-size: 11px; font-weight: bold; color: #78350f;">0 ₺</div>
-                    </div>
-                </div>
+        <!-- Şube ve Tarih Arama / Filtreleme Kutuları -->
+        <div class="bg-white p-4 rounded-xl shadow mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Şube ile Filtrele / Ara</label>
+                <input type="text" id="aramaSube" placeholder="Şube adı yazın (örn: Kurtkoy, Soganlik)..." class="w-full p-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
-
-            <div style="background: #fff; border: 1px solid #ddd6fe; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                <h3 style="font-size: 11px; font-weight: bold; color: #5b21b6; margin: 0 0 8px 0; text-transform: uppercase;">Online Yemek Platformları Toplamları</h3>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
-                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px; text-align: center;">
-                        <div style="font-size: 8px; color: #6b7280;">Trendyol Yemek</div>
-                        <div id="sumTrendyol" style="font-size: 11px; font-weight: bold; color: #5b21b6;">0 ₺</div>
-                    </div>
-                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px; text-align: center;">
-                        <div style="font-size: 8px; color: #6b7280;">Yemeksepeti</div>
-                        <div id="sumYemeksepeti" style="font-size: 11px; font-weight: bold; color: #5b21b6;">0 ₺</div>
-                    </div>
-                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px; text-align: center;">
-                        <div style="font-size: 8px; color: #6b7280;">Getir Yemek</div>
-                        <div id="sumGetir" style="font-size: 11px; font-weight: bold; color: #5b21b6;">0 ₺</div>
-                    </div>
-                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px; text-align: center;">
-                        <div style="font-size: 8px; color: #6b7280;">Migros Yemek</div>
-                        <div id="sumMigros" style="font-size: 11px; font-weight: bold; color: #5b21b6;">0 ₺</div>
-                    </div>
-                </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tarih ile Filtrele</label>
+                <input type="date" id="aramaTarih" class="w-full p-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
         </div>
 
-        <!-- Raporlar / Liste Tablosu (Sadece Merkezde Görünecek Şekilde Ayarlandı) -->
-        <div id="reportsTableContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-                <h3 id="tableHeaderTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0; text-transform: uppercase;">Raporlar Listesi</h3>
-            </div>
-            
-            <!-- Biten Aylar Butonları Konteyneri -->
-            <div id="monthlyButtonsContainer" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #fde68a;">
-                <!-- Dinamik Ay Butonları Buraya Gelecek -->
-            </div>
-
-            <div style="width: 100%; overflow-x: auto;">
-                <table style="width: 100%; min-width: 950px; border-collapse: collapse; font-size: 10px;">
-                    <thead>
-                        <tr style="background: #fffbeb; color: #78350f;">
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">ŞUBE</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">NAKİT</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">BANKA</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">YEMEK KARTLARI</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">ONLİNE PLATFORM</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">CİRO</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600; background-color: #fef2f2; border: 1px dashed #fca5a5; color: #b91c1c;">MASRAF & AÇIKLAMA</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600; background-color: #ecfdf5; border: 1px dashed #6ee7b7; color: #047857;">KALAN NAKİT</th>
-                            <th id="thActionsHeader" style="padding: 6px; text-align: center; font-weight: 600; display: none;">İŞLEMLER</th>
-                        </tr>
-                    </thead>
-                    <tbody id="allReportsTableBody"></tbody>
-                    <tfoot id="allReportsTableFooter" style="background: #fffbeb; font-weight: bold; border-top: 1px solid #fde68a;"></tfoot>
-                </table>
-            </div>
+        <!-- Rapor Tablosu -->
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Şube</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tarih</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nakit</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Banka</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Yemek Kartları</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Online Platform</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ciro</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Masraf & Açıklama</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kalan Nakit</th>
+                    </tr>
+                </thead>
+                <tbody id="raporListesi" class="bg-white divide-y divide-gray-200 text-sm">
+                    <!-- Dinamik Veriler Buraya Gelecek -->
+                </tbody>
+            </table>
         </div>
-
-        <!-- MERKEZ STOK ÇIKIŞLARI GEÇMİŞİ / ŞUBELER İÇİN GELEN STOK LİSTESİ -->
-        <div id="stockOutTableContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-                <h3 id="stockSectionHeading" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0; text-transform: uppercase;">Merkez Stok Çıkışları Geçmişi</h3>
-                
-                <!-- Filtreler -->
-                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                    <select id="filterStockBranch" onchange="renderStocks()" style="padding: 4px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 10px; background: #fff;">
-                        <option value="">Tüm Şubeler (Filtre)</option>
-                        <option value="Kurtkoy">Kurtköy</option>
-                        <option value="Soganlik">Soğanlık</option>
-                        <option value="Ortadag">Ortadağ</option>
-                    </select>
-                    <input type="text" id="filterStockName" oninput="renderStocks()" placeholder="Stok adı ara..." style="padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 10px; background: #fff;">
-                </div>
-            </div>
-
-            <div style="width: 100%; overflow-x: auto;">
-                <table style="width: 100%; min-width: 450px; border-collapse: collapse; font-size: 10px;">
-                    <thead>
-                        <tr style="background: #fffbeb; color: #78350f;">
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">TARİH</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">GİDECEK ŞUBE</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">STOK ADI</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">MİKTAR</th>
-                            <th style="padding: 6px; text-align: left; font-weight: 600;">BİRİM</th>
-                            <th id="thStockActionsHeader" style="padding: 6px; text-align: center; font-weight: 600; display: none;">İŞLEMLER</th>
-                        </tr>
-                    </thead>
-                    <tbody id="stockOutTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_'; 
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let aktifAyFiltresi = 'Tumu';
 
-        const branchPasswords = {
-            'Merkez': '1985',
-            'Kurtkoy': '2025',
-            'Soganlik': '2026',
-            'Ortadag': '2027'
-        };
-
-        let allDataCache = [];
-        let allStockCache = [];
-        let currentSelectedBranch = localStorage.getItem('sweet_waffle_active_branch') || '';
-        let pendingBranchTarget = '';
-        let selectedMonthFilter = ''; 
-
-        const monthNamesTr = {
-            "01": "Ocak", "02": "Şubat", "03": "Mart", "04": "Nisan", 
-            "05": "Mayıs", "06": "Haziran", "07": "Temmuz", "08": "Ağustos", 
-            "09": "Eylül", "10": "Ekim", "11": "Kasım", "12": "Aralık"
-        };
-
-        document.getElementById('reportDate').valueAsDate = new Date();
-
-        window.addEventListener('DOMContentLoaded', () => {
-            if (!currentSelectedBranch || !branchPasswords[currentSelectedBranch]) {
-                forceLogout();
-            } else {
-                document.getElementById('welcomeScreenModal').style.display = 'none';
-                applyBranchUI(currentSelectedBranch);
-                fetchAllReports();
-                fetchAllStocks();
-            }
-        });
-
-        function forceLogout() {
-            localStorage.removeItem('sweet_waffle_active_branch');
-            currentSelectedBranch = '';
-            closePasswordModal();
-            document.getElementById('welcomeScreenModal').style.display = 'flex';
-        }
-
-        function openPasswordModal(branchName) {
-            pendingBranchTarget = branchName;
-            let displayName = branchName === 'Merkez' ? 'Merkez (Tüm Şubeler)' : (branchName === 'Kurtkoy' ? 'Kurtköy Şubesi' : (branchName === 'Soganlik' ? 'Soğanlık Şubesi' : 'Ortadağ Şubesi'));
+        function ayFiltrele(ay) {
+            aktifAyFiltresi = ay;
             
-            document.getElementById('passwordLabel').innerText = `${displayName} için şifreyi giriniz:`;
-            document.getElementById('branchSelectionButtons').style.display = 'none';
-            document.getElementById('passwordInputContainer').style.display = 'block';
+            // Butonların aktiflik renklerini güncelle
+            document.querySelectorAll('#btnTumu, [id^="btn2026"]').forEach(btn => {
+                btn.className = "px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition";
+            });
             
-            const passwordInput = document.getElementById('branchPasswordInput');
-            passwordInput.value = '';
-            setTimeout(() => passwordInput.focus(), 100);
-        }
-
-        function closePasswordModal() {
-            pendingBranchTarget = '';
-            document.getElementById('passwordInputContainer').style.display = 'none';
-            document.getElementById('branchSelectionButtons').style.display = 'flex';
-            document.getElementById('branchPasswordInput').value = '';
-        }
-
-        function verifyEnteredPassword() {
-            let passwordInput = document.getElementById('branchPasswordInput').value;
-
-            if (passwordInput === branchPasswords[pendingBranchTarget]) {
-                currentSelectedBranch = pendingBranchTarget;
-                localStorage.setItem('sweet_waffle_active_branch', pendingBranchTarget);
-                document.getElementById('welcomeScreenModal').style.display = 'none';
-                applyBranchUI(pendingBranchTarget);
-                fetchAllReports();
-                fetchAllStocks();
-            } else {
-                alert('Hatalı şifre! Lütfen tekrar deneyin.');
-                document.getElementById('branchPasswordInput').value = '';
-                document.getElementById('branchPasswordInput').focus();
+            const aktifBtn = document.getElementById(ay === 'Tumu' ? 'btnTumu' : 'btn' + ay);
+            if(aktifBtn) {
+                aktifBtn.className = "px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium shadow transition";
             }
+
+            tabloyuGuncelle();
         }
 
-        function applyBranchUI(branchName) {
-            let displayName = branchName === 'Merkez' ? 'Merkez Yönetimi (Tüm Şubeler)' : (branchName === 'Kurtkoy' ? 'Kurtköy Şubesi' : (branchName === 'Soganlik' ? 'Soğanlık Şubesi' : 'Ortadağ Şubesi'));
-            document.getElementById('panelTitle').innerText = displayName;
-            document.getElementById('panelSubtitle').innerText = branchName === 'Merkez' ? 'Tüm Şube Verileri Toplu Görünüm ve Stok Yönetimi' : 'Günlük Rapor ve Masraf Girişi';
-            document.getElementById('formSectionTitle').innerText = displayName + " - Günlük Rapor ve Masraf Girişi";
-            document.getElementById('tableHeaderTitle').innerText = displayName + " Raporları Listesi";
+        function tabloyuGuncelle() {
+            const aramaSubeDegeri = document.getElementById('aramaSube').value.toLowerCase().trim();
+            const aramaTarihDegeri = document.getElementById('aramaTarih').value;
 
-            if (branchName === 'Merkez') {
-                document.getElementById('formCardContainer').style.display = 'none';
-                document.getElementById('stockOutCardContainer').style.display = 'block';
-                document.getElementById('exportButtonsContainer').style.display = 'flex';
-                document.getElementById('statsCardsContainer').style.display = 'grid';
-                document.getElementById('platformTotalsContainer').style.display = 'grid';
-                document.getElementById('reportsTableContainer').style.display = 'block'; // Sadece Merkez görebilir
-                document.getElementById('stockSectionHeading').innerText = "Merkez Stok Çıkışları Geçmişi";
-                document.getElementById('filterStockBranch').style.display = 'inline-block';
-                document.getElementById('thActionsHeader').style.display = 'table-cell';
-                document.getElementById('thStockActionsHeader').style.display = 'table-cell';
-            } else {
-                document.getElementById('formCardContainer').style.display = 'block';
-                document.getElementById('stockOutCardContainer').style.display = 'none';
-                document.getElementById('exportButtonsContainer').style.display = 'none';
-                document.getElementById('statsCardsContainer').style.display = 'none';
-                document.getElementById('platformTotalsContainer').style.display = 'none';
-                document.getElementById('reportsTableContainer').style.display = 'none'; // Kurtköy, Soğanlık ve Ortadağ şubelerinde tamamen gizlenir
-                document.getElementById('stockSectionHeading').innerText = "Merkeften Gelen Stok Listesi";
-                document.getElementById('filterStockBranch').style.display = 'none';
-                document.getElementById('thActionsHeader').style.display = 'none';
-                document.getElementById('thStockActionsHeader').style.display = 'none';
-            }
-            document.getElementById('stockOutTableContainer').style.display = 'block';
-        }
+            // localStorage'dan kayıtlı verileri alıyoruz
+            const tumRaporlar = JSON.parse(localStorage.getItem('memaltRaporlar')) || [];
+            const tabloGovdesi = document.getElementById('raporListesi');
+            tabloGovdesi.innerHTML = '';
 
-        function formatMoney(val) {
-            if (val === null || val === undefined || val === '') return '0 ₺';
-            let num = Number(val);
-            if (isNaN(num)) return '0 ₺';
-            return num.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) + ' ₺';
-        }
+            const filtrelenmis = tumRaporlar.filter(item => {
+                // 1. Ay Butonları Filtresi
+                let ayUyumlu = true;
+                if (aktifAyFiltresi !== 'Tumu' && item.tarih) {
+                    ayUyumlu = item.tarih.startsWith(aktifAyFiltresi);
+                }
 
-        function cleanVal(val) {
-            let num = Number(val);
-            return isNaN(num) ? 0 : num;
-        }
+                // 2. Şube Arama Kutusu Filtresi
+                let subeUyumlu = true;
+                if (aramaSubeDegeri && item.subeAdi) {
+                    subeUyumlu = item.subeAdi.toLowerCase().includes(aramaSubeDegeri);
+                }
 
-        async function fetchAllReports() {
-            try {
-                const { data, error } = await supabaseClient.from('reports').select('*').order('date', { ascending: false });
-                if (error) throw error;
-                allDataCache = data || [];
-                renderMonthlyButtons();
-                renderReports();
-            } catch (err) { console.error('Hata:', err); }
-        }
+                // 3. Tarih Seçim Kutusu Filtresi
+                let tarihUyumlu = true;
+                if (aramaTarihDegeri && item.tarih) {
+                    tarihUyumlu = (item.tarih === aramaTarihDegeri);
+                }
 
-        async function fetchAllStocks() {
-            try {
-                const { data, error } = await supabaseClient.from('archive').select('*').order('id', { ascending: false });
-                if (error) throw error;
-                allStockCache = data || [];
-                renderStocks();
-            } catch (err) { console.error('Stok Çekme Hatası:', err); }
-        }
+                return ayUyumlu && subeUyumlu && tarihUyumlu;
+            });
 
-        document.getElementById('stockOutForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (currentSelectedBranch !== 'Merkez') return;
-
-            const targetBranchVal = document.getElementById('targetBranch').value;
-            const stockNameVal = document.getElementById('stockName').value.trim();
-            const stockAmountVal = parseFloat(document.getElementById('stockAmount').value) || 0;
-            const stockUnitVal = document.getElementById('stockUnit').value;
-
-            const payload = {
-                target_branch: targetBranchVal,
-                stock_name: stockNameVal,
-                stock_amount: stockAmountVal,
-                stock_unit: stockUnitVal
-            };
-
-            try {
-                const { error } = await supabaseClient.from('archive').insert([payload]);
-                if (error) throw error;
-                alert('Stok çıkışı başarıyla kaydedildi.');
-                document.getElementById('stockOutForm').reset();
-                fetchAllStocks();
-            } catch (err) {
-                alert('Stok kaydedilemedi: ' + err.message);
-            }
-        });
-
-        document.getElementById('branchReportForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (!currentSelectedBranch || currentSelectedBranch === 'Merkez') {
-                alert('Merkez hesabından doğrudan rapor eklenemez!');
+            if (filtrelenmis.length === 0) {
+                tabloGovdesi.innerHTML = `<tr><td colspan="9" class="px-6 py-4 text-center text-gray-500">Seçilen kriterlere uygun kayıt bulunamadı.</td></tr>`;
                 return;
             }
 
-            const payload = {
-                branch: currentSelectedBranch,
-                date: document.getElementById('reportDate').value,
-                cash: parseFloat(document.getElementById('reportCash').value) || 0,
-                bank: parseFloat(document.getElementById('reportBank').value) || 0,
-                platform_pluxee: parseFloat(document.getElementById('reportPluxee').value) || 0,
-                platform_edenred: parseFloat(document.getElementById('reportEdenred').value) || 0,
-                platform_multinet: parseFloat(document.getElementById('reportMultiNet').value) || 0,
-                platform_setcard: parseFloat(document.getElementById('reportSetcard').value) || 0,
-                platform_metropol: parseFloat(document.getElementById('reportMetropol').value) || 0,
-                platform_token: parseFloat(document.getElementById('reportToken').value) || 0,
-                platform_trendyol: parseFloat(document.getElementById('reportTrendyol').value) || 0,
-                platform_yemeksepeti: parseFloat(document.getElementById('reportYemeksepeti').value) || 0,
-                platform_getir: parseFloat(document.getElementById('reportGetir').value) || 0,
-                platform_migros: parseFloat(document.getElementById('reportMigros').value) || 0,
-                expense: parseFloat(document.getElementById('reportExpense').value) || 0,
-                expense_desc: document.getElementById('reportExpenseDesc').value || ''
-            };
-
-            try {
-                const { error } = await supabaseClient.from('reports').insert([payload]);
-                if (error) throw error;
-                alert('Günlük rapor ve masraf başarıyla kaydedildi.');
-                document.getElementById('branchReportForm').reset();
-                document.getElementById('reportDate').valueAsDate = new Date();
-                fetchAllReports();
-            } catch (err) {
-                alert('Kayıt başarısız: ' + err.message);
-            }
-        });
-
-        function renderMonthlyButtons() {
-            const container = document.getElementById('monthlyButtonsContainer');
-            if (!container) return;
-            container.innerHTML = '';
-
-            let branchData = currentSelectedBranch === 'Merkez' ? allDataCache : allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
-            
-            let monthsSet = new Set();
-            branchData.forEach(row => {
-                if (row.date && row.date.length >= 7) {
-                    monthsSet.add(row.date.substring(0, 7)); 
-                }
-            });
-
-            let sortedMonths = Array.from(monthsSet).sort().reverse();
-
-            let allBtn = document.createElement('button');
-            allBtn.type = 'button';
-            allBtn.innerText = "Tüm Veriler";
-            allBtn.style.cssText = `padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; border: 1px solid #78350f; background: ${selectedMonthFilter === '' ? '#78350f' : '#fff'}; color: ${selectedMonthFilter === '' ? '#fff' : '#78350f'};`;
-            allBtn.onclick = () => { selectedMonthFilter = ''; renderMonthlyButtons(); renderReports(); };
-            container.appendChild(allBtn);
-
-            sortedMonths.forEach(ym => {
-                let parts = ym.split('-');
-                let year = parts[0];
-                let monthNum = parts[1];
-                let monthName = monthNamesTr[monthNum] || monthNum;
-                let label = `${monthName} ${year}`;
-
-                let btn = document.createElement('button');
-                btn.type = 'button';
-                btn.innerText = label;
-                let isActive = selectedMonthFilter === ym;
-                btn.style.cssText = `padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; border: 1px solid #78350f; background: ${isActive ? '#78350f' : '#fff'}; color: ${isActive ? '#fff' : '#78350f'};`;
-                btn.onclick = () => { selectedMonthFilter = ym; renderMonthlyButtons(); renderReports(); };
-                container.appendChild(btn);
-            });
-        }
-
-        function renderReports() {
-            const tbody = document.getElementById('allReportsTableBody');
-            const tfoot = document.getElementById('allReportsTableFooter');
-            
-            if (!tbody || !tfoot) return;
-            tbody.innerHTML = '';
-            tfoot.innerHTML = '';
-
-            let filteredData = [];
-            if (currentSelectedBranch === 'Merkez') {
-                filteredData = allDataCache;
-            } else {
-                filteredData = allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
-            }
-
-            if (selectedMonthFilter) {
-                filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
-            }
-
-            let totalCash = 0, totalBank = 0, totalPlatforms = 0, totalOnline = 0, totalRevenue = 0, totalExpense = 0, totalRemainingCash = 0;
-            let sumPluxee = 0, sumEdenred = 0, sumMultiNet = 0, sumSetcard = 0, sumMetropol = 0, sumToken = 0;
-            let sumTrendyol = 0, sumYemeksepeti = 0, sumGetir = 0, sumMigros = 0;
-
-            if (filteredData.length > 0) {
-                filteredData.forEach(row => {
-                    const rawC = cleanVal(row.cash);
-                    const rawB = cleanVal(row.bank);
-                    
-                    const pPluxee = cleanVal(row.platform_pluxee);
-                    const pEdenred = cleanVal(row.platform_edenred);
-                    const pMultiNet = cleanVal(row.platform_multinet);
-                    const pSetcard = cleanVal(row.platform_setcard);
-                    const pMetropol = cleanVal(row.platform_metropol);
-                    const pToken = cleanVal(row.platform_token);
-                    
-                    const pTrendyol = cleanVal(row.platform_trendyol);
-                    const pYemeksepeti = cleanVal(row.platform_yemeksepeti);
-                    const pGetir = cleanVal(row.platform_getir);
-                    const pMigros = cleanVal(row.platform_migros);
-
-                    const rowPlatformTotal = pPluxee + pEdenred + pMultiNet + pSetcard + pMetropol + pToken;
-                    const rowOnlineTotal = pTrendyol + pYemeksepeti + pGetir + pMigros;
-                    
-                    const rawR = rawC + rawB + rowPlatformTotal + rowOnlineTotal;
-                    const rawE = cleanVal(row.expense);
-                    
-                    const rowRemainingCash = rawC - rawE;
-                    const expDesc = row.expense_desc ? ` (${row.expense_desc})` : '';
-
-                    totalCash += rawC; 
-                    totalBank += rawB; 
-                    totalPlatforms += rowPlatformTotal;
-                    totalOnline += rowOnlineTotal;
-                    totalRevenue += rawR; 
-                    totalExpense += rawE;
-                    totalRemainingCash += rowRemainingCash;
-
-                    sumPluxee += pPluxee;
-                    sumEdenred += pEdenred;
-                    sumMultiNet += pMultiNet;
-                    sumSetcard += pSetcard;
-                    sumMetropol += pMetropol;
-                    sumToken += pToken;
-
-                    sumTrendyol += pTrendyol;
-                    sumYemeksepeti += pYemeksepeti;
-                    sumGetir += pGetir;
-                    sumMigros += pMigros;
-
-                    const tr = document.createElement('tr');
-                    tr.style.borderBottom = '1px solid #f3f4f6';
-                    
-                    let actionButtonsHtml = '';
-                    if (currentSelectedBranch === 'Merkez') {
-                        actionButtonsHtml = `
-                            <td style="padding: 6px; text-align: center; white-space: nowrap;">
-                                <button type="button" onclick='openEditModal(${JSON.stringify(row)})' style="background: #2563eb; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
-                                <button type="button" onclick="deleteReport(${row.id})" style="background: #dc2626; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
-                            </td>
-                        `;
-                    }
-
-                    tr.innerHTML = `
-                        <td style="padding: 6px; font-weight: bold; color: #78350f;">${row.branch || '-'}</td>
-                        <td style="padding: 6px; color: #4b5563;">${row.date || '-'}</td>
-                        <td style="padding: 6px; color: #1f2937;">${formatMoney(rawC)}</td>
-                        <td style="padding: 6px; color: #1f2937;">${formatMoney(rawB)}</td>
-                        <td style="padding: 6px; color: #047857;">${formatMoney(rowPlatformTotal)}</td>
-                        <td style="padding: 6px; color: #7c3aed;">${formatMoney(rowOnlineTotal)}</td>
-                        <td style="padding: 6px; font-weight: bold; color: #b45309;">${formatMoney(rawR)}</td>
-                        <td style="padding: 6px; color: #dc2626; background-color: #fef2f2; border-left: 1px dashed #fca5a5; border-right: 1px dashed #fca5a5;">${formatMoney(rawE)}${expDesc}</td>
-                        <td style="padding: 6px; font-weight: bold; color: #047857; background-color: #ecfdf5; border-left: 1px dashed #6ee7b7; border-right: 1px dashed #6ee7b7;">${formatMoney(rowRemainingCash)}</td>
-                        ${actionButtonsHtml}
-                    `;
-                    tbody.appendChild(tr);
-                });
-
-                tfoot.innerHTML = `
+            filtrelenmis.forEach(item => {
+                tabloGovdesi.innerHTML += `
                     <tr>
-                        <td colspan="2" style="padding: 6px; color: #451a03; text-transform: uppercase;">TOPLAM:</td>
-                        <td style="padding: 6px; color: #1f2937;">${formatMoney(totalCash)}</td>
-                        <td style="padding: 6px; color: #1f2937;">${formatMoney(totalBank)}</td>
-                        <td style="padding: 6px; color: #047857;">${formatMoney(totalPlatforms)}</td>
-                        <td style="padding: 6px; color: #7c3aed;">${formatMoney(totalOnline)}</td>
-                        <td style="padding: 6px; color: #b45309;">${formatMoney(totalRevenue)}</td>
-                        <td style="padding: 6px; color: #dc2626; background-color: #fef2f2;">${formatMoney(totalExpense)}</td>
-                        <td style="padding: 6px; color: #047857; background-color: #ecfdf5;">${formatMoney(totalCash - totalExpense)}</td>
-                        ${currentSelectedBranch === 'Merkez' ? '<td></td>' : ''}
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${item.subeAdi || ''}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-700">${item.tarih || ''}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-700">${Number(item.nakit || 0).toLocaleString('tr-TR')} ₺</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-700">${Number(item.banka || 0).toLocaleString('tr-TR')} ₺</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-700">${Number(item.yemekKartlari || 0).toLocaleString('tr-TR')} ₺</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-700">${Number(item.onlinePlatform || 0).toLocaleString('tr-TR')} ₺</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-bold text-gray-900">${Number(item.ciro || 0).toLocaleString('tr-TR')} ₺</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-red-600">${Number(item.masrafTutar || 0).toLocaleString('tr-TR')} ₺ (${item.masrafAciklama || ''})</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-bold text-green-600">${Number(item.kalanNakit || 0).toLocaleString('tr-TR')} ₺</td>
                     </tr>
                 `;
-            } else {
-                let colspanVal = currentSelectedBranch === 'Merkez' ? '10' : '9';
-                tbody.innerHTML = `<tr><td colspan="${colspanVal}" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
-            }
-
-            const statTotalCashEl = document.getElementById('statTotalCash');
-            if (statTotalCashEl) statTotalCashEl.innerText = formatMoney(totalCash);
-            const statTotalBankEl = document.getElementById('statTotalBank');
-            if (statTotalBankEl) statTotalBankEl.innerText = formatMoney(totalBank);
-            const statTotalPlatformsEl = document.getElementById('statTotalPlatforms');
-            if (statTotalPlatformsEl) statTotalPlatformsEl.innerText = formatMoney(totalPlatforms);
-            const statTotalOnlineEl = document.getElementById('statTotalOnline');
-            if (statTotalOnlineEl) statTotalOnlineEl.innerText = formatMoney(totalOnline);
-            const statTotalRevenueEl = document.getElementById('statTotalRevenue');
-            if (statTotalRevenueEl) statTotalRevenueEl.innerText = formatMoney(totalRevenue);
-            const statTotalExpenseEl = document.getElementById('statTotalExpense');
-            if (statTotalExpenseEl) statTotalExpenseEl.innerText = formatMoney(totalExpense);
-
-            const sumPluxeeEl = document.getElementById('sumPluxee');
-            if (sumPluxeeEl) sumPluxeeEl.innerText = formatMoney(sumPluxee);
-            const sumEdenredEl = document.getElementById('sumEdenred');
-            if (sumEdenredEl) sumEdenredEl.innerText = formatMoney(sumEdenred);
-            const sumMultiNetEl = document.getElementById('sumMultiNet');
-            if (sumMultiNetEl) sumMultiNetEl.innerText = formatMoney(sumMultiNet);
-            const sumSetcardEl = document.getElementById('sumSetcard');
-            if (sumSetcardEl) sumSetcardEl.innerText = formatMoney(sumSetcard);
-            const sumMetropolEl = document.getElementById('sumMetropol');
-            if (sumMetropolEl) sumMetropolEl.innerText = formatMoney(sumMetropol);
-            const sumTokenEl = document.getElementById('sumToken');
-            if (sumTokenEl) sumTokenEl.innerText = formatMoney(sumToken);
-
-            const sumTrendyolEl = document.getElementById('sumTrendyol');
-            if (sumTrendyolEl) sumTrendyolEl.innerText = formatMoney(sumTrendyol);
-            const sumYemeksepetiEl = document.getElementById('sumYemeksepeti');
-            if (sumYemeksepetiEl) sumYemeksepetiEl.innerText = formatMoney(sumYemeksepeti);
-            const sumGetirEl = document.getElementById('sumGetir');
-            if (sumGetirEl) sumGetirEl.innerText = formatMoney(sumGetir);
-            const sumMigrosEl = document.getElementById('sumMigros');
-            if (sumMigrosEl) sumMigrosEl.innerText = formatMoney(sumMigros);
-        }
-
-        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (RAPOR) ---
-        function openEditModal(row) {
-            if (currentSelectedBranch !== 'Merkez') return;
-            document.getElementById('editReportId').value = row.id;
-            document.getElementById('editBranch').value = row.branch || '';
-            document.getElementById('editDate').value = row.date || '';
-            document.getElementById('editCash').value = row.cash || '';
-            document.getElementById('editBank').value = row.bank || '';
-            document.getElementById('editPluxee').value = row.platform_pluxee || '';
-            document.getElementById('editEdenred').value = row.platform_edenred || '';
-            document.getElementById('editMultiNet').value = row.platform_multinet || '';
-            document.getElementById('editSetcard').value = row.platform_setcard || '';
-            document.getElementById('editMetropol').value = row.platform_metropol || '';
-            document.getElementById('editToken').value = row.platform_token || '';
-            document.getElementById('editTrendyol').value = row.platform_trendyol || '';
-            document.getElementById('editYemeksepeti').value = row.platform_yemeksepeti || '';
-            document.getElementById('editGetir').value = row.platform_getir || '';
-            document.getElementById('editMigros').value = row.platform_migros || '';
-            document.getElementById('editExpense').value = row.expense || '';
-            document.getElementById('editExpenseDesc').value = row.expense_desc || '';
-
-            document.getElementById('editReportModal').style.display = 'flex';
-        }
-
-        function closeEditModal() {
-            document.getElementById('editReportModal').style.display = 'none';
-        }
-
-        document.getElementById('editReportForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (currentSelectedBranch !== 'Merkez') return;
-
-            const id = document.getElementById('editReportId').value;
-            const payload = {
-                date: document.getElementById('editDate').value,
-                cash: parseFloat(document.getElementById('editCash').value) || 0,
-                bank: parseFloat(document.getElementById('editBank').value) || 0,
-                platform_pluxee: parseFloat(document.getElementById('editPluxee').value) || 0,
-                platform_edenred: parseFloat(document.getElementById('editEdenred').value) || 0,
-                platform_multinet: parseFloat(document.getElementById('editMultiNet').value) || 0,
-                platform_setcard: parseFloat(document.getElementById('editSetcard').value) || 0,
-                platform_metropol: parseFloat(document.getElementById('editMetropol').value) || 0,
-                platform_token: parseFloat(document.getElementById('editToken').value) || 0,
-                platform_trendyol: parseFloat(document.getElementById('editTrendyol').value) || 0,
-                platform_yemeksepeti: parseFloat(document.getElementById('editYemeksepeti').value) || 0,
-                platform_getir: parseFloat(document.getElementById('editGetir').value) || 0,
-                platform_migros: parseFloat(document.getElementById('editMigros').value) || 0,
-                expense: parseFloat(document.getElementById('editExpense').value) || 0,
-                expense_desc: document.getElementById('editExpenseDesc').value || ''
-            };
-
-            try {
-                const { error } = await supabaseClient.from('reports').update(payload).eq('id', id);
-                if (error) throw error;
-                alert('Rapor başarıyla güncellendi.');
-                closeEditModal();
-                fetchAllReports();
-            } catch (err) {
-                alert('Güncelleme başarısız: ' + err.message);
-            }
-        });
-
-        async function deleteReport(id) {
-            if (currentSelectedBranch !== 'Merkez') return;
-            if (!confirm('Bu raporu kalıcı olarak silmek istediğinize emin misiniz?')) return;
-
-            try {
-                const { error } = await supabaseClient.from('reports').delete().eq('id', id);
-                if (error) throw error;
-                alert('Rapor başarıyla silindi.');
-                fetchAllReports();
-            } catch (err) {
-                alert('Silme işlemi başarısız: ' + err.message);
-            }
-        }
-
-        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (STOK) ---
-        function openEditStockModal(item) {
-            if (currentSelectedBranch !== 'Merkez') return;
-            document.getElementById('editStockId').value = item.id;
-            document.getElementById('editTargetBranch').value = item.target_branch || 'Kurtkoy';
-            document.getElementById('editStockName').value = item.stock_name || '';
-            document.getElementById('editStockUnit').value = item.stock_unit || 'Kg';
-            document.getElementById('editStockAmount').value = item.stock_amount || '';
-
-            document.getElementById('editStockModal').style.display = 'flex';
-        }
-
-        function closeEditStockModal() {
-            document.getElementById('editStockModal').style.display = 'none';
-        }
-
-        document.getElementById('editStockForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (currentSelectedBranch !== 'Merkez') return;
-
-            const id = document.getElementById('editStockId').value;
-            const payload = {
-                target_branch: document.getElementById('editTargetBranch').value,
-                stock_name: document.getElementById('editStockName').value.trim(),
-                stock_unit: document.getElementById('editStockUnit').value,
-                stock_amount: parseFloat(document.getElementById('editStockAmount').value) || 0
-            };
-
-            try {
-                const { error } = await supabaseClient.from('archive').update(payload).eq('id', id);
-                if (error) throw error;
-                alert('Stok çıkışı başarıyla güncellendi.');
-                closeEditStockModal();
-                fetchAllStocks();
-            } catch (err) {
-                alert('Stok güncelleme başarısız: ' + err.message);
-            }
-        });
-
-        async function deleteStock(id) {
-            if (currentSelectedBranch !== 'Merkez') return;
-            if (!confirm('Bu stok çıkışını kalıcı olarak silmek istediğinize emin misiniz?')) return;
-
-            try {
-                const { error } = await supabaseClient.from('archive').delete().eq('id', id);
-                if (error) throw error;
-                alert('Stok çıkışı başarıyla silindi.');
-                fetchAllStocks();
-            } catch (err) {
-                alert('Silme işlemi başarısız: ' + err.message);
-            }
-        }
-
-        function renderStocks() {
-            const stockTbody = document.getElementById('stockOutTableBody');
-            if (!stockTbody) return;
-            stockTbody.innerHTML = '';
-
-            let filteredStocks = allStockCache;
-
-            if (currentSelectedBranch === 'Merkez') {
-                const branchFilterVal = document.getElementById('filterStockBranch').value;
-                if (branchFilterVal) {
-                    filteredStocks = filteredStocks.filter(item => item.target_branch && item.target_branch.toLowerCase() === branchFilterVal.toLowerCase());
-                }
-            } else {
-                filteredStocks = filteredStocks.filter(item => item.target_branch && item.target_branch.toLowerCase() === currentSelectedBranch.toLowerCase());
-            }
-
-            const nameSearchVal = document.getElementById('filterStockName').value.trim().toLowerCase();
-            if (nameSearchVal) {
-                filteredStocks = filteredStocks.filter(item => item.stock_name && item.stock_name.toLowerCase().includes(nameSearchVal));
-            }
-
-            if (filteredStocks.length > 0) {
-                filteredStocks.forEach(item => {
-                    let dateStr = item.created_at ? new Date(item.created_at).toLocaleDateString('tr-TR') : '-';
-                    const tr = document.createElement('tr');
-                    tr.style.borderBottom = '1px solid #f3f4f6';
-
-                    let stockActionHtml = '';
-                    if (currentSelectedBranch === 'Merkez') {
-                        stockActionHtml = `
-                            <td style="padding: 6px; text-align: center; white-space: nowrap;">
-                                <button type="button" onclick='openEditStockModal(${JSON.stringify(item)})' style="background: #2563eb; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
-                                <button type="button" onclick="deleteStock(${item.id})" style="background: #dc2626; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
-                            </td>
-                        `;
-                    }
-
-                    tr.innerHTML = `
-                        <td style="padding: 6px; color: #4b5563;">${dateStr}</td>
-                        <td style="padding: 6px; font-weight: bold; color: #1d4ed8;">${item.target_branch || '-'}</td>
-                        <td style="padding: 6px; font-weight: bold; color: #78350f;">${item.stock_name || '-'}</td>
-                        <td style="padding: 6px; color: #1f2937; font-weight: bold;">${item.stock_amount || 0} ₺</td>
-                        <td style="padding: 6px; color: #047857; font-weight: bold;">${item.stock_unit || '-'}</td>
-                        ${stockActionHtml}
-                    `;
-                    stockTbody.appendChild(tr);
-                });
-            } else {
-                let colspanVal = currentSelectedBranch === 'Merkez' ? '6' : '5';
-                stockTbody.innerHTML = `<tr><td colspan="${colspanVal}" style="padding: 12px; text-align: center; color: #9ca3a0;">Stok kaydı bulunmuyor.</td></tr>`;
-            }
-        }
-
-        function exportToExcel() {
-            let filteredData = currentSelectedBranch === 'Merkez' ? allDataCache : allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
-            if (selectedMonthFilter) {
-                filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
-            }
-            let dataToExport = filteredData.map(row => {
-                const cash = cleanVal(row.cash);
-                const bank = cleanVal(row.bank);
-                const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
-                const oTotal = cleanVal(row.platform_trendyol) + cleanVal(row.platform_yemeksepeti) + cleanVal(row.platform_getir) + cleanVal(row.platform_migros);
-                
-                const ciro = cash + bank + pTotal + oTotal;
-                const expense = cleanVal(row.expense);
-                return {
-                    "Şube": row.branch || '',
-                    "Tarih": row.date || '',
-                    "Nakit": cash,
-                    "Banka": bank,
-                    "Yemek Kartları": pTotal,
-                    "Online Platform": oTotal,
-                    "Ciro": ciro,
-                    "Masraf": expense,
-                    "Masraf Açıklaması": row.expense_desc || '',
-                    "Kalan Nakit": cash - expense
-                };
             });
-
-            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Raporlar");
-            XLSX.writeFile(workbook, `SweetWaffle_${currentSelectedBranch}_Raporlar.xlsx`);
         }
 
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape');
+        // Event Dinleyicileri
+        document.getElementById('aramaSube').addEventListener('input', tabloyuGuncelle);
+        document.getElementById('aramaTarih').addEventListener('change', tabloyuGuncelle);
 
-            doc.setFontSize(14);
-            doc.text(`Sweet Waffle - ${currentSelectedBranch === 'Merkez' ? 'Merkez (Tüm Şubeler)' : currentSelectedBranch} Raporları`, 14, 15);
-
-            let filteredData = currentSelectedBranch === 'Merkez' ? allDataCache : allDataCache.filter(row => row.branch && row.branch.toLowerCase() === currentSelectedBranch.toLowerCase());
-            if (selectedMonthFilter) {
-                filteredData = filteredData.filter(row => row.date && row.date.startsWith(selectedMonthFilter));
-            }
-            let tableRows = filteredData.map(row => {
-                const cash = cleanVal(row.cash);
-                const bank = cleanVal(row.bank);
-                const pTotal = cleanVal(row.platform_pluxee) + cleanVal(row.platform_edenred) + cleanVal(row.platform_multinet) + cleanVal(row.platform_setcard) + cleanVal(row.platform_metropol) + cleanVal(row.platform_token);
-                const oTotal = cleanVal(row.platform_trendyol) + cleanVal(row.platform_yemeksepeti) + cleanVal(row.platform_getir) + cleanVal(row.platform_migros);
-                
-                const ciro = cash + bank + pTotal + oTotal;
-                const expense = cleanVal(row.expense);
-                const remainingCash = cash - expense;
-                const expInfo = expense + (row.expense_desc ? ` (${row.expense_desc})` : '');
-                return [
-                    row.branch || '',
-                    row.date || '',
-                    formatMoney(cash),
-                    formatMoney(bank),
-                    formatMoney(pTotal),
-                    formatMoney(oTotal),
-                    formatMoney(ciro),
-                    expInfo,
-                    formatMoney(remainingCash)
-                ];
-            });
-
-            doc.autoTable({
-                head: [['Şube', 'Tarih', 'Nakit', 'Banka', 'Yemek Kartı', 'Online Platform', 'Ciro', 'Masraf & Açıklama', 'Kalan Nakit']],
-                body: tableRows,
-                startY: 20,
-                styles: { fontSize: 8 }
-            });
-
-            doc.save(`SweetWaffle_${currentSelectedBranch}_Raporlar.pdf`);
-        }
+        // Sayfa yüklendiğinde çalıştır
+        window.onload = tabloyuGuncelle;
     </script>
 </body>
 </html>
