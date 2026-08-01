@@ -185,14 +185,14 @@
             </div>
         </header>
 
-        <!-- Çıktı Alma Butonları -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 8px; margin-bottom: 12px; display: flex; gap: 8px; justify-content: flex-end;">
+        <!-- Çıktı Alma Butonları (Sadece Merkezde Görünecek Şekilde Ayarlandı) -->
+        <div id="exportButtonsContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 8px; margin-bottom: 12px; display: none; gap: 8px; justify-content: flex-end;">
             <button type="button" onclick="exportToExcel()" style="background: #047857; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Excel Çıktısı Al</button>
             <button type="button" onclick="exportToPDF()" style="background: #b91c1c; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">PDF Çıktısı Al</button>
         </div>
 
-        <!-- Özet Kartları -->
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
+        <!-- Özet Kartları (Sadece Merkezde Görünecek Şekilde Ayarlandı) -->
+        <div id="statsCardsContainer" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
             <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
                 <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM NAKİT</div>
                 <div id="statTotalCash" style="font-size: 14px; font-weight: 900; color: #047857;">0 ₺</div>
@@ -334,8 +334,8 @@
             </form>
         </div>
 
-        <!-- PLATFORM DETAYLARI TOPLAMLARI -->
-        <div style="display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px;">
+        <!-- PLATFORM DETAYLARI TOPLAMLARI (Sadece Merkezde Görünecek Şekilde Ayarlandı) -->
+        <div id="platformTotalsContainer" style="display: none; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px;">
             <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                 <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Yemek Kartı Platformları Toplamları</h3>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
@@ -389,8 +389,8 @@
             </div>
         </div>
 
-        <!-- Raporlar / Liste Tablosu -->
-        <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+        <!-- Raporlar / Liste Tablosu (Sadece Merkezde Görünecek Şekilde Ayarlandı) -->
+        <div id="reportsTableContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
                 <h3 id="tableHeaderTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0; text-transform: uppercase;">Raporlar Listesi</h3>
             </div>
@@ -549,6 +549,10 @@
             if (branchName === 'Merkez') {
                 document.getElementById('formCardContainer').style.display = 'none';
                 document.getElementById('stockOutCardContainer').style.display = 'block';
+                document.getElementById('exportButtonsContainer').style.display = 'flex';
+                document.getElementById('statsCardsContainer').style.display = 'grid';
+                document.getElementById('platformTotalsContainer').style.display = 'grid';
+                document.getElementById('reportsTableContainer').style.display = 'block'; // Sadece Merkez görebilir
                 document.getElementById('stockSectionHeading').innerText = "Merkez Stok Çıkışları Geçmişi";
                 document.getElementById('filterStockBranch').style.display = 'inline-block';
                 document.getElementById('thActionsHeader').style.display = 'table-cell';
@@ -556,6 +560,10 @@
             } else {
                 document.getElementById('formCardContainer').style.display = 'block';
                 document.getElementById('stockOutCardContainer').style.display = 'none';
+                document.getElementById('exportButtonsContainer').style.display = 'none';
+                document.getElementById('statsCardsContainer').style.display = 'none';
+                document.getElementById('platformTotalsContainer').style.display = 'none';
+                document.getElementById('reportsTableContainer').style.display = 'none'; // Kurtköy, Soğanlık ve Ortadağ şubelerinde tamamen gizlenir
                 document.getElementById('stockSectionHeading').innerText = "Merkeften Gelen Stok Listesi";
                 document.getElementById('filterStockBranch').style.display = 'none';
                 document.getElementById('thActionsHeader').style.display = 'none';
@@ -704,6 +712,7 @@
             const tbody = document.getElementById('allReportsTableBody');
             const tfoot = document.getElementById('allReportsTableFooter');
             
+            if (!tbody || !tfoot) return;
             tbody.innerHTML = '';
             tfoot.innerHTML = '';
 
@@ -814,24 +823,40 @@
                 tbody.innerHTML = `<tr><td colspan="${colspanVal}" style="padding: 12px; text-align: center; color: #9ca3a0;">Kayıt bulunmuyor.</td></tr>`;
             }
 
-            document.getElementById('statTotalCash').innerText = formatMoney(totalCash);
-            document.getElementById('statTotalBank').innerText = formatMoney(totalBank);
-            document.getElementById('statTotalPlatforms').innerText = formatMoney(totalPlatforms);
-            document.getElementById('statTotalOnline').innerText = formatMoney(totalOnline);
-            document.getElementById('statTotalRevenue').innerText = formatMoney(totalRevenue);
-            document.getElementById('statTotalExpense').innerText = formatMoney(totalExpense);
+            const statTotalCashEl = document.getElementById('statTotalCash');
+            if (statTotalCashEl) statTotalCashEl.innerText = formatMoney(totalCash);
+            const statTotalBankEl = document.getElementById('statTotalBank');
+            if (statTotalBankEl) statTotalBankEl.innerText = formatMoney(totalBank);
+            const statTotalPlatformsEl = document.getElementById('statTotalPlatforms');
+            if (statTotalPlatformsEl) statTotalPlatformsEl.innerText = formatMoney(totalPlatforms);
+            const statTotalOnlineEl = document.getElementById('statTotalOnline');
+            if (statTotalOnlineEl) statTotalOnlineEl.innerText = formatMoney(totalOnline);
+            const statTotalRevenueEl = document.getElementById('statTotalRevenue');
+            if (statTotalRevenueEl) statTotalRevenueEl.innerText = formatMoney(totalRevenue);
+            const statTotalExpenseEl = document.getElementById('statTotalExpense');
+            if (statTotalExpenseEl) statTotalExpenseEl.innerText = formatMoney(totalExpense);
 
-            document.getElementById('sumPluxee').innerText = formatMoney(sumPluxee);
-            document.getElementById('sumEdenred').innerText = formatMoney(sumEdenred);
-            document.getElementById('sumMultiNet').innerText = formatMoney(sumMultiNet);
-            document.getElementById('sumSetcard').innerText = formatMoney(sumSetcard);
-            document.getElementById('sumMetropol').innerText = formatMoney(sumMetropol);
-            document.getElementById('sumToken').innerText = formatMoney(sumToken);
+            const sumPluxeeEl = document.getElementById('sumPluxee');
+            if (sumPluxeeEl) sumPluxeeEl.innerText = formatMoney(sumPluxee);
+            const sumEdenredEl = document.getElementById('sumEdenred');
+            if (sumEdenredEl) sumEdenredEl.innerText = formatMoney(sumEdenred);
+            const sumMultiNetEl = document.getElementById('sumMultiNet');
+            if (sumMultiNetEl) sumMultiNetEl.innerText = formatMoney(sumMultiNet);
+            const sumSetcardEl = document.getElementById('sumSetcard');
+            if (sumSetcardEl) sumSetcardEl.innerText = formatMoney(sumSetcard);
+            const sumMetropolEl = document.getElementById('sumMetropol');
+            if (sumMetropolEl) sumMetropolEl.innerText = formatMoney(sumMetropol);
+            const sumTokenEl = document.getElementById('sumToken');
+            if (sumTokenEl) sumTokenEl.innerText = formatMoney(sumToken);
 
-            document.getElementById('sumTrendyol').innerText = formatMoney(sumTrendyol);
-            document.getElementById('sumYemeksepeti').innerText = formatMoney(sumYemeksepeti);
-            document.getElementById('sumGetir').innerText = formatMoney(sumGetir);
-            document.getElementById('sumMigros').innerText = formatMoney(sumMigros);
+            const sumTrendyolEl = document.getElementById('sumTrendyol');
+            if (sumTrendyolEl) sumTrendyolEl.innerText = formatMoney(sumTrendyol);
+            const sumYemeksepetiEl = document.getElementById('sumYemeksepeti');
+            if (sumYemeksepetiEl) sumYemeksepetiEl.innerText = formatMoney(sumYemeksepeti);
+            const sumGetirEl = document.getElementById('sumGetir');
+            if (sumGetirEl) sumGetirEl.innerText = formatMoney(sumGetir);
+            const sumMigrosEl = document.getElementById('sumMigros');
+            if (sumMigrosEl) sumMigrosEl.innerText = formatMoney(sumMigros);
         }
 
         // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (RAPOR) ---
@@ -1095,3 +1120,4 @@
     </script>
 </body>
 </html>
+```[cite: 1]
