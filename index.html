@@ -1,3 +1,282 @@
+Gemini ile sohbet
+
+<!DOCTYPE html>
+
+<html lang="tr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MemAlt Uygulama</title>
+
+    <style>
+
+        /* Genel Stiller ve Sıfırlama */
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background-color: #f4f6f9;
+
+            margin: 0;
+
+            padding: 20px;
+
+        }
+
+        .container {
+
+            max-width: 800px;
+
+            margin: 0 auto;
+
+            background: #fff;
+
+            padding: 20px;
+
+            border-radius: 8px;
+
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+        }
+
+        button {
+
+            cursor: pointer;
+
+            padding: 8px 16px;
+
+            border: none;
+
+            border-radius: 4px;
+
+            color: white;
+
+        }
+
+        .btn-primary { background-color: #007bff; }
+
+        .btn-danger { background-color: #dc3545; }
+
+
+        /* Özel Onay Modalı Stilleri */
+
+        .custom-modal {
+
+            position: fixed;
+
+            top: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            background: rgba(0, 0, 0, 0.5);
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            z-index: 9999;
+
+        }
+
+        .custom-modal-content {
+
+            background: #fff;
+
+            padding: 25px 30px;
+
+            border-radius: 8px;
+
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+
+            text-align: center;
+
+            max-width: 400px;
+
+            width: 100%;
+
+        }
+
+        .custom-modal-buttons {
+
+            margin-top: 20px;
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+    <div class="container">
+
+        <h2>MemAlt Raporlama ve Yönetim</h2>
+
+        <p>Silme veya düzenleme işlemlerini test etmek için aşağıdaki butona tıklayabilirsiniz:</p>
+
+        <button class="btn-danger" onclick="kaydiSil(1)">Örnek Kaydı Sil</button>
+
+    </div>
+
+
+    <!-- Özel Onay Modalı HTML Yapısı -->
+
+    <div id="customConfirmModal" class="custom-modal" style="display: none;">
+
+        <div class="custom-modal-content">
+
+            <p id="confirmMessage" style="font-size: 16px; font-weight: bold; margin-bottom: 15px;">Bu işlemi yapmak istediğinize emin misiniz?</p>
+
+            <div style="margin: 15px 0; text-align: left;">
+
+                <label style="cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+
+                    <input type="checkbox" id="dontAskAgainCheckbox" style="width: 16px; height: 16px;"> Bir daha bu soruyu sorma
+
+                </label>
+
+            </div>
+
+            <div class="custom-modal-buttons">
+
+                <button id="confirmYesBtn" class="btn-primary" style="padding: 8px 20px;">Tamam</button>
+
+                <button id="confirmNoBtn" class="btn-danger" style="padding: 8px 20px; background-color: #6c757d;">Vazgeç</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- JavaScript Kodları -->
+
+    <script>
+
+        function showCustomConfirm(message, callback) {
+
+            // Eğer kullanıcı daha önceden "bir daha sorma" seçeneğini işaretlediyse direkt onay ver
+
+            if (localStorage.getItem('skipDeleteConfirm') === 'true') {
+
+                callback(true);
+
+                return;
+
+            }
+
+
+            const modal = document.getElementById('customConfirmModal');
+
+            const msgEl = document.getElementById('confirmMessage');
+
+            const yesBtn = document.getElementById('confirmYesBtn');
+
+            const noBtn = document.getElementById('confirmNoBtn');
+
+            const checkbox = document.getElementById('dontAskAgainCheckbox');
+
+
+            msgEl.textContent = message;
+
+            modal.style.display = 'flex';
+
+            checkbox.checked = false;
+
+
+            // Eski olay dinleyicilerini temizlemek için butonları yenileriyle değiştiriyoruz
+
+            const newYesBtn = yesBtn.cloneNode(true);
+
+            const newNoBtn = noBtn.cloneNode(true);
+
+            yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+
+            noBtn.parentNode.replaceChild(newNoBtn, noBtn);
+
+
+            document.getElementById('confirmYesBtn').addEventListener('click', () => {
+
+                if (checkbox.checked) {
+
+                    localStorage.setItem('skipDeleteConfirm', 'true');
+
+                }
+
+                modal.style.display = 'none';
+
+                callback(true);
+
+            });
+
+
+            document.getElementById('confirmNoBtn').addEventListener('click', () => {
+
+                modal.style.display = 'none';
+
+                callback(false);
+
+            });
+
+        }
+
+
+        // Silme veya Düzenleme butonlarınızın tetikleyeceği fonksiyon
+
+        function kaydiSil(id) {
+
+            showCustomConfirm("Bu raporu kalıcı olarak silmek istediğinize emin misiniz?", (isConfirmed) => {
+
+                if (isConfirmed) {
+
+                    // Buraya gerçek silme kodunuz (fetch, DOM silme vb.) gelecek
+
+                    alert("Kayıt başarıyla silindi!");
+
+                    console.log("Silinen ID:", id);
+
+                } else {
+
+                    console.log("İşlem iptal edildi.");
+
+                }
+
+            });
+
+        }
+
+    </script>
+
+</body>
+
+</html>BURDA SİL DUZENLERDE TEKRAR HATASI VERİYOR ONU DUZENLE TEK PARACA SEK,LNDE INDEX HTML VER BANA
+
+Kodunuzdaki hata, butonları klonlayıp (cloneNode) yer değiştirdiğiniz satırlarda confirmYesBtn ve confirmNoBtn ID'lerinin DOM üzerinde kaybolması veya olay dinleyicilerinin karışması nedeniyle document.getElementById('confirmYesBtn') ifadesinin eski ya da yanlış referansı yakalamasından kaynaklanıyordu.
+
+Bu sorunu çözmek için butonları her seferinde klonlamak yerine, olay dinleyicilerini düzgün yöneten temiz ve kararlı bir yapı kurdum. Ayrıca "Tercihleri Sıfırla" adında test amaçlı kullanışlı bir buton ekledim, böylece "Bir daha bu soruyu sorma" seçeneğini seçtikten sonra tekrar modalı test etmek istediğinizde localStorage'ı kolayca temizleyebilirsiniz.
+
+Tüm kodların düzeltilmiş ve tek parça halindeki index.html versiyonu aşağıdadır:
+HTML
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -29,6 +308,7 @@
         }
         .btn-primary { background-color: #007bff; }
         .btn-danger { background-color: #dc3545; }
+        .btn-secondary { background-color: #6c757d; }
 
         /* Özel Onay Modalı Stilleri */
         .custom-modal {
@@ -64,8 +344,11 @@
 
     <div class="container">
         <h2>MemAlt Raporlama ve Yönetim</h2>
-        <p>Silme veya düzenleme işlemlerini test etmek için aşağıdaki butona tıklayabilirsiniz:</p>
-        <button class="btn-danger" onclick="kaydiSil(1)">Örnek Kaydı Sil</button>
+        <p>Silme veya düzenleme işlemlerini test etmek için aşağıdaki butonları kullanabilirsiniz:</p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn-danger" onclick="kaydiSil(1)">Örnek Kaydı Sil</button>
+            <button class="btn-secondary" onclick="tercihleriSifirla()">"Bir daha sorma" Tercihini Sıfırla</button>
+        </div>
     </div>
 
     <!-- Özel Onay Modalı HTML Yapısı -->
@@ -79,51 +362,58 @@
             </div>
             <div class="custom-modal-buttons">
                 <button id="confirmYesBtn" class="btn-primary" style="padding: 8px 20px;">Tamam</button>
-                <button id="confirmNoBtn" class="btn-danger" style="padding: 8px 20px; background-color: #6c757d;">Vazgeç</button>
+                <button id="confirmNoBtn" class="btn-secondary" style="padding: 8px 20px;">Vazgeç</button>
             </div>
         </div>
     </div>
 
     <!-- JavaScript Kodları -->
     <script>
-        function showCustomConfirm(message, callback) {
-            // Eğer kullanıcı daha önceden "bir daha sorma" seçeneğini işaretlediyse direkt onay ver
-            if (localStorage.getItem('skipDeleteConfirm') === 'true') {
-                callback(true);
-                return;
-            }
-
+        // Sayfa yüklendiğinde butonlara bir kere olay dinleyicisi atanır
+        document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('customConfirmModal');
-            const msgEl = document.getElementById('confirmMessage');
             const yesBtn = document.getElementById('confirmYesBtn');
             const noBtn = document.getElementById('confirmNoBtn');
             const checkbox = document.getElementById('dontAskAgainCheckbox');
 
-            msgEl.textContent = message;
-            modal.style.display = 'flex';
-            checkbox.checked = false;
+            let currentCallback = null;
 
-            // Eski olay dinleyicilerini temizlemek için butonları yenileriyle değiştiriyoruz
-            const newYesBtn = yesBtn.cloneNode(true);
-            const newNoBtn = noBtn.cloneNode(true);
-            yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
-            noBtn.parentNode.replaceChild(newNoBtn, noBtn);
-
-            document.getElementById('confirmYesBtn').addEventListener('click', () => {
+            // Evet butonuna tıklama olayı
+            yesBtn.addEventListener('click', () => {
                 if (checkbox.checked) {
                     localStorage.setItem('skipDeleteConfirm', 'true');
                 }
                 modal.style.display = 'none';
-                callback(true);
+                if (typeof currentCallback === 'function') {
+                    currentCallback(true);
+                }
             });
 
-            document.getElementById('confirmNoBtn').addEventListener('click', () => {
+            // Hayır / Vazgeç butonuna tıklama olayı
+            noBtn.addEventListener('click', () => {
                 modal.style.display = 'none';
-                callback(false);
+                if (typeof currentCallback === 'function') {
+                    currentCallback(false);
+                }
             });
-        }
 
-        // Silme veya Düzenleme butonlarınızın tetikleyeceği fonksiyon
+            // Global fonksiyon olarak dışarıya açıyoruz
+            window.showCustomConfirm = function(message, callback) {
+                // Eğer kullanıcı daha önceden "bir daha sorma" seçeneğini işaretlediyse direkt onay ver
+                if (localStorage.getItem('skipDeleteConfirm') === 'true') {
+                    callback(true);
+                    return;
+                }
+
+                const msgEl = document.getElementById('confirmMessage');
+                msgEl.textContent = message;
+                checkbox.checked = false;
+                currentCallback = callback;
+                modal.style.display = 'flex';
+            };
+        });
+
+        // Silme veya Düzenleme butonunuzun tetikleyeceği fonksiyon
         function kaydiSil(id) {
             showCustomConfirm("Bu raporu kalıcı olarak silmek istediğinize emin misiniz?", (isConfirmed) => {
                 if (isConfirmed) {
@@ -135,6 +425,15 @@
                 }
             });
         }
+
+        // Test amaçlı localStorage tercihini sıfırlama fonksiyonu
+        function tercihleriSifirla() {
+            localStorage.removeItem('skipDeleteConfirm');
+            alert("Onay tercihiniz sıfırlandı. Artık modal tekrar görünecek.");
+        }
     </script>
 </body>
 </html>
+
+
+Gemini bir yapay zeka modeli olduğu için hata yapabilir.
