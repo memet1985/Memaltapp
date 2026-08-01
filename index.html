@@ -3,137 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MemAlt - Merkez Yönetim ve Şube Raporları</title>
+    <title>Sweet Waffle - Merkez Yönetim Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #171a21; color: #f3f4f6; }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-6">
+<body class="min-h-screen flex flex-col justify-between">
 
-    <div class="max-w-7xl mx-auto">
-        <!-- Başlık ve Ay Butonları -->
-        <div class="bg-white p-4 rounded-xl shadow mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <h1 class="text-xl font-bold text-gray-800">MERKEZ YÖNETİMİ (TÜM ŞUBELER) RAPORLARI LİSTESİ</h1>
-            
-            <!-- Ay Seçim Butonları -->
-            <div class="flex flex-wrap gap-2">
-                <button onclick="ayFiltrele('Tumu')" id="btnTumu" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium shadow transition">Tüm Veriler</button>
-                <button onclick="ayFiltrele('2026-08')" id="btn2026-08" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition">Ağustos 2026</button>
-                <button onclick="ayFiltrele('2026-07')" id="btn2026-07" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition">Temmuz 2026</button>
-            </div>
-        </div>
-
-        <!-- Şube ve Tarih Arama / Filtreleme Kutuları -->
-        <div class="bg-white p-4 rounded-xl shadow mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Şube ile Filtrele / Ara</label>
-                <input type="text" id="aramaSube" placeholder="Şube adı yazın (örn: Kurtkoy, Soganlik)..." class="w-full p-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <!-- ŞİFRE GİRİŞ EKRANI (QR OKUTULUNCA ÖNCE BU ÇIKAR) -->
+    <div id="authModal" class="fixed inset-0 bg-[#171a21]/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-[#1e222a] p-6 rounded-3xl shadow-2xl border border-gray-800 max-w-sm w-full text-center space-y-4">
+            <div class="space-y-1">
+                <h2 class="text-lg font-bold text-amber-200">Kasa Yetki Doğrulaması 🔒</h2>
+                <p class="text-xs text-gray-400">İşlem paneline erişmek için şifre giriniz.</p>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Tarih ile Filtrele</label>
-                <input type="date" id="aramaTarih" class="w-full p-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="modalPin" placeholder="Kasa Şifresi" class="w-full bg-[#171a21] border border-gray-800 rounded-xl px-4 py-3 text-white text-center text-lg tracking-widest focus:outline-none focus:border-amber-500">
             </div>
-        </div>
-
-        <!-- Rapor Tablosu -->
-        <div class="bg-white rounded-xl shadow overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Şube</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tarih</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nakit</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Banka</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Yemek Kartları</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Online Platform</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ciro</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Masraf & Açıklama</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kalan Nakit</th>
-                    </tr>
-                </thead>
-                <tbody id="raporListesi" class="bg-white divide-y divide-gray-200 text-sm">
-                    <!-- Dinamik Veriler Buraya Gelecek -->
-                </tbody>
-            </table>
+            <button onclick="verifyModalPin()" class="w-full bg-gradient-to-r from-amber-500 to-[#d4975d] hover:from-amber-600 text-gray-950 font-bold py-3 rounded-xl text-sm transition shadow-md cursor-pointer">
+                Paneli Aç
+            </button>
         </div>
     </div>
 
+    <header class="w-full bg-[#1e222a]/90 backdrop-blur-md shadow-md py-3 px-6 sticky top-0 z-50 border-b border-gray-800">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <img src="logo.webp" alt="Sweet Waffle Logo" class="w-10 h-10 rounded-full object-cover border border-amber-500/30 shadow-md bg-gray-800">
+                <h1 class="text-lg font-bold tracking-wide bg-gradient-to-r from-amber-200 via-amber-400 to-[#d4975d] bg-clip-text text-transparent">Sweet Waffle</h1>
+            </div>
+            <div class="text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/20 px-3 py-1.5 rounded-full">
+                Merkez / Kasa Paneli
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-md w-full mx-auto p-4 flex-grow space-y-6">
+
+        <div class="bg-[#1e222a] p-5 rounded-3xl shadow-xl border border-gray-800 space-y-3">
+            <h2 class="text-sm font-bold text-amber-200">Müşteri Arama (Telefon ile)</h2>
+            <div class="flex space-x-2">
+                <input type="tel" id="searchPhone" placeholder="05XX XXX XX XX" class="w-full bg-[#171a21] border border-gray-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-amber-500">
+                <button onclick="searchCustomer()" class="bg-amber-500 hover:bg-amber-600 text-gray-950 font-bold px-5 rounded-xl text-sm transition cursor-pointer">Ara</button>
+            </div>
+        </div>
+
+        <div id="customerCard" class="hidden bg-[#1e222a] p-5 rounded-3xl shadow-xl border border-gray-800 space-y-4">
+            <div class="bg-[#171a21] p-4 rounded-2xl border border-gray-800 space-y-1">
+                <p class="text-xs text-gray-400">Müşteri Adı Soyadı:</p>
+                <h3 id="resName" class="text-lg font-bold text-amber-100">-</h3>
+                <p class="text-xs text-gray-400 mt-2">Telefon:</p>
+                <p id="resPhone" class="text-sm font-semibold text-gray-300">-</p>
+                <p class="text-xs text-gray-400 mt-2">Mevcut Puan:</p>
+                <p id="resPoints" class="text-2xl font-extrabold text-amber-400">0 Puan</p>
+            </div>
+
+            <div class="border-t border-gray-800 pt-4 space-y-3">
+                <h3 class="text-xs font-bold text-amber-200 uppercase tracking-wider">Fiş Tutarı ile Puan Ekle (10 TL = 1 Puan)</h3>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">Toplam Fiş Tutarı (TL)</label>
+                    <input type="number" id="receiptAmount" placeholder="Örn: 350" class="w-full bg-[#171a21] border border-gray-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-amber-500">
+                </div>
+                <button onclick="addPoints()" class="w-full bg-gradient-to-r from-amber-500 to-[#d4975d] hover:from-amber-600 text-gray-950 font-bold py-3 rounded-xl text-sm transition shadow-md cursor-pointer">
+                    Puanı Hesaba Ekle
+                </button>
+            </div>
+
+            <div class="border-t border-gray-800 pt-4 space-y-3">
+                <h3 class="text-xs font-bold text-red-400 uppercase tracking-wider">Ödül Kullanımı (Puan Sıfırlama)</h3>
+                <button onclick="useReward()" class="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 font-bold py-3 rounded-xl text-sm transition cursor-pointer">
+                    Ödülü Ver ve Puanı Sıfırla
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full text-center py-4 text-xs text-gray-500 border-t border-gray-800/60">
+        &copy; 2026 Sweet Waffle - Merkez Yönetim Paneli
+    </footer>
+
     <script>
-        let aktifAyFiltresi = 'Tumu';
+        const SUPABASE_URL = 'https://yatgnoiybbjvmreikeqs.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_8BxYi7oOUnHvkHAJQNaitQ_kKlHk_Y_';
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        const STAFF_PIN = "1985"; // Kasa şifresi (İstediğiniz gibi değiştirebilirsiniz)
+        let activeCustomer = null;
 
-        function ayFiltrele(ay) {
-            aktifAyFiltresi = ay;
-            
-            // Butonların aktiflik renklerini güncelle
-            document.querySelectorAll('#btnTumu, [id^="btn2026"]').forEach(btn => {
-                btn.className = "px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition";
-            });
-            
-            const aktifBtn = document.getElementById(ay === 'Tumu' ? 'btnTumu' : 'btn' + ay);
-            if(aktifBtn) {
-                aktifBtn.className = "px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium shadow transition";
+        // Sayfa açıldığında URL'de telefon var mı kontrol et ve QR ile gelinip gelinmediğine bak
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const phone = urlParams.get('phone');
+            if (phone) {
+                // QR ile gelindiğinde şifre modalı açık kalır, doğru şifre girilince aranır.
+                document.getElementById('searchPhone').value = phone;
+            } else {
+                // Manuel giriş yapıldıysa şifre modalını gizleyebiliriz veya her halükarda şifre isteyebiliriz. 
+                // İstediğiniz gibi doğrudan şifre ekranı ile başlar.
             }
+        });
 
-            tabloyuGuncelle();
+        function verifyModalPin() {
+            const enteredPin = document.getElementById('modalPin').value.trim();
+            if (enteredPin === STAFF_PIN) {
+                document.getElementById('authModal').style.display = 'none';
+                // Eğer URL'de telefon varsa otomatik aramayı tetikle
+                const urlParams = new URLSearchParams(window.location.search);
+                const phone = urlParams.get('phone');
+                if (phone) {
+                    searchCustomerByPhone(phone);
+                }
+            } else {
+                alert('Hatalı Kasa Şifresi!');
+                document.getElementById('modalPin').value = '';
+            }
         }
 
-        function tabloyuGuncelle() {
-            const aramaSubeDegeri = document.getElementById('aramaSube').value.toLowerCase().trim();
-            const aramaTarihDegeri = document.getElementById('aramaTarih').value;
+        async function searchCustomer() {
+            const phone = document.getElementById('searchPhone').value.trim();
+            if (!phone) {
+                alert('Lütfen telefon numarası giriniz.');
+                return;
+            }
+            searchCustomerByPhone(phone);
+        }
 
-            // localStorage'dan kayıtlı verileri alıyoruz
-            const tumRaporlar = JSON.parse(localStorage.getItem('memaltRaporlar')) || [];
-            const tabloGovdesi = document.getElementById('raporListesi');
-            tabloGovdesi.innerHTML = '';
+        async function searchCustomerByPhone(phone) {
+            let { data, error } = await client.from('customers').select('*').eq('phone', phone).single();
 
-            const filtrelenmis = tumRaporlar.filter(item => {
-                // 1. Ay Butonları Filtresi
-                let ayUyumlu = true;
-                if (aktifAyFiltresi !== 'Tumu' && item.tarih) {
-                    ayUyumlu = item.tarih.startsWith(aktifAyFiltresi);
-                }
-
-                // 2. Şube Arama Kutusu Filtresi
-                let subeUyumlu = true;
-                if (aramaSubeDegeri && item.subeAdi) {
-                    subeUyumlu = item.subeAdi.toLowerCase().includes(aramaSubeDegeri);
-                }
-
-                // 3. Tarih Seçim Kutusu Filtresi
-                let tarihUyumlu = true;
-                if (aramaTarihDegeri && item.tarih) {
-                    tarihUyumlu = (item.tarih === aramaTarihDegeri);
-                }
-
-                return ayUyumlu && subeUyumlu && tarihUyumlu;
-            });
-
-            if (filtrelenmis.length === 0) {
-                tabloGovdesi.innerHTML = `<tr><td colspan="9" class="px-6 py-4 text-center text-gray-500">Seçilen kriterlere uygun kayıt bulunamadı.</td></tr>`;
+            if (error || !data) {
+                alert('Bu telefon numarasına ait kayıtlı müşteri bulunamadı!');
+                document.getElementById('customerCard').classList.add('hidden');
+                activeCustomer = null;
                 return;
             }
 
-            filtrelenmis.forEach(item => {
-                tabloGovdesi.innerHTML += `
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${item.subeAdi || ''}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-700">${item.tarih || ''}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-700">${Number(item.nakit || 0).toLocaleString('tr-TR')} ₺</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-700">${Number(item.banka || 0).toLocaleString('tr-TR')} ₺</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-700">${Number(item.yemekKartlari || 0).toLocaleString('tr-TR')} ₺</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-700">${Number(item.onlinePlatform || 0).toLocaleString('tr-TR')} ₺</td>
-                        <td class="px-6 py-4 whitespace-nowrap font-bold text-gray-900">${Number(item.ciro || 0).toLocaleString('tr-TR')} ₺</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-red-600">${Number(item.masrafTutar || 0).toLocaleString('tr-TR')} ₺ (${item.masrafAciklama || ''})</td>
-                        <td class="px-6 py-4 whitespace-nowrap font-bold text-green-600">${Number(item.kalanNakit || 0).toLocaleString('tr-TR')} ₺</td>
-                    </tr>
-                `;
-            });
+            activeCustomer = data;
+            document.getElementById('resName').innerText = data.name;
+            document.getElementById('resPhone').innerText = data.phone;
+            document.getElementById('resPoints').innerText = (data.points || 0) + " Puan";
+            document.getElementById('customerCard').classList.remove('hidden');
         }
 
-        // Event Dinleyicileri
-        document.getElementById('aramaSube').addEventListener('input', tabloyuGuncelle);
-        document.getElementById('aramaTarih').addEventListener('change', tabloyuGuncelle);
+        async function addPoints() {
+            if (!activeCustomer) return;
+            const amountInput = document.getElementById('receiptAmount').value;
+            const amount = parseFloat(amountInput);
 
-        // Sayfa yüklendiğinde çalıştır
-        window.onload = tabloyuGuncelle;
+            if (isNaN(amount) || amount <= 0) {
+                alert('Lütfen geçerli bir fiş tutarı giriniz.');
+                return;
+            }
+
+            const earnedPoints = Math.floor(amount / 10);
+            if (earnedPoints <= 0) {
+                alert('Girilen tutar için en az 1 puan kazanılmalıdır (Minimum 10 TL).');
+                return;
+            }
+
+            const newTotalPoints = (activeCustomer.points || 0) + earnedPoints;
+
+            let { error } = await client.from('customers').update({ points: newTotalPoints }).eq('phone', activeCustomer.phone);
+
+            if (error) {
+                alert('Puan eklenirken hata oluştu: ' + error.message);
+                return;
+            }
+
+            activeCustomer.points = newTotalPoints;
+            document.getElementById('resPoints').innerText = newTotalPoints + " Puan";
+            document.getElementById('receiptAmount').value = '';
+            alert('🚀 Başarıyla ' + earnedPoints + ' puan eklendi!');
+        }
+
+        async function useReward() {
+            if (!activeCustomer) return;
+
+            if ((activeCustomer.points || 0) < 100) {
+                alert('⚠️ Müşteri puanı 100’den az, ödül verilemez!');
+                return;
+            }
+
+            let { error } = await client.from('customers').update({ points: 0 }).eq('phone', activeCustomer.phone);
+
+            if (error) {
+                alert('İşlem başarısız: ' + error.message);
+                return;
+            }
+
+            activeCustomer.points = 0;
+            document.getElementById('resPoints').innerText = "0 Puan";
+            alert('✅ Ödül onaylandı! Müşterinin puanı sıfırlandı.');
+        }
     </script>
 </body>
 </html>
