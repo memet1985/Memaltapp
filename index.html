@@ -185,13 +185,13 @@
             </div>
         </header>
 
-        <!-- Çıktı Alma Butonları (Sadece Merkezde Görünecek Şekilde Ayarlandı) -->
+        <!-- Çıktı Alma Butonları -->
         <div id="exportButtonsContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 8px; margin-bottom: 12px; display: none; gap: 8px; justify-content: flex-end;">
             <button type="button" onclick="exportToExcel()" style="background: #047857; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Excel Çıktısı Al</button>
             <button type="button" onclick="exportToPDF()" style="background: #b91c1c; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer;">PDF Çıktısı Al</button>
         </div>
 
-        <!-- Özet Kartları (Sadece Merkezde Görünecek Şekilde Ayarlandı) -->
+        <!-- Özet Kartları -->
         <div id="statsCardsContainer" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
             <div style="background: #fff; border: 1px solid #fde68a; border-radius: 8px; padding: 8px; text-align: center;">
                 <div style="font-size: 9px; color: #6b7280; font-weight: bold;">TOPLAM NAKİT</div>
@@ -334,7 +334,7 @@
             </form>
         </div>
 
-        <!-- PLATFORM DETAYLARI TOPLAMLARI (Sadece Merkezde Görünecek Şekilde Ayarlandı) -->
+        <!-- PLATFORM DETAYLARI TOPLAMLARI -->
         <div id="platformTotalsContainer" style="display: none; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px;">
             <div style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                 <h3 style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0 0 8px 0; text-transform: uppercase;">Yemek Kartı Platformları Toplamları</h3>
@@ -389,16 +389,13 @@
             </div>
         </div>
 
-        <!-- Raporlar / Liste Tablosu (Sadece Merkezde Görünecek Şekilde Ayarlandı) -->
+        <!-- Raporlar / Liste Tablosu -->
         <div id="reportsTableContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
                 <h3 id="tableHeaderTitle" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0; text-transform: uppercase;">Raporlar Listesi</h3>
             </div>
             
-            <!-- Biten Aylar Butonları Konteyneri -->
-            <div id="monthlyButtonsContainer" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #fde68a;">
-                <!-- Dinamik Ay Butonları Buraya Gelecek -->
-            </div>
+            <div id="monthlyButtonsContainer" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #fde68a;"></div>
 
             <div style="width: 100%; overflow-x: auto;">
                 <table style="width: 100%; min-width: 950px; border-collapse: collapse; font-size: 10px;">
@@ -422,12 +419,11 @@
             </div>
         </div>
 
-        <!-- MERKEZ STOK ÇIKIŞLARI GEÇMİŞİ / ŞUBELER İÇİN GELEN STOK LİSTESİ -->
+        <!-- STOK ÇIKIŞLARI GEÇMİŞİ -->
         <div id="stockOutTableContainer" style="background: #fff; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 12px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
                 <h3 id="stockSectionHeading" style="font-size: 11px; font-weight: bold; color: #78350f; margin: 0; text-transform: uppercase;">Merkez Stok Çıkışları Geçmişi</h3>
                 
-                <!-- Filtreler -->
                 <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                     <select id="filterStockBranch" onchange="renderStocks()" style="padding: 4px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 10px; background: #fff;">
                         <option value="">Tüm Şubeler (Filtre)</option>
@@ -552,7 +548,7 @@
                 document.getElementById('exportButtonsContainer').style.display = 'flex';
                 document.getElementById('statsCardsContainer').style.display = 'grid';
                 document.getElementById('platformTotalsContainer').style.display = 'grid';
-                document.getElementById('reportsTableContainer').style.display = 'block'; // Sadece Merkez görebilir
+                document.getElementById('reportsTableContainer').style.display = 'block';
                 document.getElementById('stockSectionHeading').innerText = "Merkez Stok Çıkışları Geçmişi";
                 document.getElementById('filterStockBranch').style.display = 'inline-block';
                 document.getElementById('thActionsHeader').style.display = 'table-cell';
@@ -563,7 +559,7 @@
                 document.getElementById('exportButtonsContainer').style.display = 'none';
                 document.getElementById('statsCardsContainer').style.display = 'none';
                 document.getElementById('platformTotalsContainer').style.display = 'none';
-                document.getElementById('reportsTableContainer').style.display = 'none'; // Kurtköy, Soğanlık ve Ortadağ şubelerinde tamamen gizlenir
+                document.getElementById('reportsTableContainer').style.display = 'none';
                 document.getElementById('stockSectionHeading').innerText = "Merkeften Gelen Stok Listesi";
                 document.getElementById('filterStockBranch').style.display = 'none';
                 document.getElementById('thActionsHeader').style.display = 'none';
@@ -784,8 +780,8 @@
                     if (currentSelectedBranch === 'Merkez') {
                         actionButtonsHtml = `
                             <td style="padding: 6px; text-align: center; white-space: nowrap;">
-                                <button type="button" onclick='openEditModal(${JSON.stringify(row)})' style="background: #2563eb; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
-                                <button type="button" onclick="deleteReport(${row.id})" style="background: #dc2626; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
+                                <button type="button" class="edit-btn" data-id="${row.id}" style="background: #2563eb; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
+                                <button type="button" class="delete-btn" data-id="${row.id}" style="background: #dc2626; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
                             </td>
                         `;
                     }
@@ -802,6 +798,14 @@
                         <td style="padding: 6px; font-weight: bold; color: #047857; background-color: #ecfdf5; border-left: 1px dashed #6ee7b7; border-right: 1px dashed #6ee7b7;">${formatMoney(rowRemainingCash)}</td>
                         ${actionButtonsHtml}
                     `;
+                    
+                    if (currentSelectedBranch === 'Merkez') {
+                        const editBtn = tr.querySelector('.edit-btn');
+                        const deleteBtn = tr.querySelector('.delete-btn');
+                        if (editBtn) editBtn.addEventListener('click', () => openEditModal(row));
+                        if (deleteBtn) deleteBtn.addEventListener('click', () => deleteReport(row.id));
+                    }
+
                     tbody.appendChild(tr);
                 });
 
@@ -859,7 +863,6 @@
             if (sumMigrosEl) sumMigrosEl.innerText = formatMoney(sumMigros);
         }
 
-        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (RAPOR) ---
         function openEditModal(row) {
             if (currentSelectedBranch !== 'Merkez') return;
             document.getElementById('editReportId').value = row.id;
@@ -913,8 +916,8 @@
             try {
                 const { error } = await supabaseClient.from('reports').update(payload).eq('id', id);
                 if (error) throw error;
-                alert('Rapor başarıyla güncellendi.');
                 closeEditModal();
+                alert('Rapor başarıyla güncellendi.');
                 fetchAllReports();
             } catch (err) {
                 alert('Güncelleme başarısız: ' + err.message);
@@ -935,7 +938,6 @@
             }
         }
 
-        // --- MERKEZ DÜZENLEME VE SİLME FONKSİYONLARI (STOK) ---
         function openEditStockModal(item) {
             if (currentSelectedBranch !== 'Merkez') return;
             document.getElementById('editStockId').value = item.id;
@@ -966,8 +968,8 @@
             try {
                 const { error } = await supabaseClient.from('archive').update(payload).eq('id', id);
                 if (error) throw error;
-                alert('Stok çıkışı başarıyla güncellendi.');
                 closeEditStockModal();
+                alert('Stok çıkışı başarıyla güncellendi.');
                 fetchAllStocks();
             } catch (err) {
                 alert('Stok güncelleme başarısız: ' + err.message);
@@ -1019,8 +1021,8 @@
                     if (currentSelectedBranch === 'Merkez') {
                         stockActionHtml = `
                             <td style="padding: 6px; text-align: center; white-space: nowrap;">
-                                <button type="button" onclick='openEditStockModal(${JSON.stringify(item)})' style="background: #2563eb; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
-                                <button type="button" onclick="deleteStock(${item.id})" style="background: #dc2626; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
+                                <button type="button" class="edit-stock-btn" style="background: #2563eb; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; margin-right: 4px;">Düzenle</button>
+                                <button type="button" class="delete-stock-btn" style="background: #dc2626; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer;">Sil</button>
                             </td>
                         `;
                     }
@@ -1029,10 +1031,18 @@
                         <td style="padding: 6px; color: #4b5563;">${dateStr}</td>
                         <td style="padding: 6px; font-weight: bold; color: #1d4ed8;">${item.target_branch || '-'}</td>
                         <td style="padding: 6px; font-weight: bold; color: #78350f;">${item.stock_name || '-'}</td>
-                        <td style="padding: 6px; color: #1f2937; font-weight: bold;">${item.stock_amount || 0} ₺</td>
+                        <td style="padding: 6px; color: #1f2937; font-weight: bold;">${item.stock_amount || 0}</td>
                         <td style="padding: 6px; color: #047857; font-weight: bold;">${item.stock_unit || '-'}</td>
                         ${stockActionHtml}
                     `;
+
+                    if (currentSelectedBranch === 'Merkez') {
+                        const editStockBtn = tr.querySelector('.edit-stock-btn');
+                        const deleteStockBtn = tr.querySelector('.delete-stock-btn');
+                        if (editStockBtn) editStockBtn.addEventListener('click', () => openEditStockModal(item));
+                        if (deleteStockBtn) deleteStockBtn.addEventListener('click', () => deleteStock(item.id));
+                    }
+
                     stockTbody.appendChild(tr);
                 });
             } else {
