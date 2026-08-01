@@ -49,7 +49,7 @@
             </div>
             <div class="bg-white p-4 rounded-xl shadow border-l-4 border-red-500">
                 <p class="text-sm text-gray-500">Toplam Masraf</p>
-                <p id="toplamMasraf" class="text-xl font-bold text-gray-800">0.00 TL</p>
+                <p id="toplamMasraf" class="text-xl font-bold text-gray-800">0.00 tar</p>
             </div>
         </div>
 
@@ -67,51 +67,50 @@
                     </tr>
                 </thead>
                 <tbody id="raporListesi" class="bg-white divide-y divide-gray-200">
-                    <!-- Dinamik Veriler Buraya Gelecek -->
+                    <!-- Veriler dinamik olarak buraya dolacak -->
                 </tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // Şubelerin kaydettiği ortak anahtar (Şube sayfalarında veriler bu anahtarla kaydediliyor olmalı)
-        // Örnek: localStorage.setItem('memaltRaporlar', JSON.stringify(tumRaporlar));
-
-        function verileriYukleVeFiltrele() {
+        function verileriFiltreleVeGoster() {
             const secilenSube = document.getElementById('subeFiltre').value;
             const secilenAy = document.getElementById('ayFiltre').value;
-            
-            // localStorage'dan verileri al (Eğer anahtar farklıysa şube sayfalarındaki kayıt anahtarı ile burası eşleştirilebilir)
-            const kayitliVeriler = JSON.parse(localStorage.getItem('memaltRaporlar')) || [];
+
+            // Şubelerin kaydettiği ortak localStorage verisini alıyoruz
+            const tumRaporlar = JSON.parse(localStorage.getItem('memaltRaporlar')) || [];
 
             const tabloGovdesi = document.getElementById('raporListesi');
             tabloGovdesi.innerHTML = '';
 
-            let tNakit = 0, tKredi = 0, tYemek = 0, tMasraf = 0;
+            let toplamNakit = 0;
+            let toplamKredi = 0;
+            let toplamYemek = 0;
+            let toplamMasraf = 0;
 
-            const filtrelenmisVeriler = kayitliVeriler.filter(item => {
+            const filtrelenmis = tumRaporlar.filter(item => {
                 let subeUyumlu = (secilenSube === 'Tumu' || item.subeAdi === secilenSube);
                 let ayUyumlu = true;
 
                 if (secilenAy && item.tarih) {
-                    // item.tarih "YYYY-MM-DD" formatında beklenir
-                    let raporAy = item.tarih.substring(0, 7);
+                    let raporAy = item.tarih.substring(0, 7); // YYYY-MM
                     ayUyumlu = (raporAy === secilenAy);
                 }
 
                 return subeUyumlu && ayUyumlu;
             });
 
-            if (filtrelenmisVeriler.length === 0) {
-                tabloGovdesi.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Seçilen kriterlere uygun rapor bulunamadı.</td></tr>`;
+            if (filtrelenmis.length === 0) {
+                tabloGovdesi.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Kayıt bulunamadı.</td></tr>`;
             } else {
-                filtrelenmisVeriler.forEach(item => {
-                    tNakit += Number(item.nakit || 0);
-                    tKredi += Number(item.krediKarti || 0);
-                    tYemek += Number(item.yemekKarti || 0);
-                    tMasraf += Number(item.masrafTutar || 0);
+                filtrelenmis.forEach(item => {
+                    toplamNakit += Number(item.nakit || 0);
+                    toplamKredi += Number(item.krediKarti || 0);
+                    toplamYemek += Number(item.yemekKarti || 0);
+                    toplamMasraf += Number(item.masrafTutar || 0);
 
-                    const satir = `
+                    tabloGovdesi.innerHTML += `
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${item.tarih || ''}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.subeAdi || ''}</td>
@@ -121,22 +120,19 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">${Number(item.masrafTutar || 0).toLocaleString('tr-TR')} TL</td>
                         </tr>
                     `;
-                    tabloGovdesi.innerHTML += satir;
                 });
             }
 
-            // Özet kartlarını güncelle
-            document.getElementById('toplamNakit').innerText = tNakit.toLocaleString('tr-TR') + ' TL';
-            document.getElementById('toplamKrediKarti').innerText = tKredi.toLocaleString('tr-TR') + ' TL';
-            document.getElementById('toplamYemekKarti').innerText = tYemek.toLocaleString('tr-TR') + ' TL';
-            document.getElementById('toplamMasraf').innerText = tMasraf.toLocaleString('tr-TR') + ' TL';
+            document.getElementById('toplamNakit').innerText = toplamNakit.toLocaleString('tr-TR') + ' TL';
+            document.getElementById('toplamKrediKarti').innerText = toplamKredi.toLocaleString('tr-TR') + ' TL';
+            document.getElementById('toplamYemekKarti').innerText = toplamYemek.toLocaleString('tr-TR') + ' TL';
+            document.getElementById('toplamMasraf').innerText = toplamMasraf.toLocaleString('tr-TR') + ' TL';
         }
 
-        document.getElementById('subeFiltre').addEventListener('change', verileriYukleVeFiltrele);
-        document.getElementById('ayFiltre').addEventListener('change', verileriYukleVeFiltrele);
+        document.getElementById('subeFiltre').addEventListener('change', verileriFiltreleVeGoster);
+        document.getElementById('ayFiltre').addEventListener('change', verileriFiltreleVeGoster);
 
-        // Sayfa ilk açıldığında verileri yükle
-        window.onload = verileriYukleVeFiltrele;
+        window.onload = verileriFiltreleVeGoster;
     </script>
 </body>
 </html>
